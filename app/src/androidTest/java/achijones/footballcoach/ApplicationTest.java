@@ -1,4 +1,4 @@
-package com.example.achijones.footballcoach;
+package achijones.footballcoach;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

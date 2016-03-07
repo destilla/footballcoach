@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.achijones.footballcoach">
+    package="achijones.footballcoach">
 
     <application
         android:allowBackup="true"
@@ -10,7 +10,7 @@
         android:largeHeap="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Home"
+            android:name="achijones.footballcoach.Home"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -21,24 +21,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="achijones.footballcoach.MainActivity"
             android:label="@string/title_activity_main"
-            android:parentActivityName=".Home"
+            android:parentActivityName="achijones.footballcoach.Home"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.achijones.footballcoach.Home" />
+                android:value="achijones.footballcoach.Home" />
         </activity>
         <activity
-            android:name=".RecruitingActivity"
+            android:name="achijones.footballcoach.RecruitingActivity"
             android:label="@string/title_activity_recruiting"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="achijones.footballcoach.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.achijones.footballcoach.MainActivity" />
+                android:value="achijones.footballcoach.MainActivity" />
         </activity>
     </application>
 

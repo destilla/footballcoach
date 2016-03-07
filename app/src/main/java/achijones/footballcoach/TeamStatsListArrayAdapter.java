@@ -1,4 +1,4 @@
-package com.example.achijones.footballcoach;
+package achijones.footballcoach;
 
 /**
  * Created by Achi Jones on 2/20/2016.
@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import achijones.footballcoach.R;
 
 public class TeamStatsListArrayAdapter extends ArrayAdapter<String> {
     private final Context context;

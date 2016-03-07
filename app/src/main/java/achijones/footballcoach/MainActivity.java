@@ -1,8 +1,6 @@
-package com.example.achijones.footballcoach;
+package achijones.footballcoach;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -12,12 +10,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.view.Gravity;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.*;
+
+import achijones.footballcoach.R;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,16 +22,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import CFBsimPack.Conference;
 import CFBsimPack.Game;
 import CFBsimPack.League;
-import CFBsimPack.Player;
-import CFBsimPack.PlayerQB;
-import CFBsimPack.PlayerRB;
 import CFBsimPack.Team;
 
 public class MainActivity extends AppCompatActivity {

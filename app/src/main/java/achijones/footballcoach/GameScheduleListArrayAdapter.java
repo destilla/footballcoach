@@ -1,4 +1,4 @@
-package com.example.achijones.footballcoach;
+package achijones.footballcoach;
 
 /**
  * Created by Achi Jones on 2/21/2016.
@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+
+import achijones.footballcoach.R;
 
 import CFBsimPack.Game;
 import CFBsimPack.Team;
