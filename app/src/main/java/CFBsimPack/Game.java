@@ -379,6 +379,11 @@ public class Game implements Serializable {
             homeTeam.teamOppYards += awayYards;
             awayTeam.teamOppYards += homeYards;
 
+            homeTeam.teamOppPassYards += getPassYards(true);
+            awayTeam.teamOppPassYards += getPassYards(false);
+            homeTeam.teamOppRushYards += getRushYards(true);
+            awayTeam.teamOppRushYards += getRushYards(false);
+
             homeTeam.teamTODiff += awayTOs-homeTOs;
             awayTeam.teamTODiff += homeTOs-awayTOs;
 
@@ -556,7 +561,7 @@ public class Game implements Serializable {
         
         //throw ball, check for completion
         double completion = ( getHFadv() + normalize(offense.getQB(0).ratPassAcc) + normalize(selWR.ratRecCat)
-                - normalize(selCB.ratCBCov) )/2 + 17 - pressureOnQB/17;
+                - normalize(selCB.ratCBCov) )/2 + 19 - pressureOnQB/17;
         if ( 100*Math.random() < completion ) {
             if ( 100*Math.random() < (100 - selWR.ratRecCat)/3 ) {
                 //drop
@@ -565,7 +570,7 @@ public class Game implements Serializable {
                 selWR.statsDrops++;
             } else {
                 //no drop
-                yardsGain = (int) (( offense.getQB(0).ratPassPow + selWR.ratRecSpd - normalize(selCB.ratCBSpd) )*Math.random()/4);
+                yardsGain = (int) (( normalize(offense.getQB(0).ratPassPow) + normalize(selWR.ratRecSpd) - normalize(selCB.ratCBSpd) )*Math.random()/3.5);
                 //see if receiver can get yards after catch
                 double escapeChance = (normalize(selWR.ratRecEva)*3 - selCB.ratCBTkl - defense.getS(0).ratOvr)*Math.random();
                 if ( escapeChance > 92 || Math.random() > 0.93 ) {

@@ -342,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
             String heismanTop5Str = simLeague.getTop5HeismanStr();
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(heismanTop5Str)
-                    .setTitle("Heisman Watch")
+                    .setTitle("Player of the Year Watch")
                     .setPositiveButton("OK",new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -570,7 +570,7 @@ public class MainActivity extends AppCompatActivity {
         String heismanStr = simLeague.getHeismanCeremonyStr();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(heismanStr)
-                .setTitle("Heisman Ceremony")
+                .setTitle("Player of the Year")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -625,7 +625,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> rankings = new ArrayList<String>();// = simLeague.getTeamRankingsStr(0);
         String[] rankingsSelection = {"AP Votes", "SOS", "Points Per Game", "Opp Points Per Game",
                 "Yards Per Game", "Opp Yards Per Game", "Pass Yards Per Game", "Rush Yards Per Game",
-                "TO Differential", "Off Talent", "Def Talent", "Prestige"};
+                "Opp Pass YPG", "Opp Rush YPG", "TO Differential", "Off Talent", "Def Talent", "Prestige"};
         Spinner teamRankingsSpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
         ArrayAdapter<String> teamRankingsSpinnerAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, rankingsSelection);

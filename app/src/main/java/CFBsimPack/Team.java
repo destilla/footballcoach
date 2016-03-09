@@ -50,6 +50,8 @@ public class Team {
     public int teamOppYards;
     public int teamPassYards;
     public int teamRushYards;
+    public int teamOppPassYards;
+    public int teamOppRushYards;
     public int teamTODiff;
     public int teamOffTalent;
     public int teamDefTalent;
@@ -63,6 +65,8 @@ public class Team {
     public int rankTeamOppYards;
     public int rankTeamPassYards;
     public int rankTeamRushYards;
+    public int rankTeamOppPassYards;
+    public int rankTeamOppRushYards;
     public int rankTeamTODiff;
     public int rankTeamOffTalent;
     public int rankTeamDefTalent;
@@ -139,6 +143,8 @@ public class Team {
         teamOppYards = 0;
         teamPassYards = 0;
         teamRushYards = 0;
+        teamOppPassYards = 0;
+        teamOppRushYards = 0;
         teamTODiff = 0;
         teamOffTalent = getOffTalent();
         teamDefTalent = getDefTalent();
@@ -184,6 +190,8 @@ public class Team {
         teamOppYards = 0;
         teamPassYards = 0;
         teamRushYards = 0;
+        teamOppPassYards = 0;
+        teamOppRushYards = 0;
         teamTODiff = 0;
         teamOffTalent = 0;
         teamDefTalent = 0;
@@ -675,6 +683,8 @@ public class Team {
         teamOppYards = 0;
         teamPassYards = 0;
         teamRushYards = 0;
+        teamOppPassYards = 0;
+        teamOppRushYards = 0;
         teamTODiff = 0;
         diffOffTalent = getOffTalent() - teamOffTalent;
         teamOffTalent = getOffTalent();
@@ -995,6 +1005,14 @@ public class Team {
         ts0.append(teamRushYards/numGames() + ",");
         ts0.append("Rush Yards" + ",");
         ts0.append(getRankStr(rankTeamRushYards) + "%\n");
+
+        ts0.append(teamOppPassYards/numGames() + ",");
+        ts0.append("Opp Pass YPG" + ",");
+        ts0.append(getRankStr(rankTeamOppPassYards) + "%\n");
+
+        ts0.append(teamOppRushYards/numGames() + ",");
+        ts0.append("Opp Rush YPG" + ",");
+        ts0.append(getRankStr(rankTeamOppRushYards) + "%\n");
 
         if (teamTODiff > 0) ts0.append("+" + teamTODiff + ",");
         else ts0.append(teamTODiff + ",");

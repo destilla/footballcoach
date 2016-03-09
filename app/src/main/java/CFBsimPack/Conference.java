@@ -8,7 +8,7 @@ import java.util.Collections;
  * Class for conferences, which each have 10 teams.
  * @author Achi
  */
-public class Conference implements Serializable {
+public class Conference {
     
     public String confName;
     public int confPrestige;
@@ -92,11 +92,11 @@ public class Conference implements Serializable {
     public void setUpOOCSchedule() {
         //schedule OOC games
         int confNum = -1;
-        if ( "SEC".equals(confName) ) {
+        if ( "SOUTH".equals(confName) ) {
             confNum = 0;
-        } else if ( "B10".equals(confName) ) {
+        } else if ( "LAKES".equals(confName) ) {
             confNum = 1;
-        } else if ( "PAC".equals(confName) ) {
+        } else if ( "NORTH".equals(confName) ) {
             confNum = 2;
         }
         
@@ -119,9 +119,9 @@ public class Conference implements Serializable {
                     
                     Game gm;
                     if ( Math.random() > 0.5 ) {
-                        gm = new Game( a, b, a.conference + " v " + b.conference );
+                        gm = new Game( a, b, a.conference.substring(0,3) + " v " + b.conference.substring(0,3) );
                     } else {
-                        gm = new Game( b, a, b.conference + " v " + a.conference );
+                        gm = new Game( b, a, b.conference.substring(0,3) + " v " + a.conference.substring(0,3) );
                     }
                     
                     if ( offsetOOC == 3 ) {
