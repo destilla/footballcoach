@@ -158,6 +158,43 @@ public class Conference {
             confTeams.get(i).updatePollScore();
         }
         Collections.sort( confTeams, new TeamCompConfWins() );
+
+        int winsFirst = confTeams.get(0).getConfWins();
+        Team t = confTeams.get(0);
+        int i = 0;
+        ArrayList<Team> teamTB = new ArrayList<>();
+        while (t.getConfWins() == winsFirst) {
+            teamTB.add(t);
+            ++i;
+            t = confTeams.get(i);
+        }
+        if (teamTB.size() > 2) {
+            // ugh 3 way tiebreaker
+            Collections.sort(teamTB, new TeamCompPoll());
+            for (int j = 0; j < teamTB.size(); ++j) {
+                confTeams.set(j, teamTB.get(j));
+            }
+
+        }
+
+        int winsSecond = confTeams.get(1).getConfWins();
+        t = confTeams.get(1);
+        i = 1;
+        teamTB.clear();
+        while (t.getConfWins() == winsSecond) {
+            teamTB.add(t);
+            ++i;
+            t = confTeams.get(i);
+        }
+        if (teamTB.size() > 2) {
+            // ugh 3 way tiebreaker
+            Collections.sort(teamTB, new TeamCompPoll());
+            for (int j = 0; j < teamTB.size(); ++j) {
+                confTeams.set(1+j, teamTB.get(j));
+            }
+
+        }
+
         ccg = new Game ( confTeams.get(0), confTeams.get(1), confName + " CCG" );
         confTeams.get(0).gameSchedule.add(ccg);
         confTeams.get(1).gameSchedule.add(ccg);
@@ -250,6 +287,8 @@ class TeamCompConfWins implements Comparator<Team> {
             //check for h2h tiebreaker
             if (a.gameWinsAgainst.contains(b)) {
                 return -1;
+            } else if (b.gameWinsAgainst.contains(a)) {
+                return 1;
             } else {
                 return 0;
             }

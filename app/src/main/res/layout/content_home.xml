@@ -45,7 +45,8 @@
         android:text="New Dynasty"
         android:id="@+id/buttonNewGame"
         android:layout_gravity="center"
-        android:padding="5dp" />
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="8dp"/>
 
     <Button
         android:layout_width="250dp"
