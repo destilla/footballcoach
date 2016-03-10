@@ -23,7 +23,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="10sp"
+            android:paddingBottom="5sp"
             android:paddingStart="10sp"
             android:paddingEnd="10sp">
             <TextView
@@ -53,30 +53,31 @@
             android:layout_height="wrap_content"
             android:id="@+id/currentTeamText"
             android:textStyle="bold" />
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:paddingTop="10sp">
+            android:paddingTop="5sp">
             <Button
-                android:text="Team Stats"
-                android:layout_width="115.0dp"
+                android:text="Stats"
+                android:layout_width="0dip"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:id="@+id/teamStatsButton" />
             <Button
                 android:text="Roster"
-                android:layout_width="100.0dp"
+                android:layout_width="0dip"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:id="@+id/playerStatsButton"
-                android:layout_toRightOf="@id/teamStatsButton" />
+                android:id="@+id/playerStatsButton" />
             <Button
                 android:text="Games"
-                android:layout_width="115.0dp"
+                android:layout_width="0dip"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:id="@+id/teamScheduleButton"
-                android:layout_toRightOf="@id/playerStatsButton" />
-        </RelativeLayout>
+                android:id="@+id/teamScheduleButton" />
+        </LinearLayout>
         <TextView
             android:text="Team Stats / Player Stats / Team Sched"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -90,7 +91,7 @@
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:layout_height="0dip"
-            android:layout_weight="5">
+            android:layout_weight="6">
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

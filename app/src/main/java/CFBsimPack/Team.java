@@ -20,6 +20,8 @@ public class Team {
     public String name;
     public String abbr;
     public String conference;
+    public String rivalTeam;
+    public boolean wonRivalryGame;
     public ArrayList<String> teamHistory;
     public boolean userControlled;
     public int recruitMoney;
@@ -101,7 +103,7 @@ public class Team {
      * @param league
      * @param prestige 
      */
-    public Team( String name, String abbr, String conference, League league, int prestige ) {
+    public Team( String name, String abbr, String conference, League league, int prestige, String rivalTeamAbbr ) {
         this.league = league;
         yearsLetdown = 0;
         userControlled = false;
@@ -137,6 +139,8 @@ public class Team {
         this.name = name;
         this.abbr = abbr;
         this.conference = conference;
+        rivalTeam = rivalTeamAbbr;
+        wonRivalryGame = false;
         teamPoints = 0;
         teamOppPoints = 0;
         teamYards = 0;
@@ -202,7 +206,7 @@ public class Team {
 
         // Line 0 is team info
         String[] teamInfo = lines[0].split(",");
-        if (teamInfo.length == 8) {
+        if (teamInfo.length == 9) {
             conference = teamInfo[0];
             name = teamInfo[1];
             abbr = teamInfo[2];
@@ -211,6 +215,7 @@ public class Team {
             totalLosses = Integer.parseInt(teamInfo[5]);
             totalCCs = Integer.parseInt(teamInfo[6]);
             totalNCs = Integer.parseInt(teamInfo[7]);
+            rivalTeam = teamInfo[8];
         }
 
         // Rest of lines are player info
@@ -219,6 +224,7 @@ public class Team {
             recruitPlayerCSV(lines[i]);
         }
 
+        wonRivalryGame = false;
         numRecruits = 30;
     }
 
@@ -238,16 +244,20 @@ public class Team {
         int expectedPollFinish = 100 - teamPrestige;
         int diffExpected = expectedPollFinish - rankTeamPollScore;
         int oldPrestige = teamPrestige;
+
         if ( teamPrestige > 55 || diffExpected > 0 ) {
             teamPrestige = (int)Math.pow(teamPrestige, 1 + (float)diffExpected/1500);// + diffExpected/2500);
         }
-        //check if should hire new coach
-        if (diffExpected < 0) yearsLetdown++;
-        if (yearsLetdown >= 4) {
-            //hire new coach, get recruiting bonus
-            if (teamPrestige <= 85) teamPrestige += 8 + (int)(8*Math.random());
-            yearsLetdown = 0;
+
+        if ( wonRivalryGame ) {
+            teamPrestige += 2;
+        } else {
+            teamPrestige -= 2;
         }
+
+        if (teamPrestige > 95) teamPrestige = 95;
+        if (teamPrestige < 45) teamPrestige = 45;
+
         diffPrestige = teamPrestige - oldPrestige;
         advanceSeasonPlayers();
         
@@ -1093,6 +1103,12 @@ public class Team {
             summary += "\n\nWell, your team performed exactly how many expected. This won't hurt or help recruiting, but try to improve next year!";
         }
 
+        if (wonRivalryGame) {
+            summary += "\n\nFuture recruits were impressed that you won your rivalry game. You gained 2 prestige.";
+        } else {
+            summary += "\n\nSince you couldn't win your rivalry game, recruits aren't excited to attend your school. You lost 2 prestige.";
+        }
+
         return summary;
     }
 
@@ -1413,6 +1429,23 @@ public class Team {
         } else return 1;
     }
 
+    public int getConfWins() {
+        int confWins = 0;
+        Game g;
+        for (int i = 0; i < gameWLSchedule.size(); ++i) {
+            g = gameSchedule.get(i);
+            if ( g.gameName.equals("In Conf") || g.gameName.equals("Rivalry Game") ) {
+                // in conference game, see if was won
+                if ( g.homeTeam == this && g.homeScore > g.awayScore ) {
+                    confWins++;
+                } else if ( g.awayTeam == this && g.homeScore < g.awayScore ) {
+                    confWins++;
+                }
+            }
+        }
+        return confWins;
+    }
+
     public String strRep() {
         return "#" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ")";
     }
@@ -1425,7 +1458,12 @@ public class Team {
         int i = wins + losses - 1;
         Game g = gameSchedule.get(i);
         String gameSummary = gameWLSchedule.get(i) + " " + gameSummaryStr(g);
-        return name + " " + gameSummary + "\nNew poll rank: #" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ")";
+        String rivalryGameStr = "";
+        if (g.homeTeam.rivalTeam.equals(g.awayTeam.abbr)) {
+            if ( gameWLSchedule.get(i).equals("W") ) rivalryGameStr = "Won vs Rival! +2 Prestige\n";
+            else rivalryGameStr = "Lost vs Rival! -2 Prestige\n";
+        }
+        return rivalryGameStr + name + " " + gameSummary + "\nNew poll rank: #" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ")";
     }
 
     public String gameSummaryStr(Game g) {

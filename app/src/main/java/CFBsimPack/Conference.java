@@ -3,6 +3,7 @@ package CFBsimPack;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Class for conferences, which each have 10 teams.
@@ -21,26 +22,6 @@ public class Conference {
     
     public int week;
     public int robinWeek;
-    
-    /**
-     * Sets up conference with randomized team prestiges.
-     * @param name
-     * @param prestige
-     * @param league 
-     */
-    public Conference( String name, int prestige, League league ) {
-        confName = name;
-        confPrestige = prestige;
-        confTeams = new ArrayList<Team>();
-        this.league = league;
-        week = 0;
-        int randPrestige;
-        for( int i = 0; i < 10; ++i ) {
-            randPrestige = (int) (prestige + 50*Math.random() - 25);
-            if (randPrestige >= 100) randPrestige = (int) (99 - 10*Math.random());
-            confTeams.add( new Team( name+" "+i, name+" "+i, name, league, randPrestige) );
-        }
-    }
     
     /**
      * Sets up Conference with empty list of teams.
@@ -176,7 +157,7 @@ public class Conference {
         for ( int i = 0; i < confTeams.size(); ++i ) {
             confTeams.get(i).updatePollScore();
         }
-        Collections.sort( confTeams, new TeamCompPoll() );
+        Collections.sort( confTeams, new TeamCompConfWins() );
         ccg = new Game ( confTeams.get(0), confTeams.get(1), confName + " CCG" );
         confTeams.get(0).gameSchedule.add(ccg);
         confTeams.get(1).gameSchedule.add(ccg);
@@ -208,19 +189,24 @@ public class Conference {
         Collections.sort(confTeams, new TeamCompPoll());
     }
 
+    /**
+     * String of who is playing in the CCG and the result if available.
+     * @return conf champ summary
+     */
     public String getCCGStr() {
         if (ccg == null) {
             // Give prediction, find top 2 teams
             Team team1 = null, team2 = null;
             int score1 = 0, score2 = 0;
-            for (Team t : confTeams) {
-                if (t.teamPollScore >= score1) {
+            for (int i = confTeams.size()-1; i >= 0; --i) { //count backwards so higher ranked teams are predicted
+                Team t = confTeams.get(i);
+                if (t.getConfWins() >= score1) {
                     score2 = score1;
-                    score1 = t.teamPollScore;
+                    score1 = t.getConfWins();
                     team2 = team1;
                     team1 = t;
-                } else if (t.teamPollScore > score2) {
-                    score2 = t.teamPollScore;
+                } else if (t.getConfWins() > score2) {
+                    score2 = t.getConfWins();
                     team2 = t;
                 }
             }
@@ -253,4 +239,22 @@ public class Conference {
         }
     }
    
+}
+
+class TeamCompConfWins implements Comparator<Team> {
+    @Override
+    public int compare( Team a, Team b ) {
+        if (a.getConfWins() > b.getConfWins()) {
+            return -1;
+        } else if (a.getConfWins() == b.getConfWins()) {
+            //check for h2h tiebreaker
+            if (a.gameWinsAgainst.contains(b)) {
+                return -1;
+            } else {
+                return 0;
+            }
+        } else {
+            return 1;
+        }
+    }
 }

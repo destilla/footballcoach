@@ -101,8 +101,11 @@ public class Game implements Serializable {
         
         //playGame();
         hasPlayed = false;
-        homeTeam.gameWinsAgainst.add(awayTeam);
-        awayTeam.gameWinsAgainst.add(homeTeam);
+
+        if (gameName.equals("In Conf") && homeTeam.rivalTeam.equals(awayTeam.abbr)) {
+            // Rivalry game!
+            gameName = "Rivalry Game";
+        }
     }
     
     /**
@@ -149,8 +152,6 @@ public class Game implements Serializable {
         
         //playGame();
         hasPlayed = false;
-        homeTeam.gameWinsAgainst.add(awayTeam);
-        awayTeam.gameWinsAgainst.add(homeTeam);
         
     }
 
@@ -357,6 +358,7 @@ public class Game implements Serializable {
                 awayTeam.losses++;
                 awayTeam.totalLosses++;
                 awayTeam.gameWLSchedule.add("L");
+                homeTeam.gameWinsAgainst.add(awayTeam);
             } else {
                 homeTeam.losses++;
                 homeTeam.totalLosses++;
@@ -364,6 +366,7 @@ public class Game implements Serializable {
                 awayTeam.wins++;
                 awayTeam.totalWins++;
                 awayTeam.gameWLSchedule.add("W");
+                awayTeam.gameWinsAgainst.add(homeTeam);
             }
 
             // Add points/opp points
@@ -390,6 +393,14 @@ public class Game implements Serializable {
             hasPlayed = true;
 
             addNewsStory();
+
+            if (gameName.equals("Rivalry Game")) {
+                if (homeScore > awayScore) {
+                    homeTeam.wonRivalryGame = true;
+                } else {
+                    awayTeam.wonRivalryGame = true;
+                }
+            }
         }
     }
 
@@ -561,7 +572,7 @@ public class Game implements Serializable {
         
         //throw ball, check for completion
         double completion = ( getHFadv() + normalize(offense.getQB(0).ratPassAcc) + normalize(selWR.ratRecCat)
-                - normalize(selCB.ratCBCov) )/2 + 19 - pressureOnQB/17;
+                - normalize(selCB.ratCBCov) )/2 + 18.25 - pressureOnQB/16.8;
         if ( 100*Math.random() < completion ) {
             if ( 100*Math.random() < (100 - selWR.ratRecCat)/3 ) {
                 //drop
@@ -570,7 +581,7 @@ public class Game implements Serializable {
                 selWR.statsDrops++;
             } else {
                 //no drop
-                yardsGain = (int) (( normalize(offense.getQB(0).ratPassPow) + normalize(selWR.ratRecSpd) - normalize(selCB.ratCBSpd) )*Math.random()/3.5);
+                yardsGain = (int) (( normalize(offense.getQB(0).ratPassPow) + normalize(selWR.ratRecSpd) - normalize(selCB.ratCBSpd) )*Math.random()/3.6);
                 //see if receiver can get yards after catch
                 double escapeChance = (normalize(selWR.ratRecEva)*3 - selCB.ratCBTkl - defense.getS(0).ratOvr)*Math.random();
                 if ( escapeChance > 92 || Math.random() > 0.93 ) {

@@ -88,76 +88,76 @@ public class League {
 
         //Set up conferences
         //SOUTH
-        conferences.get(0).confTeams.add( new Team( "Alabama", "ALA", "SOUTH", this, 95 ));
-        conferences.get(0).confTeams.add( new Team( "Georgia", "GEO", "SOUTH", this, 90 ));
-        conferences.get(0).confTeams.add( new Team( "Florida", "FLA", "SOUTH", this, 85 ));
-        conferences.get(0).confTeams.add( new Team( "Tennessee", "TEN", "SOUTH", this, 80 ));
-        conferences.get(0).confTeams.add( new Team( "Atlanta", "ATL", "SOUTH", this, 75 ));
-        conferences.get(0).confTeams.add( new Team( "New Orleans", "NOR", "SOUTH", this, 75 ));
-        conferences.get(0).confTeams.add( new Team( "Arkansas", "ARK", "SOUTH", this, 70 ));
-        conferences.get(0).confTeams.add( new Team( "Louisiana", "LOU", "SOUTH", this, 65 ));
-        conferences.get(0).confTeams.add( new Team( "Key West", "KYW", "SOUTH", this, 65 ));
-        conferences.get(0).confTeams.add( new Team( "Kentucky", "KTY", "SOUTH", this, 50 ));
+        conferences.get(0).confTeams.add( new Team( "Alabama", "ALA", "SOUTH", this, 95, "GEO" ));
+        conferences.get(0).confTeams.add( new Team( "Georgia", "GEO", "SOUTH", this, 90, "ALA" ));
+        conferences.get(0).confTeams.add( new Team( "Florida", "FLA", "SOUTH", this, 85, "TEN" ));
+        conferences.get(0).confTeams.add( new Team( "Tennessee", "TEN", "SOUTH", this, 80, "FLA" ));
+        conferences.get(0).confTeams.add( new Team( "Atlanta", "ATL", "SOUTH", this, 75, "KYW" ));
+        conferences.get(0).confTeams.add( new Team( "New Orleans", "NOR", "SOUTH", this, 75, "LOU" ));
+        conferences.get(0).confTeams.add( new Team( "Arkansas", "ARK", "SOUTH", this, 70, "KTY" ));
+        conferences.get(0).confTeams.add( new Team( "Louisiana", "LOU", "SOUTH", this, 65, "NOR" ));
+        conferences.get(0).confTeams.add( new Team( "Key West", "KYW", "SOUTH", this, 65, "ATL" ));
+        conferences.get(0).confTeams.add( new Team( "Kentucky", "KTY", "SOUTH", this, 50, "ARK" ));
 
         //LAKES
-        conferences.get(1).confTeams.add( new Team( "Ohio State", "OHI", "LAKES", this, 90 ));
-        conferences.get(1).confTeams.add( new Team( "Michigan", "MIC", "LAKES", this, 90 ));
-        conferences.get(1).confTeams.add( new Team( "Michigan St", "MSU", "LAKES", this, 80 ));
-        conferences.get(1).confTeams.add( new Team( "Wisconsin", "WIS", "LAKES", this, 70 ));
-        conferences.get(1).confTeams.add( new Team( "Minnesota", "MIN", "LAKES", this, 70 ));
-        conferences.get(1).confTeams.add( new Team( "Univ of Chicago", "CHI", "LAKES", this, 70 ));
-        conferences.get(1).confTeams.add( new Team( "Detroit St", "DET", "LAKES", this, 65 ));
-        conferences.get(1).confTeams.add( new Team( "Indiana", "IND", "LAKES", this, 65 ));
-        conferences.get(1).confTeams.add( new Team( "Cleveland St", "CLE", "LAKES", this, 55 ));
-        conferences.get(1).confTeams.add( new Team( "Milwaukee", "MIL", "LAKES", this, 45 ));
+        conferences.get(1).confTeams.add( new Team( "Ohio State", "OHI", "LAKES", this, 90, "MIC" ));
+        conferences.get(1).confTeams.add( new Team( "Michigan", "MIC", "LAKES", this, 90, "OHI" ));
+        conferences.get(1).confTeams.add( new Team( "Michigan St", "MSU", "LAKES", this, 80, "MIN" ));
+        conferences.get(1).confTeams.add( new Team( "Wisconsin", "WIS", "LAKES", this, 70, "IND" ));
+        conferences.get(1).confTeams.add( new Team( "Minnesota", "MIN", "LAKES", this, 70, "MSU" ));
+        conferences.get(1).confTeams.add( new Team( "Univ of Chicago", "CHI", "LAKES", this, 70, "DET" ));
+        conferences.get(1).confTeams.add( new Team( "Detroit St", "DET", "LAKES", this, 65, "CHI" ));
+        conferences.get(1).confTeams.add( new Team( "Indiana", "IND", "LAKES", this, 65, "WIS" ));
+        conferences.get(1).confTeams.add( new Team( "Cleveland St", "CLE", "LAKES", this, 55, "MIL" ));
+        conferences.get(1).confTeams.add( new Team( "Milwaukee", "MIL", "LAKES", this, 45, "CLE" ));
 
         //NORTH
-        conferences.get(2).confTeams.add( new Team( "New York St", "NYS", "NORTH", this, 90 ));
-        conferences.get(2).confTeams.add( new Team( "New Jersey", "NWJ", "NORTH", this, 85 ));
-        conferences.get(2).confTeams.add( new Team( "New York City", "NYC", "NORTH", this, 75 ));
-        conferences.get(2).confTeams.add( new Team( "Pennsylvania", "PEN", "NORTH", this, 75 ));
-        conferences.get(2).confTeams.add( new Team( "Maryland", "MAR", "NORTH", this, 70 ));
-        conferences.get(2).confTeams.add( new Team( "Washington DC", "WDC", "NORTH", this, 70 ));
-        conferences.get(2).confTeams.add( new Team( "Boston St", "BOS", "NORTH", this, 65 ));
-        conferences.get(2).confTeams.add( new Team( "Pittsburgh", "PIT", "NORTH", this, 60 ));
-        conferences.get(2).confTeams.add( new Team( "Maine", "MAI", "NORTH", this, 50 ));
-        conferences.get(2).confTeams.add( new Team( "Vermont", "VER", "NORTH", this, 45 ));
+        conferences.get(2).confTeams.add( new Team( "New York St", "NYS", "NORTH", this, 90, "NYC" ));
+        conferences.get(2).confTeams.add( new Team( "New Jersey", "NWJ", "NORTH", this, 85, "PEN" ));
+        conferences.get(2).confTeams.add( new Team( "New York City", "NYC", "NORTH", this, 75, "NYS" ));
+        conferences.get(2).confTeams.add( new Team( "Pennsylvania", "PEN", "NORTH", this, 75, "NWJ" ));
+        conferences.get(2).confTeams.add( new Team( "Maryland", "MAR", "NORTH", this, 70, "WDC" ));
+        conferences.get(2).confTeams.add( new Team( "Washington DC", "WDC", "NORTH", this, 70, "MAR" ));
+        conferences.get(2).confTeams.add( new Team( "Boston St", "BOS", "NORTH", this, 65, "VER" ));
+        conferences.get(2).confTeams.add( new Team( "Pittsburgh", "PIT", "NORTH", this, 60, "MAI" ));
+        conferences.get(2).confTeams.add( new Team( "Maine", "MAI", "NORTH", this, 50, "PIT" ));
+        conferences.get(2).confTeams.add( new Team( "Vermont", "VER", "NORTH", this, 45, "BOS" ));
 
         //COWBY
-        conferences.get(3).confTeams.add( new Team( "Oklahoma", "OKL", "COWBY", this, 90 ));
-        conferences.get(3).confTeams.add( new Team( "Texas", "TEX", "COWBY", this, 90 ));
-        conferences.get(3).confTeams.add( new Team( "Houston", "HOU", "COWBY", this, 80 ));
-        conferences.get(3).confTeams.add( new Team( "Dallas", "DAL", "COWBY", this, 80 ));
-        conferences.get(3).confTeams.add( new Team( "Alamo St", "AMO", "COWBY", this, 70 ));
-        conferences.get(3).confTeams.add( new Team( "Oklahoma St", "OKS", "COWBY", this, 70 ));
-        conferences.get(3).confTeams.add( new Team( "El Paso St", "PAS", "COWBY", this, 60 ));
-        conferences.get(3).confTeams.add( new Team( "Texas St", "TXS", "COWBY", this, 60 ));
-        conferences.get(3).confTeams.add( new Team( "Tulsa", "TUL", "COWBY", this, 55 ));
-        conferences.get(3).confTeams.add( new Team( "Univ of Austin", "AUS", "COWBY", this, 50 ));
+        conferences.get(3).confTeams.add( new Team( "Oklahoma", "OKL", "COWBY", this, 90, "TEX" ));
+        conferences.get(3).confTeams.add( new Team( "Texas", "TEX", "COWBY", this, 90, "OKL" ));
+        conferences.get(3).confTeams.add( new Team( "Houston", "HOU", "COWBY", this, 80, "DAL" ));
+        conferences.get(3).confTeams.add( new Team( "Dallas", "DAL", "COWBY", this, 80, "HOU" ));
+        conferences.get(3).confTeams.add( new Team( "Alamo St", "AMO", "COWBY", this, 70, "PAS" ));
+        conferences.get(3).confTeams.add( new Team( "Oklahoma St", "OKS", "COWBY", this, 70, "TUL" ));
+        conferences.get(3).confTeams.add( new Team( "El Paso St", "PAS", "COWBY", this, 60, "AMO" ));
+        conferences.get(3).confTeams.add( new Team( "Texas St", "TXS", "COWBY", this, 60, "AUS" ));
+        conferences.get(3).confTeams.add( new Team( "Tulsa", "TUL", "COWBY", this, 55, "OKS" ));
+        conferences.get(3).confTeams.add( new Team( "Univ of Austin", "AUS", "COWBY", this, 50, "TXS" ));
 
         //PACIF
-        conferences.get(4).confTeams.add( new Team( "California", "CAL", "PACIF", this, 90 ));
-        conferences.get(4).confTeams.add( new Team( "Oregon", "ORE", "PACIF", this, 85 ));
-        conferences.get(4).confTeams.add( new Team( "Los Angeles", "ULA", "PACIF", this, 80 ));
-        conferences.get(4).confTeams.add( new Team( "Oakland St", "OAK", "PACIF", this, 75 ));
-        conferences.get(4).confTeams.add( new Team( "Washington", "WAS", "PACIF", this, 75 ));
-        conferences.get(4).confTeams.add( new Team( "Hawaii", "HAW", "PACIF", this, 70 ));
-        conferences.get(4).confTeams.add( new Team( "Seattle", "SEA", "PACIF", this, 70 ));
-        conferences.get(4).confTeams.add( new Team( "Hollywood St", "HOL", "PACIF", this, 70 ));
-        conferences.get(4).confTeams.add( new Team( "San Diego St", "SAN", "PACIF", this, 60 ));
-        conferences.get(4).confTeams.add( new Team( "American Samoa", "SAM", "PACIF", this, 50 ));
+        conferences.get(4).confTeams.add( new Team( "California", "CAL", "PACIF", this, 90, "ULA" ));
+        conferences.get(4).confTeams.add( new Team( "Oregon", "ORE", "PACIF", this, 85, "WAS" ));
+        conferences.get(4).confTeams.add( new Team( "Los Angeles", "ULA", "PACIF", this, 80, "CAL" ));
+        conferences.get(4).confTeams.add( new Team( "Oakland St", "OAK", "PACIF", this, 75, "HOL" ));
+        conferences.get(4).confTeams.add( new Team( "Washington", "WAS", "PACIF", this, 75, "ORE" ));
+        conferences.get(4).confTeams.add( new Team( "Hawaii", "HAW", "PACIF", this, 70, "SAM" ));
+        conferences.get(4).confTeams.add( new Team( "Seattle", "SEA", "PACIF", this, 70, "SAN" ));
+        conferences.get(4).confTeams.add( new Team( "Hollywood St", "HOL", "PACIF", this, 70, "OAK" ));
+        conferences.get(4).confTeams.add( new Team( "San Diego St", "SAN", "PACIF", this, 60, "SEA" ));
+        conferences.get(4).confTeams.add( new Team( "American Samoa", "SAM", "PACIF", this, 50, "HAW" ));
 
         //MOUNT
-        conferences.get(5).confTeams.add( new Team( "Colorado", "COL", "MOUNT", this, 80 ));
-        conferences.get(5).confTeams.add( new Team( "Yellowstone St", "YEL", "MOUNT", this, 75 ));
-        conferences.get(5).confTeams.add( new Team( "Utah", "UTA", "MOUNT", this, 75 ));
-        conferences.get(5).confTeams.add( new Team( "Univ of Denver", "DEN", "MOUNT", this, 75 ));
-        conferences.get(5).confTeams.add( new Team( "Albuquerque", "ALB", "MOUNT", this, 70 ));
-        conferences.get(5).confTeams.add( new Team( "Salt Lake St", "SAL", "MOUNT", this, 65 ));
-        conferences.get(5).confTeams.add( new Team( "Wyoming", "WYO", "MOUNT", this, 60 ));
-        conferences.get(5).confTeams.add( new Team( "Montana", "MON", "MOUNT", this, 55 ));
-        conferences.get(5).confTeams.add( new Team( "Las Vegas", "LSV", "MOUNT", this, 50 ));
-        conferences.get(5).confTeams.add( new Team( "Phoenix", "PHO", "MOUNT", this, 45 ));
+        conferences.get(5).confTeams.add( new Team( "Colorado", "COL", "MOUNT", this, 80, "DEN" ));
+        conferences.get(5).confTeams.add( new Team( "Yellowstone St", "YEL", "MOUNT", this, 75, "ALB" ));
+        conferences.get(5).confTeams.add( new Team( "Utah", "UTA", "MOUNT", this, 75, "SAL" ));
+        conferences.get(5).confTeams.add( new Team( "Univ of Denver", "DEN", "MOUNT", this, 75, "COL" ));
+        conferences.get(5).confTeams.add( new Team( "Albuquerque", "ALB", "MOUNT", this, 70, "YEL" ));
+        conferences.get(5).confTeams.add( new Team( "Salt Lake St", "SAL", "MOUNT", this, 65, "UTA" ));
+        conferences.get(5).confTeams.add( new Team( "Wyoming", "WYO", "MOUNT", this, 60, "MON" ));
+        conferences.get(5).confTeams.add( new Team( "Montana", "MON", "MOUNT", this, 55, "WYO" ));
+        conferences.get(5).confTeams.add( new Team( "Las Vegas", "LSV", "MOUNT", this, 50, "PHO" ));
+        conferences.get(5).confTeams.add( new Team( "Phoenix", "PHO", "MOUNT", this, 45, "LSV" ));
 
         //set teamList
         teamList = new ArrayList<Team>();
@@ -904,7 +904,7 @@ public class League {
         String[] teams = new String[teamList.size()];
         for (int i = 0; i < teamList.size(); ++i){
             teams[i] = teamList.get(i).conference + ": " +
-                    teamList.get(i).name + ", Prestige: " + teamList.get(i).teamPrestige;
+                    teamList.get(i).name + ", Pres: " + teamList.get(i).teamPrestige;
         }
         return teams;
     }
@@ -1096,7 +1096,8 @@ public class League {
         sb.append("END_HEISMAN_HIST\n");
 
         for (Team t : teamList) {
-            sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," + t.totalWins + "," + t.totalLosses + "," + t.totalCCs + "," + t.totalNCs + "%\n");
+            sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
+                    t.totalWins + "," + t.totalLosses + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }

@@ -587,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
         if (g.hasPlayed) {
             String[] gameStr = g.getGameSummaryStr();
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(g.awayTeam.name + " @ " + g.homeTeam.name)
+            builder.setTitle(g.awayTeam.abbr + " @ " + g.homeTeam.abbr + ": " + g.gameName)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
