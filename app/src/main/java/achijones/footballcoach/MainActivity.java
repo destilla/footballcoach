@@ -446,11 +446,6 @@ public class MainActivity extends AppCompatActivity {
              * Let user confirm that they actually do want to go to main menu
              */
             exitMainActivity();
-        } else if (id == R.id.action_examine_team) {
-            /**
-             * Testing examineTeam()
-             */
-            examineTeam(userTeam.name);
         }
 
         return super.onOptionsItemSelected(item);
