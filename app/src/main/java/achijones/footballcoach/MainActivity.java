@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     //recruiting
     int recruitingStage;
 
+    int wantUpdateConf;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         recruitingStage = -1;
+        wantUpdateConf = 2; // 0 and 1, dont update, 2 update
+
 
         if (!loadedLeague) {
             // Set it to alabama until they pick
@@ -203,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
 
                     public void onNothingSelected(AdapterView<?> parent) {
                         //heh
-                        //updateCurrConf();
                     }
                 });
 
@@ -443,12 +446,18 @@ public class MainActivity extends AppCompatActivity {
              * Let user confirm that they actually do want to go to main menu
              */
             exitMainActivity();
+        } else if (id == R.id.action_examine_team) {
+            /**
+             * Testing examineTeam()
+             */
+            examineTeam(userTeam.name);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     private void examineTeam(String teamName) {
+        wantUpdateConf = 0;
         // Find team
         Team tempT = simLeague.teamList.get(0);
         for (Team t : simLeague.teamList) {
@@ -462,6 +471,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < simLeague.conferences.size(); ++i) {
             Conference c = simLeague.conferences.get(i);
             if (c.confName.equals(currentTeam.conference)) {
+                if (c == currentConference) wantUpdateConf = 1;
                 currentConference = c;
                 examineConfSpinner.setSelection(i);
                 break;
@@ -482,11 +492,20 @@ public class MainActivity extends AppCompatActivity {
             if (spinnerSplit[1].equals(tempT.abbr)) {
                 examineTeamSpinner.setSelection(i);
                 currentTeam = tempT;
-                updateCurrTeam();
+                TextView currentTeamText = (TextView) findViewById(R.id.currentTeamText);
+                currentTeamText.setText("#" + currentTeam.rankTeamPollScore +
+                        " " + currentTeam.name + " (" + currentTeam.wins + "-" + currentTeam.losses + ") " +
+                        currentTeam.confChampion + " " + currentTeam.semiFinalWL + currentTeam.natChampWL);
+                if (currTab == 0) {
+                    updateTeamStats();
+                } else if (currTab == 1) {
+                    updatePlayerStats();
+                } else {
+                    updateSchedule();
+                }
                 break;
             }
         }
-
     }
 
     private void updateCurrTeam() {
@@ -511,16 +530,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateCurrConference() {
-        teamList = new ArrayList<String>();
-        dataAdapterTeam.clear();
-        for (int i = 0; i < 10; i++) {
-            teamList.add(currentConference.confTeams.get(i).strRep());
-            dataAdapterTeam.add(teamList.get(i));
+        if (wantUpdateConf >= 1) {
+            teamList = new ArrayList<String>();
+            dataAdapterTeam.clear();
+            for (int i = 0; i < 10; i++) {
+                teamList.add(currentConference.confTeams.get(i).strRep());
+                dataAdapterTeam.add(teamList.get(i));
+            }
+            dataAdapterTeam.notifyDataSetChanged();
+            examineTeamSpinner.setSelection(0);
+            currentTeam = currentConference.confTeams.get(0);
+            updateCurrTeam();
+        } else {
+            wantUpdateConf++;
         }
-        dataAdapterTeam.notifyDataSetChanged();
-        examineTeamSpinner.setSelection(0);
-        currentTeam = currentConference.confTeams.get(0);
-        updateCurrTeam();
     }
 
     private void updateTeamStats(){
