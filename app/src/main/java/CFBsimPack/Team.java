@@ -93,7 +93,8 @@ public class Team {
     public ArrayList<PlayerS> teamSs;
     public ArrayList<PlayerCB> teamCBs;
     
-    private int yearsLetdown;
+    public TeamStrategy teamStratOff;
+    public TeamStrategy teamStratDef;
     
     /**
      * Creates new team, recruiting needed players and setting team stats to 0.
@@ -105,7 +106,6 @@ public class Team {
      */
     public Team( String name, String abbr, String conference, League league, int prestige, String rivalTeamAbbr ) {
         this.league = league;
-        yearsLetdown = 0;
         userControlled = false;
         teamHistory = new ArrayList<String>();
         
@@ -155,6 +155,8 @@ public class Team {
         
         teamPollScore = teamPrestige + getOffTalent() + getDefTalent();
 
+        teamStratOff = new TeamStrategy();
+        teamStratDef = new TeamStrategy();
         numRecruits = 30;
     }
 
@@ -164,7 +166,6 @@ public class Team {
      */
     public Team( String loadStr, League league ) {
         this.league = league;
-        yearsLetdown = 0;
         userControlled = false;
         teamHistory = new ArrayList<String>();
 
@@ -225,6 +226,8 @@ public class Team {
         }
 
         wonRivalryGame = false;
+        teamStratOff = new TeamStrategy();
+        teamStratDef = new TeamStrategy();
         numRecruits = 30;
     }
 
@@ -1708,6 +1711,39 @@ public class Team {
             sb.append("F7," + f7.name + "," + f7.year + "," + f7.ratPot + "," + f7.ratFootIQ + "," + f7.ratF7Pow + "," + f7.ratF7Rsh + "," + f7.ratF7Pas + "," + f7.ratOvr + "%\n");
         }
         return sb.toString();
+    }
+
+    public TeamStrategy[] getTeamStrategiesOff() {
+        TeamStrategy[] ts = new TeamStrategy[3];
+
+        ts[0] = new TeamStrategy("Aggressive",
+                "Play a more aggressive offense. Will pass with lower completion percentage and higher chance of interception." +
+                        " However, catches will go for more yards.", -1, 2, 3, 2);
+
+        ts[1] = new TeamStrategy("No Preference",
+                "Will play a normal offense with no bonus either way, but no penalties either.", 0, 0, 0, 0);
+
+        ts[2] = new TeamStrategy("Conservative",
+                "Play a more conservative offense, running a bit more and passing slightly less. Passes are more accurate but shorter." +
+                        " Rushes are more likely to gain yards but less likely to break free for big plays.", 1, -2, -3, -2);
+
+        return ts;
+    }
+
+    public TeamStrategy[] getTeamStrategiesDef() {
+        TeamStrategy[] ts = new TeamStrategy[3];
+
+        ts[0] = new TeamStrategy("Stack the Box",
+                "Focus on stopping the run. Will give up more big passing plays but will allow less rushing yards and far less big plays from rushing.", 1, 0, -1, -1);
+
+        ts[1] = new TeamStrategy("No Preference",
+                "Will play a normal defense with no bonus either way, but no penalties either.", 0, 0, 0, 0);
+
+        ts[2] = new TeamStrategy("No Fly Zone",
+                "Focus on stopping the pass. Will give up less yards on catches and will be more likely to intercept passes, " +
+                "but will allow more rushing yards.", -1, 0, 1, 1);
+
+        return ts;
     }
     
 }
