@@ -22,9 +22,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import CFBsimPack.Team;
 import achijones.footballcoach.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +60,7 @@ public class RecruitingActivity extends AppCompatActivity {
     private ArrayList<String> availSs;
     private ArrayList<String> availCBs;
     private ArrayList<String> availF7s;
+    private ArrayList<String> availAll;
 
     private int needQBs;
     private int needRBs;
@@ -111,6 +115,7 @@ public class RecruitingActivity extends AppCompatActivity {
         availSs = new ArrayList<String>();
         availCBs = new ArrayList<String>();
         availF7s = new ArrayList<String>();
+        availAll = new ArrayList<String>();
 
         // Get User Team's player info and team info for recruiting
         Bundle extras = getIntent().getExtras();
@@ -162,6 +167,7 @@ public class RecruitingActivity extends AppCompatActivity {
         ++i;
         while ( i < lines.length ) {
             playerInfo = lines[i].split(",");
+            availAll.add( lines[i] );
             if (playerInfo[0].equals("QB")) {
                 availQBs.add( lines[i] );
             } else if (playerInfo[0].equals("RB")) {
@@ -182,6 +188,9 @@ public class RecruitingActivity extends AppCompatActivity {
             ++i;
         }
 
+        // Sort to get top 50 overall players
+        Collections.sort( availAll, new PlayerStrCompOverall() );
+        availAll = new ArrayList<String>( availAll.subList(0, 100) );
 
         // Get needs for each position
         updatePositionNeeds();
@@ -207,6 +216,7 @@ public class RecruitingActivity extends AppCompatActivity {
         positions.add("S (Need: " + needSs + ")");
         positions.add("CB (Need: " + needCBs + ")");
         positions.add("F7 (Need: " + needF7s + ")");
+        positions.add("Top 100 Recruits");
         dataAdapterPosition = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, positions);
         dataAdapterPosition.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -439,10 +449,22 @@ public class RecruitingActivity extends AppCompatActivity {
      * Called whenever new position is selected, updates all the components
      */
     private void updateForNewPosition() {
-        String[] splitty = currentPosition.split(" ");
-        setPlayerList(splitty[0]);
-        setPlayerInfoMap(splitty[0]);
-        expListAdapter.notifyDataSetChanged();
+        if (!currentPosition.equals("Top 50 Recruits")) {
+            String[] splitty = currentPosition.split(" ");
+            setPlayerList(splitty[0]);
+            setPlayerInfoMap(splitty[0]);
+            expListAdapter.notifyDataSetChanged();
+        } else {
+            // See top 50 recruits
+            players = availAll;
+            playersInfo = new LinkedHashMap<String, List<String>>();
+            for (String p : players) {
+                ArrayList<String> pInfoList = new ArrayList<String>();
+                pInfoList.add(getPlayerDetails(p, p.split(",")[0]));
+                playersInfo.put(p, pInfoList);
+            }
+            expListAdapter.notifyDataSetChanged();
+        }
     }
 
     /**
@@ -468,6 +490,7 @@ public class RecruitingActivity extends AppCompatActivity {
             positions.add("S (Need: " + needSs + ")");
             positions.add("CB (Need: " + needCBs + ")");
             positions.add("F7 (Need: " + needF7s + ")");
+            positions.add("Top 100 Recruits");
             dataAdapterPosition.clear();
             for (String p : positions) {
                 dataAdapterPosition.add(p);
@@ -602,6 +625,7 @@ public class RecruitingActivity extends AppCompatActivity {
             Toast.makeText(this, "Not enough money!",
                     Toast.LENGTH_SHORT).show();
         }
+
         updatePositionNeeds();
     }
 
@@ -700,3 +724,15 @@ public class RecruitingActivity extends AppCompatActivity {
     } //end class
 
 }
+
+class PlayerStrCompOverall implements Comparator<String> {
+    @Override
+    public int compare( String a, String b ) {
+        String[] psA = a.split(",");
+        String[] psB = b.split(",");
+        int ovrA = Integer.parseInt(psA[8]);
+        int ovrB = Integer.parseInt(psB[8]);
+        return ovrA > ovrB ? -1 : ovrA == ovrB ? 0 : 1;
+    }
+}
+

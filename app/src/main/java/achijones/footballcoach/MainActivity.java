@@ -607,29 +607,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showGameDialog(Game g) {
+        String[] gameStr;
         if (g.hasPlayed) {
-            String[] gameStr = g.getGameSummaryStr();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(g.awayTeam.abbr + " @ " + g.homeTeam.abbr + ": " + g.gameName)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //do nothing?
-                        }
-                    })
-                    .setView(getLayoutInflater().inflate(R.layout.game_dialog, null));
-            AlertDialog dialog = builder.create();
-            dialog.show();
-
-            final TextView gameL = (TextView) dialog.findViewById(R.id.gameDialogLeft);
-            gameL.setText(gameStr[0]);
-            final TextView gameC = (TextView) dialog.findViewById(R.id.gameDialogCenter);
-            gameC.setText(gameStr[1]);
-            final TextView gameR = (TextView) dialog.findViewById(R.id.gameDialogRight);
-            gameR.setText(gameStr[2]);
-            final TextView gameB = (TextView) dialog.findViewById(R.id.gameDialogBottom);
-            gameB.setText(gameStr[3] + "\n\n");
+            gameStr = g.getGameSummaryStr();
+        } else {
+            gameStr = g.getGameScoutStr();
         }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(g.awayTeam.abbr + " @ " + g.homeTeam.abbr + ": " + g.gameName)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing?
+                    }
+                })
+                .setView(getLayoutInflater().inflate(R.layout.game_dialog, null));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        final TextView gameL = (TextView) dialog.findViewById(R.id.gameDialogLeft);
+        gameL.setText(gameStr[0]);
+        final TextView gameC = (TextView) dialog.findViewById(R.id.gameDialogCenter);
+        gameC.setText(gameStr[1]);
+        final TextView gameR = (TextView) dialog.findViewById(R.id.gameDialogRight);
+        gameR.setText(gameStr[2]);
+        final TextView gameB = (TextView) dialog.findViewById(R.id.gameDialogBottom);
+        gameB.setText(gameStr[3] + "\n\n");
     }
 
     public void showTeamRankingsDialog() {

@@ -272,6 +272,43 @@ public class Game implements Serializable {
 
         return gameSum;
     }
+
+    public String[] getGameScoutStr() {
+        /**
+         * [0] is left side
+         * [1] is center
+         * [2] is right
+         * [3] is bottom (will be empty for scouting)
+         */
+        String[] gameSum = new String[4];
+        StringBuilder gameL = new StringBuilder();
+        StringBuilder gameC = new StringBuilder();
+        StringBuilder gameR = new StringBuilder();
+
+        gameL.append("Ranking\nRecord\nPPG\nOpp PPG\nYPG\nOpp YPG\n" +
+                "\nPass YPG\nRush YPG\nOpp PYPG\nOpp RYPG\n");
+        int g = awayTeam.numGames();
+        Team t = awayTeam;
+        gameC.append("#"+t.rankTeamPollScore+" "+t.abbr+"\n"+t.wins+"-"+t.losses+"\n"+
+                t.teamPoints/g+" ("+t.rankTeamPoints+")\n"+t.teamOppPoints/g+" ("+t.rankTeamOppPoints+")\n"+
+                t.teamYards/g+" ("+t.rankTeamYards+")\n"+t.teamOppYards/g+" ("+t.rankTeamOppYards+")\n\n"+
+                t.teamPassYards/g+" ("+t.rankTeamPassYards+")\n"+t.teamRushYards/g+" ("+t.rankTeamRushYards+")\n"+
+                t.teamOppPassYards/g+" ("+t.rankTeamOppPassYards+")\n"+t.teamOppRushYards/g+" ("+t.rankTeamOppRushYards+")\n");
+        g = homeTeam.numGames();
+        t = homeTeam;
+        gameR.append("#"+t.rankTeamPollScore+" "+t.abbr+"\n"+t.wins+"-"+t.losses+"\n"+
+                t.teamPoints/g+" ("+t.rankTeamPoints+")\n"+t.teamOppPoints/g+" ("+t.rankTeamOppPoints+")\n"+
+                t.teamYards/g+" ("+t.rankTeamYards+")\n"+t.teamOppYards/g+" ("+t.rankTeamOppYards+")\n\n"+
+                t.teamPassYards/g+" ("+t.rankTeamPassYards+")\n"+t.teamRushYards/g+" ("+t.rankTeamRushYards+")\n"+
+                t.teamOppPassYards/g+" ("+t.rankTeamOppPassYards+")\n"+t.teamOppRushYards/g+" ("+t.rankTeamOppRushYards+")\n");
+
+        gameSum[0] = gameL.toString();
+        gameSum[1] = gameC.toString();
+        gameSum[2] = gameR.toString();
+        gameSum[3] = "";
+
+        return gameSum;
+    }
     
     public int getPassYards( boolean ha ) {
         //ha = home/away, false for home, true for away
@@ -583,12 +620,12 @@ public class Game implements Serializable {
                 selWR.statsDrops++;
             } else {
                 //no drop
-                yardsGain = (int) (( normalize(offense.getQB(0).ratPassPow) + normalize(selWR.ratRecSpd) - normalize(selCB.ratCBSpd) )*Math.random()/3.6
+                yardsGain = (int) (( normalize(offense.getQB(0).ratPassPow) + normalize(selWR.ratRecSpd) - normalize(selCB.ratCBSpd) )*Math.random()/3.7
                         + offense.teamStratOff.getPYB()/2 - defense.teamStratDef.getPYB());
                 //see if receiver can get yards after catch
                 double escapeChance = (normalize(selWR.ratRecEva)*3 - selCB.ratCBTkl - defense.getS(0).ratOvr)*Math.random()
                         + offense.teamStratOff.getPYB() - defense.teamStratDef.getPAB();
-                if ( escapeChance > 92 || Math.random() > 0.93 ) {
+                if ( escapeChance > 92 || Math.random() > 0.95 ) {
                     yardsGain += 3 + selWR.ratRecSpd*Math.random()/3;
                 }
                 if ( escapeChance > 75 && Math.random() < (0.1 + (offense.teamStratOff.getPAB()-defense.teamStratDef.getPAB())/200)) {
@@ -682,7 +719,7 @@ public class Game implements Serializable {
             yardsGain += selRB.ratRushPow/20 - 3 - defense.teamStratDef.getRYB()/2;
         } else {
             //break free from tackles
-            if (Math.random() < ( 0.3 + ( offense.teamStratOff.getRAB() - defense.teamStratDef.getRYB()/2 )/50 )) {
+            if (Math.random() < ( 0.28 + ( offense.teamStratOff.getRAB() - defense.teamStratDef.getRYB()/2 )/50 )) {
                 yardsGain += selRB.ratRushEva/5 * Math.random();
             }
         }
