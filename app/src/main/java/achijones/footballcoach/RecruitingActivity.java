@@ -189,7 +189,7 @@ public class RecruitingActivity extends AppCompatActivity {
         }
 
         // Sort to get top 50 overall players
-        Collections.sort( availAll, new PlayerStrCompOverall() );
+        Collections.sort( availAll, new PlayerRecruitStrCompOverall() );
         availAll = new ArrayList<String>( availAll.subList(0, 100) );
 
         // Get needs for each position
@@ -276,8 +276,8 @@ public class RecruitingActivity extends AppCompatActivity {
     private void exitRecruiting() {
         StringBuilder sb = new StringBuilder();
         sb.append("Are you sure you are done recruiting? Any unfilled positions will be filled by walk-ons.\n\n");
-        for (String s : positions) {
-            sb.append("\t\t"+s+"\n");
+        for (int i = 0; i < positions.size()-1; ++i) {
+            sb.append("\t\t" + positions.get(i) + "\n");
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(RecruitingActivity.this);
         builder.setMessage(sb.toString())
@@ -449,13 +449,13 @@ public class RecruitingActivity extends AppCompatActivity {
      * Called whenever new position is selected, updates all the components
      */
     private void updateForNewPosition() {
-        if (!currentPosition.equals("Top 50 Recruits")) {
+        if (!currentPosition.equals("Top 100 Recruits")) {
             String[] splitty = currentPosition.split(" ");
             setPlayerList(splitty[0]);
             setPlayerInfoMap(splitty[0]);
             expListAdapter.notifyDataSetChanged();
         } else {
-            // See top 50 recruits
+            // See top 100 recruits
             players = availAll;
             playersInfo = new LinkedHashMap<String, List<String>>();
             for (String p : players) {
@@ -596,27 +596,35 @@ public class RecruitingActivity extends AppCompatActivity {
             if (ps[0].equals("QB")) {
                 availQBs.remove(player);
                 teamQBs.add(getReadablePlayerInfo(player));
+                Collections.sort(teamQBs, new PlayerTeamStrCompOverall());
             } else if (ps[0].equals("RB")) {
                 availRBs.remove(player);
                 teamRBs.add(getReadablePlayerInfo(player));
+                Collections.sort(teamRBs, new PlayerTeamStrCompOverall());
             } else if (ps[0].equals("WR")) {
                 availWRs.remove(player);
                 teamWRs.add(getReadablePlayerInfo(player));
+                Collections.sort(teamWRs, new PlayerTeamStrCompOverall());
             } else if (ps[0].equals("OL")) {
                 availOLs.remove(player);
                 teamOLs.add(getReadablePlayerInfo(player));
+                Collections.sort(teamOLs, new PlayerTeamStrCompOverall());
             } else if (ps[0].equals("K")) {
                 availKs.remove(player);
                 teamKs.add(getReadablePlayerInfo(player));
+                Collections.sort(teamKs, new PlayerTeamStrCompOverall());
             } else if (ps[0].equals("S")) {
                 availSs.remove(player);
                 teamSs.add(getReadablePlayerInfo(player));
+                Collections.sort(teamSs, new PlayerTeamStrCompOverall());
             } else if (ps[0].equals("CB")) {
                 availCBs.remove(player);
                 teamCBs.add(getReadablePlayerInfo(player));
+                Collections.sort(teamCBs, new PlayerTeamStrCompOverall());
             } else if (ps[0].equals("F7")) {
                 availF7s.remove(player);
                 teamF7s.add(getReadablePlayerInfo(player));
+                Collections.sort(teamF7s, new PlayerTeamStrCompOverall());
             }
 
             Toast.makeText(this, "Recruited " + ps[0] + " " + ps[1],
@@ -725,13 +733,24 @@ public class RecruitingActivity extends AppCompatActivity {
 
 }
 
-class PlayerStrCompOverall implements Comparator<String> {
+class PlayerRecruitStrCompOverall implements Comparator<String> {
     @Override
     public int compare( String a, String b ) {
         String[] psA = a.split(",");
         String[] psB = b.split(",");
         int ovrA = Integer.parseInt(psA[8]);
         int ovrB = Integer.parseInt(psB[8]);
+        return ovrA > ovrB ? -1 : ovrA == ovrB ? 0 : 1;
+    }
+}
+
+class PlayerTeamStrCompOverall implements Comparator<String> {
+    @Override
+    public int compare( String a, String b ) {
+        String[] psA = a.split(" ");
+        String[] psB = b.split(" ");
+        int ovrA = Integer.parseInt(psA[4]);
+        int ovrB = Integer.parseInt(psB[4]);
         return ovrA > ovrB ? -1 : ovrA == ovrB ? 0 : 1;
     }
 }
