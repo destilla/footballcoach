@@ -286,21 +286,25 @@ public class Game implements Serializable {
         StringBuilder gameR = new StringBuilder();
 
         gameL.append("Ranking\nRecord\nPPG\nOpp PPG\nYPG\nOpp YPG\n" +
-                "\nPass YPG\nRush YPG\nOpp PYPG\nOpp RYPG\n");
+                "\nPass YPG\nRush YPG\nOpp PYPG\nOpp RYPG\n\nOff Talent\nDef Talent\nPrestige");
         int g = awayTeam.numGames();
         Team t = awayTeam;
         gameC.append("#"+t.rankTeamPollScore+" "+t.abbr+"\n"+t.wins+"-"+t.losses+"\n"+
                 t.teamPoints/g+" ("+t.rankTeamPoints+")\n"+t.teamOppPoints/g+" ("+t.rankTeamOppPoints+")\n"+
                 t.teamYards/g+" ("+t.rankTeamYards+")\n"+t.teamOppYards/g+" ("+t.rankTeamOppYards+")\n\n"+
                 t.teamPassYards/g+" ("+t.rankTeamPassYards+")\n"+t.teamRushYards/g+" ("+t.rankTeamRushYards+")\n"+
-                t.teamOppPassYards/g+" ("+t.rankTeamOppPassYards+")\n"+t.teamOppRushYards/g+" ("+t.rankTeamOppRushYards+")\n");
+                t.teamOppPassYards/g+" ("+t.rankTeamOppPassYards+")\n"+t.teamOppRushYards/g+" ("+t.rankTeamOppRushYards+")\n\n"+
+                t.teamOffTalent+" ("+t.rankTeamOffTalent+")\n"+t.teamDefTalent+" ("+t.rankTeamDefTalent+")\n"+
+                t.teamPrestige+" ("+t.rankTeamPrestige+")\n");
         g = homeTeam.numGames();
         t = homeTeam;
         gameR.append("#"+t.rankTeamPollScore+" "+t.abbr+"\n"+t.wins+"-"+t.losses+"\n"+
                 t.teamPoints/g+" ("+t.rankTeamPoints+")\n"+t.teamOppPoints/g+" ("+t.rankTeamOppPoints+")\n"+
                 t.teamYards/g+" ("+t.rankTeamYards+")\n"+t.teamOppYards/g+" ("+t.rankTeamOppYards+")\n\n"+
                 t.teamPassYards/g+" ("+t.rankTeamPassYards+")\n"+t.teamRushYards/g+" ("+t.rankTeamRushYards+")\n"+
-                t.teamOppPassYards/g+" ("+t.rankTeamOppPassYards+")\n"+t.teamOppRushYards/g+" ("+t.rankTeamOppRushYards+")\n");
+                t.teamOppPassYards/g+" ("+t.rankTeamOppPassYards+")\n"+t.teamOppRushYards/g+" ("+t.rankTeamOppRushYards+")\n\n"+
+                t.teamOffTalent+" ("+t.rankTeamOffTalent+")\n"+t.teamDefTalent+" ("+t.rankTeamDefTalent+")\n"+
+                t.teamPrestige+" ("+t.rankTeamPrestige+")\n");
 
         gameSum[0] = gameL.toString();
         gameSum[1] = gameC.toString();

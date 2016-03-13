@@ -583,7 +583,7 @@ public class RecruitingActivity extends AppCompatActivity {
     /**
      * Recruit player, add to correct list and remove from available players list
      */
-    private void recruitPlayer(String player) {
+    private boolean recruitPlayer(String player) {
         int moneyNeeded = getRecruitCost( player );
         if (recruitingBudget >= moneyNeeded) {
             recruitingBudget -= moneyNeeded;
@@ -629,12 +629,16 @@ public class RecruitingActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Recruited " + ps[0] + " " + ps[1],
                     Toast.LENGTH_SHORT).show();
+
+            updatePositionNeeds();
+            return true;
+
         } else {
             Toast.makeText(this, "Not enough money!",
                     Toast.LENGTH_SHORT).show();
-        }
 
-        updatePositionNeeds();
+            return false;
+        }
     }
 
     /**
@@ -676,9 +680,32 @@ public class RecruitingActivity extends AppCompatActivity {
             Button recruitPlayerButton = (Button) convertView.findViewById(R.id.buttonRecruitPlayer);
             recruitPlayerButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    // Check to see if there is enough money to recruit, then add to list if is
-                    recruitPlayer(getGroup(groupPosition));
-                    notifyDataSetChanged();
+                    // Save who is currently expanded
+                    List<Integer> groupsExpanded = new ArrayList<>();
+                    recruitList.collapseGroup(groupPosition);
+                    for (int i = groupPosition+1; i < players.size(); ++i) {
+                        if ( recruitList.isGroupExpanded(i) ) {
+                            groupsExpanded.add(i);
+                        }
+                        recruitList.collapseGroup(i);
+                    }
+
+                    // recruit player if there is enough money
+                    if (recruitPlayer(getGroup(groupPosition))) {
+                        // successful recruit
+                        notifyDataSetChanged();
+                        for (int group : groupsExpanded) {
+                            recruitList.expandGroup(group - 1);
+                        }
+                    } else {
+                        // not successful
+                        recruitList.expandGroup(groupPosition);
+                        notifyDataSetChanged();
+                        for (int group : groupsExpanded) {
+                            recruitList.expandGroup(group);
+                        }
+                    }
+
                 }
             });
 

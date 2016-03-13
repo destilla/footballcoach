@@ -50,6 +50,8 @@ public class League {
     boolean heismanDecided;
     Player heisman;
     ArrayList<Player> heismanCandidates;
+
+    public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Flour Bowl", "Salsa Bowl", "Mango Bowl", "Cotton Bowl"};
     
     /**
      * Creates League, sets up Conferences, reads team names and conferences from file.
@@ -368,22 +370,22 @@ public class League {
         teamList.get(2).gameSchedule.add(semiG23);
         
         //other bowl games
-        roseBowl = new Game( teamList.get(4), teamList.get(6), "Rose Bowl" );
+        roseBowl = new Game( teamList.get(4), teamList.get(6), bowlNames[0] );
         teamList.get(4).gameSchedule.add(roseBowl);
         teamList.get(6).gameSchedule.add(roseBowl);
-        sugarBowl = new Game( teamList.get(5), teamList.get(7), "Sugar Bowl" );
+        sugarBowl = new Game( teamList.get(5), teamList.get(7), bowlNames[1] );
         teamList.get(5).gameSchedule.add(sugarBowl);
         teamList.get(7).gameSchedule.add(sugarBowl);
-        orangeBowl = new Game( teamList.get(8), teamList.get(14), "Orange Bowl" );
+        orangeBowl = new Game( teamList.get(8), teamList.get(14), bowlNames[2] );
         teamList.get(8).gameSchedule.add(orangeBowl);
         teamList.get(14).gameSchedule.add(orangeBowl);
-        peachBowl = new Game( teamList.get(9), teamList.get(15), "Peach Bowl" );
+        peachBowl = new Game( teamList.get(9), teamList.get(15), bowlNames[3] );
         teamList.get(9).gameSchedule.add(peachBowl);
         teamList.get(15).gameSchedule.add(peachBowl);
-        cottonBowl = new Game( teamList.get(10), teamList.get(11), "Cotton Bowl" );
+        cottonBowl = new Game( teamList.get(10), teamList.get(11), bowlNames[4] );
         teamList.get(10).gameSchedule.add(cottonBowl);
         teamList.get(11).gameSchedule.add(cottonBowl);
-        fiestaBowl = new Game( teamList.get(12), teamList.get(13), "Fiesta Bowl" );
+        fiestaBowl = new Game( teamList.get(12), teamList.get(13), bowlNames[5] );
         teamList.get(12).gameSchedule.add(fiestaBowl);
         teamList.get(13).gameSchedule.add(fiestaBowl);
 
@@ -394,6 +396,7 @@ public class League {
     /**
      * Actually plays each bowl game.
      */
+
     public void playBowlGames() {
         Game[] bowls = {roseBowl, sugarBowl, orangeBowl, peachBowl, cottonBowl, fiestaBowl};
         for (Game g : bowls) {
@@ -937,32 +940,32 @@ public class League {
             t2 = teamList.get(2);
             sb.append(t1.strRep() + " vs " + t2.strRep() + "\n\n");
 
-            sb.append("Rose Bowl:\n\t\t");
+            sb.append(bowlNames[0]+":\n\t\t");
             t1 = teamList.get(4);
             t2 = teamList.get(6);
             sb.append(t1.strRep() + " vs " + t2.strRep() + "\n\n");
 
-            sb.append("Sugar Bowl:\n\t\t");
+            sb.append(bowlNames[1]+":\n\t\t");
             t1 = teamList.get(5);
             t2 = teamList.get(7);
             sb.append(t1.strRep() + " vs " + t2.strRep() + "\n\n");
 
-            sb.append("Orange Bowl:\n\t\t");
+            sb.append(bowlNames[2]+":\n\t\t");
             t1 = teamList.get(8);
             t2 = teamList.get(14);
             sb.append(t1.strRep() + " vs " + t2.strRep() + "\n\n");
 
-            sb.append("Peach Bowl:\n\t\t");
+            sb.append(bowlNames[3]+":\n\t\t");
             t1 = teamList.get(9);
             t2 = teamList.get(15);
             sb.append(t1.strRep() + " vs " + t2.strRep() + "\n\n");
 
-            sb.append("Cotton Bowl:\n\t\t");
+            sb.append(bowlNames[4]+":\n\t\t");
             t1 = teamList.get(10);
             t2 = teamList.get(11);
             sb.append(t1.strRep() + " vs " + t2.strRep() + "\n\n");
 
-            sb.append("Fiesta Bowl:\n\t\t");
+            sb.append(bowlNames[5]+":\n\t\t");
             t1 = teamList.get(12);
             t2 = teamList.get(13);
             sb.append(t1.strRep() + " vs " + t2.strRep() + "\n\n");
@@ -980,22 +983,22 @@ public class League {
             sb.append("\n\nSemifinal 2v3:\n");
             sb.append(getGameSummaryBowl(semiG23));
 
-            sb.append("\n\nRose Bowl:\n");
+            sb.append("\n\n"+bowlNames[0]+":\n");
             sb.append(getGameSummaryBowl(roseBowl));
 
-            sb.append("\n\nSugar Bowl:\n");
+            sb.append("\n\n"+bowlNames[1]+":\n");
             sb.append(getGameSummaryBowl(sugarBowl));
 
-            sb.append("\n\nOrange Bowl:\n");
+            sb.append("\n\n"+bowlNames[2]+":\n");
             sb.append(getGameSummaryBowl(orangeBowl));
 
-            sb.append("\n\nPeach Bowl:\n");
+            sb.append("\n\n"+bowlNames[3]+":\n");
             sb.append(getGameSummaryBowl(peachBowl));
 
-            sb.append("\n\nCotton Bowl:\n");
+            sb.append("\n\n"+bowlNames[4]+":\n");
             sb.append(getGameSummaryBowl(cottonBowl));
 
-            sb.append("\n\nFiesta Bowl:\n");
+            sb.append("\n\n"+bowlNames[5]+":\n");
             sb.append(getGameSummaryBowl(fiestaBowl));
 
             return sb.toString();
