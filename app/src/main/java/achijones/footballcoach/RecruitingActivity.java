@@ -418,7 +418,9 @@ public class RecruitingActivity extends AppCompatActivity {
      */
     private String getReadablePlayerInfo(String p) {
         String[] pi = p.split(",");
-        return pi[0] + " " + getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot";
+        String improveStr = "";
+        if (!getYrStr(pi[2]).equals("[Fr]")) improveStr = "(+" + pi[9] + ")";
+        return pi[0] + " " + getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot " + improveStr;
     }
 
     /**

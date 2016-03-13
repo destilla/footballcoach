@@ -1687,28 +1687,36 @@ public class Team {
     public String getPlayerInfoSaveFile() {
         StringBuilder sb = new StringBuilder();
         for (PlayerQB qb : teamQBs) {
-            sb.append("QB," + qb.name + "," + qb.year + "," + qb.ratPot + "," + qb.ratFootIQ + "," + qb.ratPassPow + "," + qb.ratPassAcc + "," + qb.ratPassEva + "," + qb.ratOvr + "%\n");
+            sb.append("QB," + qb.name + "," + qb.year + "," + qb.ratPot + "," + qb.ratFootIQ + "," +
+                    qb.ratPassPow + "," + qb.ratPassAcc + "," + qb.ratPassEva + "," + qb.ratOvr + "," + qb.ratImprovement + "%\n");
         }
         for (PlayerRB rb : teamRBs) {
-            sb.append("RB," + rb.name + "," + rb.year + "," + rb.ratPot + "," + rb.ratFootIQ + "," + rb.ratRushPow + "," + rb.ratRushSpd + "," + rb.ratRushEva + "," + rb.ratOvr + "%\n");
+            sb.append("RB," + rb.name + "," + rb.year + "," + rb.ratPot + "," + rb.ratFootIQ + "," +
+                    rb.ratRushPow + "," + rb.ratRushSpd + "," + rb.ratRushEva + "," + rb.ratOvr + "," + rb.ratImprovement + "%\n");
         }
         for (PlayerWR wr : teamWRs) {
-            sb.append("WR," + wr.name + "," + wr.year + "," + wr.ratPot + "," + wr.ratFootIQ + "," + wr.ratRecCat + "," + wr.ratRecSpd + "," + wr.ratRecEva + "," + wr.ratOvr + "%\n");
+            sb.append("WR," + wr.name + "," + wr.year + "," + wr.ratPot + "," + wr.ratFootIQ + "," +
+                    wr.ratRecCat + "," + wr.ratRecSpd + "," + wr.ratRecEva + "," + wr.ratOvr + "," + wr.ratImprovement + "%\n");
         }
         for (PlayerK k : teamKs) {
-            sb.append("K," + k.name + "," + k.year + "," + k.ratPot + "," + k.ratFootIQ + "," + k.ratKickPow + "," + k.ratKickAcc + "," + k.ratKickFum + "," + k.ratOvr + "%\n");
+            sb.append("K," + k.name + "," + k.year + "," + k.ratPot + "," + k.ratFootIQ + "," +
+                    k.ratKickPow + "," + k.ratKickAcc + "," + k.ratKickFum + "," + k.ratOvr + "," + k.ratImprovement + "%\n");
         }
         for (PlayerOL ol : teamOLs) {
-            sb.append("OL," + ol.name + "," + ol.year + "," + ol.ratPot + "," + ol.ratFootIQ + "," + ol.ratOLPow + "," + ol.ratOLBkR + "," + ol.ratOLBkP + "," + ol.ratOvr + "%\n");
+            sb.append("OL," + ol.name + "," + ol.year + "," + ol.ratPot + "," + ol.ratFootIQ + "," +
+                    ol.ratOLPow + "," + ol.ratOLBkR + "," + ol.ratOLBkP + "," + ol.ratOvr + "," + ol.ratImprovement + "%\n");
         }
         for (PlayerS s : teamSs) {
-            sb.append("S," + s.name + "," + s.year + "," + s.ratPot + "," + s.ratFootIQ + "," + s.ratSCov + "," + s.ratSSpd + "," + s.ratSTkl + "," + s.ratOvr + "%\n");
+            sb.append("S," + s.name + "," + s.year + "," + s.ratPot + "," + s.ratFootIQ + "," +
+                    s.ratSCov + "," + s.ratSSpd + "," + s.ratSTkl + "," + s.ratOvr + "," + s.ratImprovement + "%\n");
         }
         for (PlayerCB cb : teamCBs) {
-            sb.append("CB," + cb.name + "," + cb.year + "," + cb.ratPot + "," + cb.ratFootIQ + "," + cb.ratCBCov + "," + cb.ratCBSpd + "," + cb.ratCBTkl + "," + cb.ratOvr + "%\n");
+            sb.append("CB," + cb.name + "," + cb.year + "," + cb.ratPot + "," + cb.ratFootIQ + "," +
+                    cb.ratCBCov + "," + cb.ratCBSpd + "," + cb.ratCBTkl + "," + cb.ratOvr + "," + cb.ratImprovement + "%\n");
         }
         for (PlayerF7 f7 : teamF7s) {
-            sb.append("F7," + f7.name + "," + f7.year + "," + f7.ratPot + "," + f7.ratFootIQ + "," + f7.ratF7Pow + "," + f7.ratF7Rsh + "," + f7.ratF7Pas + "," + f7.ratOvr + "%\n");
+            sb.append("F7," + f7.name + "," + f7.year + "," + f7.ratPot + "," + f7.ratFootIQ + "," +
+                    f7.ratF7Pow + "," + f7.ratF7Rsh + "," + f7.ratF7Pas + "," + f7.ratOvr + "," + f7.ratImprovement + "%\n");
         }
         return sb.toString();
     }
