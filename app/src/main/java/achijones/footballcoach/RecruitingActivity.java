@@ -420,7 +420,7 @@ public class RecruitingActivity extends AppCompatActivity {
         String[] pi = p.split(",");
         String improveStr = "";
         if (!getYrStr(pi[2]).equals("[Fr]")) improveStr = "(+" + pi[9] + ")";
-        return pi[0] + " " + getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot " + improveStr;
+        return getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot " + improveStr;
     }
 
     /**
@@ -507,39 +507,44 @@ public class RecruitingActivity extends AppCompatActivity {
     private String getRosterStr() {
         updatePositionNeeds();
         StringBuilder sb = new StringBuilder();
+        String stbn = ""; //ST for starter, BN for bench
+        String p = ""; //player string
+
         sb.append("QBs (Need: " + needQBs + ")\n");
-        for (String p : teamQBs) {
-            sb.append("\t\t" + p + "\n");
-        }
+        appendPlayers(sb, teamQBs, 1);
+
         sb.append("\nRBs (Need: " + needRBs + ")\n");
-        for (String p : teamRBs) {
-            sb.append("\t\t" + p + "\n");
-        }
+        appendPlayers(sb, teamRBs, 2);
+
         sb.append("\nWRs (Need: " + needWRs + ")\n");
-        for (String p : teamWRs) {
-            sb.append("\t\t" + p + "\n");
-        }
+        appendPlayers(sb, teamWRs, 3);
+
         sb.append("\nOLs (Need: " + needOLs + ")\n");
-        for (String p : teamOLs) {
-            sb.append("\t\t" + p + "\n");
-        }
+        appendPlayers(sb, teamOLs, 5);
+
         sb.append("\nKs (Need: " + needKs + ")\n");
-        for (String p : teamKs) {
-            sb.append("\t\t" + p + "\n");
-        }
+        appendPlayers(sb, teamKs, 1);
+
         sb.append("\nSs (Need: " + needSs + ")\n");
-        for (String p : teamSs) {
-            sb.append("\t\t" + p + "\n");
-        }
+        appendPlayers(sb, teamSs, 1);
+
         sb.append("\nCBs (Need: " + needCBs + ")\n");
-        for (String p : teamCBs) {
-            sb.append("\t\t" + p + "\n");
-        }
+        appendPlayers(sb, teamCBs, 3);
+
         sb.append("\nF7s (Need: " + needF7s + ")\n");
-        for (String p : teamF7s) {
-            sb.append("\t\t" + p + "\n");
-        }
+        appendPlayers(sb, teamF7s, 7);
+
         return sb.toString();
+    }
+
+    private void appendPlayers(StringBuilder sb, ArrayList<String> players, int numStart) {
+        String p, stbn;
+        for (int i = 0; i < players.size(); ++i) {
+            if (i > numStart-1) stbn = "BN";
+            else stbn = "ST";
+            p = players.get(i);
+            sb.append("\t\t" + stbn + " " + p + "\n");
+        }
     }
 
     /**
@@ -778,8 +783,8 @@ class PlayerTeamStrCompOverall implements Comparator<String> {
     public int compare( String a, String b ) {
         String[] psA = a.split(" ");
         String[] psB = b.split(" ");
-        int ovrA = Integer.parseInt(psA[4]);
-        int ovrB = Integer.parseInt(psB[4]);
+        int ovrA = Integer.parseInt(psA[3]);
+        int ovrB = Integer.parseInt(psB[3]);
         return ovrA > ovrB ? -1 : ovrA == ovrB ? 0 : 1;
     }
 }

@@ -144,8 +144,8 @@ public class PlayerRB extends Player {
     @Override
     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("TDs/Fum: " + statsTD + "/" + statsFumbles + ">Rush Attempts: " + statsRushAtt);
-        pStats.add("Rush Yards: " + statsRushYards + " yds>Yards per Att: " + ((double)(10*statsRushYards/(statsRushAtt+1))/10) + " yds");
+        pStats.add("TDs/Fum: " + statsTD + "/" + statsFumbles + ">Rush Att: " + statsRushAtt);
+        pStats.add("Rush Yards: " + statsRushYards + " yds>Yards/Att: " + ((double)(10*statsRushYards/(statsRushAtt+1))/10) + " yds");
         pStats.add("Yds/Game: " + (statsRushYards/games) + " yds/g>Rush Power: " + getLetterGrade(ratRushPow));
         pStats.add("Rush Speed: " + getLetterGrade(ratRushSpd) + ">Evasion: " + getLetterGrade(ratRushEva));
         return pStats;

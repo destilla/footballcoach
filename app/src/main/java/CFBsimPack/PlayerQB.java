@@ -154,8 +154,8 @@ public class PlayerQB extends Player {
     @Override
     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("TD/Int: " + statsTD + "/" + statsInt + ">Completion Percent: " + (100*statsPassComp/(statsPassAtt+1))+"%");
-        pStats.add("Pass Yards: " + statsPassYards + " yds>Yards per Att: " + ((double)(10*statsPassYards/(statsPassAtt+1))/10) + " yds");
+        pStats.add("TD/Int: " + statsTD + "/" + statsInt + ">Comp Percent: " + (100*statsPassComp/(statsPassAtt+1))+"%");
+        pStats.add("Pass Yards: " + statsPassYards + " yds>Yards/Att: " + ((double)(10*statsPassYards/(statsPassAtt+1))/10) + " yds");
         pStats.add("Yds/Game: " + (statsPassYards/games) + " yds/g>Pass Strength: " + getLetterGrade(ratPassPow));
         pStats.add("Accuracy: " + getLetterGrade(ratPassAcc) + ">Evasion: " + getLetterGrade(ratPassEva));
         return pStats;
