@@ -309,7 +309,7 @@ public class Game implements Serializable {
         gameSum[0] = gameL.toString();
         gameSum[1] = gameC.toString();
         gameSum[2] = gameR.toString();
-        gameSum[3] = "";
+        gameSum[3] = "SCOUTING REPORT";
 
         return gameSum;
     }

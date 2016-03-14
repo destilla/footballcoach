@@ -145,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
                     userTeam.userControlled = true;
                     userTeamStr = userTeam.name;
                     currentTeam = userTeam;
+                    // set rankings so that not everyone is rank #0
+                    simLeague.setTeamRanks();
                     // Set toolbar text to '2015 Season' etc
                     getSupportActionBar().setTitle(userTeam.name + " " + season + " Season");
                     examineTeam(currentTeam.name);
@@ -319,7 +321,11 @@ public class MainActivity extends AppCompatActivity {
         // Plz work
         if (loadedLeague) {
             examineTeam(userTeam.name);
+            // set rankings so that not everyone is rank #0
+            simLeague.setTeamRanks();
         }
+
+
 
     }
 
