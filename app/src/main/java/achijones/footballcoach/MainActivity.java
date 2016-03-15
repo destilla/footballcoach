@@ -269,10 +269,12 @@ public class MainActivity extends AppCompatActivity {
                         } else if (simLeague.currentWeek == 12) {
                             simGameButton.setText("Play Conf Championships");
                             examineTeam(currentTeam.name);
+                            scrollToLatestGame();
                         } else if (simLeague.currentWeek == 13) {
                             heismanCeremony();
                             simGameButton.setText("Play Bowl Games");
                             examineTeam(currentTeam.name);
+                            scrollToLatestGame();
                         } else if (simLeague.currentWeek == 14) {
                             simGameButton.setText("Play National Championship");
                         } else {
