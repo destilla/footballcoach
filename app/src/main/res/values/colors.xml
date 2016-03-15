@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#00bb96</color>
-    <color name="colorPrimaryDark">#00bb96</color>
+    <color name="colorPrimaryDark">#008066</color>
     <color name="colorAccent">#ef6f10</color>
+    <color name="greenLight">#00ffcc</color>
+    <color name="blueDark">#005ce6</color>
+    <color name="blueLight">#1a75ff</color>
+    <color name="winColor">#b3ffb3</color>
+    <color name="lossColor">#ffb3b3</color>
+    <color name="grey">#d9d9d9</color>
 </resources>

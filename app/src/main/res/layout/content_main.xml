@@ -116,7 +116,9 @@
                 android:text="Play Week"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/simGameButton" />
+                android:id="@+id/simGameButton"
+                android:background="@drawable/button_shape_fc"
+                android:textColor="#ffffff"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

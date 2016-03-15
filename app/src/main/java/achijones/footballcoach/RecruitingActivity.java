@@ -543,7 +543,7 @@ public class RecruitingActivity extends AppCompatActivity {
             if (i > numStart-1) stbn = "BN";
             else stbn = "ST";
             p = players.get(i);
-            sb.append("\t\t" + stbn + " " + p + "\n");
+            sb.append("\t" + stbn + " " + p + "\n");
         }
     }
 

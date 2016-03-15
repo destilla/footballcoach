@@ -248,7 +248,7 @@ public class Team {
         int diffExpected = expectedPollFinish - rankTeamPollScore;
         int oldPrestige = teamPrestige;
 
-        if ( teamPrestige > 55 || diffExpected > 0 ) {
+        if ( (teamPrestige > 45 && !name.equals("American Samoa")) || diffExpected > 0 ) {
             teamPrestige = (int)Math.pow(teamPrestige, 1 + (float)diffExpected/1500);// + diffExpected/2500);
         }
 
@@ -259,7 +259,7 @@ public class Team {
         }
 
         if (teamPrestige > 95) teamPrestige = 95;
-        if (teamPrestige < 45) teamPrestige = 45;
+        if (teamPrestige < 45 && !name.equals("American Samoa")) teamPrestige = 45;
 
         diffPrestige = teamPrestige - oldPrestige;
         advanceSeasonPlayers();

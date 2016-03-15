@@ -217,8 +217,6 @@ public class MainActivity extends AppCompatActivity {
          * Set up "Play Week" button
          */
         final Button simGameButton = (Button) findViewById(R.id.simGameButton);
-        simGameButton.setBackgroundColor(Color.parseColor("#336699"));
-        simGameButton.setTextColor(Color.parseColor("#ffffff"));
         simGameButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (recruitingStage == -1) {

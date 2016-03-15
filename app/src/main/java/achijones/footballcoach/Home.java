@@ -51,6 +51,15 @@ public class Home extends AppCompatActivity {
             }
         });
 
+        Button tutorialButton = (Button) findViewById(R.id.buttonTutorial);
+        tutorialButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                Intent myIntent = new Intent(Home.this, TutorialActivity.class);
+                Home.this.startActivity(myIntent);
+            }
+        });
+
     }
 
     @Override

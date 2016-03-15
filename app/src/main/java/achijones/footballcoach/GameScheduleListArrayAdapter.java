@@ -44,6 +44,14 @@ public class GameScheduleListArrayAdapter extends ArrayAdapter<Game> {
         gameButton.setText( gameSummary[1] );
         textRight.setText( gameSummary[2] );
 
+        if (team.gameWLSchedule.size() > position) {
+            if (team.gameWLSchedule.get(position).equals("W")) {
+                gameButton.setBackground(context.getResources().getDrawable(R.drawable.button_shape_fc_win));
+            } else {
+                gameButton.setBackground(context.getResources().getDrawable(R.drawable.button_shape_fc_loss));
+            }
+        }
+
         gameButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
