@@ -462,7 +462,7 @@ public class League {
         //schedule NCG
         ncg = new Game( semi14winner, semi23winner, "NCG" );
         semi14winner.gameSchedule.add( ncg );
-        semi23winner.gameSchedule.add( ncg );
+        semi23winner.gameSchedule.add(ncg);
         
     }
 
@@ -1103,6 +1103,58 @@ public class League {
             }
         }
         return conferences.get(0);
+    }
+
+    /**
+     * See if team name is in use, or has illegal characters.
+     * @param name team name
+     * @return true if valid, false if not
+     */
+    public boolean isNameValid(String name) {
+        if (name.length() == 0) {
+            return false;
+        }
+
+        if (name.contains(",") || name.contains(">") || name.contains("%") || name.contains("\\")) {
+            // Illegal character!
+            return false;
+        }
+
+        for (int i = 0; i < teamList.size(); i++) {
+            // compare using all lower case so no dumb duplicates
+            if (teamList.get(i).name.toLowerCase().equals(name.toLowerCase()) &&
+                    !teamList.get(i).userControlled) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * See if team abbr is in use, or has illegal characters, or is not 3 characters
+     * @param abbr new abbr
+     * @return true if valid, false if not
+     */
+    public boolean isAbbrValid(String abbr) {
+        if (abbr.length() > 3 || abbr.length() == 0) {
+            // Only 3 letter abbr allowed
+            return false;
+        }
+
+        if (abbr.contains(",") || abbr.contains(">") || abbr.contains("%") || abbr.contains("\\")) {
+            // Illegal character!
+            return false;
+        }
+
+        for (int i = 0; i < teamList.size(); i++) {
+            if (teamList.get(i).abbr.equals(abbr) &&
+                    !teamList.get(i).userControlled) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

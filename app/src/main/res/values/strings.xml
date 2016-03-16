@@ -11,6 +11,7 @@
     <string name="action_ccg_watch">Conf Championships</string>
     <string name="action_save_league">Save League</string>
     <string name="action_return_main_menu">Return to Main Menu</string>
+    <string name="action_change_team_name">Change Team Name</string>
     <string name="title_activity_recruiting">RecruitingActivity</string>
     <string name="league_player_names">
         Tim,

@@ -3,6 +3,8 @@ package achijones.footballcoach;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -457,6 +459,11 @@ public class MainActivity extends AppCompatActivity {
              * Let user confirm that they actually do want to go to main menu
              */
             exitMainActivity();
+        } else if (id == R.id.action_change_team_name) {
+            /**
+             * Let user change their team name and abbr
+             */
+            changeTeamNameDialog();
         }
 
         return super.onOptionsItemSelected(item);
@@ -817,6 +824,116 @@ public class MainActivity extends AppCompatActivity {
                         // do nothing
                     }
                 });
+
+    }
+
+    /**
+     * Open dialog that allows users to change their name and/or abbr.
+     */
+    private void changeTeamNameDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Change Team Name and Abbr")
+                .setView(getLayoutInflater().inflate(R.layout.change_team_name_dialog, null));
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        final EditText changeNameEditText = (EditText) dialog.findViewById(R.id.editTextChangeName);
+        final EditText changeAbbrEditText = (EditText) dialog.findViewById(R.id.editTextChangeAbbr);
+
+        final TextView invalidNameText = (TextView) dialog.findViewById(R.id.textViewChangeName);
+        final TextView invalidAbbrText = (TextView) dialog.findViewById(R.id.textViewChangeAbbr);
+
+        changeNameEditText.addTextChangedListener(new TextWatcher() {
+            String newName;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                newName = s.toString().trim();
+                if (!simLeague.isNameValid(newName)) {
+                    invalidNameText.setText("Name already in use or has illegal characters!");
+                } else {
+                    invalidNameText.setText("");
+                }
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                newName = s.toString().trim();
+                if (!simLeague.isNameValid(newName)) {
+                    invalidNameText.setText("Name already in use or has illegal characters!");
+                } else {
+                    invalidNameText.setText("");
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                newName = s.toString().trim();
+                if (!simLeague.isNameValid(newName)) {
+                    invalidNameText.setText("Name already in use or has illegal characters!");
+                } else {
+                    invalidNameText.setText("");
+                }
+            }
+        });
+
+        changeAbbrEditText.addTextChangedListener(new TextWatcher() {
+            String newAbbr;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                newAbbr = s.toString().trim().toUpperCase();
+                if (!simLeague.isAbbrValid(newAbbr)) {
+                    invalidAbbrText.setText("Abbr already in use or has illegal characters!");
+                } else {
+                    invalidAbbrText.setText("");
+                }
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                newAbbr = s.toString().trim().toUpperCase();
+                if (!simLeague.isAbbrValid(newAbbr)) {
+                    invalidAbbrText.setText("Abbr already in use or has illegal characters!");
+                } else {
+                    invalidAbbrText.setText("");
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                newAbbr = s.toString().trim().toUpperCase();
+                if (!simLeague.isAbbrValid(newAbbr)) {
+                    invalidAbbrText.setText("Abbr already in use or has illegal characters!");
+                } else {
+                    invalidAbbrText.setText("");
+                }
+            }
+        });
+
+        Button cancelChangeNameButton = (Button) dialog.findViewById(R.id.buttonCancelChangeName);
+        Button okChangeNameButton = (Button) dialog.findViewById(R.id.buttonOkChangeName);
+
+        cancelChangeNameButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                dialog.dismiss();
+            }
+        });
+
+        okChangeNameButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                String newName = changeNameEditText.getText().toString().trim();
+                String newAbbr = changeAbbrEditText.getText().toString().trim().toUpperCase();;
+                if ( simLeague.isNameValid(newName) && simLeague.isAbbrValid(newAbbr) ) {
+                    userTeam.name = newName;
+                    userTeam.abbr = newAbbr;
+                    getSupportActionBar().setTitle(userTeam.name + " " + season + " Season");
+                    examineTeam(userTeam.name);
+                } else {
+                    Toast.makeText(MainActivity.this, "Invalid name/abbr! Name not changed.",
+                            Toast.LENGTH_SHORT).show();
+                }
+                dialog.dismiss();
+            }
+        });
 
     }
 
