@@ -320,9 +320,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Plz work
         if (loadedLeague) {
-            examineTeam(userTeam.name);
             // set rankings so that not everyone is rank #0
             simLeague.setTeamRanks();
+            examineTeam(userTeam.name);
         }
 
 
