@@ -110,8 +110,8 @@ public class Game implements Serializable {
     
     /**
      * Create a game without a name (regular season game).
-     * @param home
-     * @param away 
+     * @param home  home team playing
+     * @param away  away team playing
      */
     public Game( Team home, Team away ) {
         homeTeam = home;
@@ -155,6 +155,10 @@ public class Game implements Serializable {
         
     }
 
+    /**
+     * Gets the game summary, along with all the stats and the game log, to be used by the UI.
+     * @return A String array of the left, center, right, and logs.
+     */
     public String[] getGameSummaryStr() {
         /**
          * [0] is left side
@@ -273,6 +277,10 @@ public class Game implements Serializable {
         return gameSum;
     }
 
+    /**
+     * Gets a scouting summary of a game that is yet to be played.
+     * @return a String array with the left, right, center, and "SCOUTING REPORT"
+     */
     public String[] getGameScoutStr() {
         /**
          * [0] is left side
@@ -313,25 +321,44 @@ public class Game implements Serializable {
 
         return gameSum;
     }
-    
+
+    /**
+     * Gets the amount of pass yards by a certain team for this game.
+     * @param ha home/away bool, false for home
+     * @return number of pass yards by specified team
+     */
     public int getPassYards( boolean ha ) {
         //ha = home/away, false for home, true for away
         if (!ha) return HomeQBStats[4];
         else return AwayQBStats[4];
     }
-    
+
+    /**
+     * Gets the amount of rush yards by a certain team for this game.
+     * @param ha hoem/away bool, false for home
+     * @return number of rush yards by speicifed team
+     */
     public int getRushYards( boolean ha ) {
         //ha = home/away, false for home, true for away
         if (!ha) return HomeRB1Stats[1] + HomeRB2Stats[1];
         else return AwayRB1Stats[1] + AwayRB2Stats[1];
     }
-    
+
+    /**
+     * Gets home field advantage, which is a +3 bonus to certain things for the home team
+     * @return 3 if for home, 0 for away
+     */
     private int getHFadv() {
         //home field advantage
         if ( gamePoss ) return 3;
         else return 0;
     }
-    
+
+    /**
+     * Gets the even prefix for events that happen in the log.
+     * Will be of type ALA 3 - 3 GEO, Time: Q2 X:XX, 1st and goal at 95 yard line.
+     * @return String of the event prefix.
+     */
     private String getEventPrefix() {
         String possStr;
         if ( gamePoss ) possStr = homeTeam.abbr;
@@ -341,7 +368,11 @@ public class Game implements Serializable {
         return "\n\n" + homeTeam.abbr + " " + homeScore + " - " + awayScore + " " + awayTeam.abbr + ", Time: " + convGameTime() + 
                 "\n\t" + possStr + " " + gameDown + " and " + yardsNeedAdj + " at " + gameYardLine + " yard line." + "\n";
     }
-    
+
+    /**
+     * Converts the game time, which is 0-3600, into readable time, i.e. Q1 12:50
+     * @return String of the converted game time
+     */
     private String convGameTime() {
         int qNum = (3600 - gameTime) / 900 + 1;
         int minTime;
@@ -445,6 +476,10 @@ public class Game implements Serializable {
         }
     }
 
+    /**
+     * Add news story to the league depending on the games outcome.
+     * Only if it is big upset, or undefeated team goes down, or there are 3+ OTs.
+     */
     public void addNewsStory() {
         if (numOT >= 3) {
             // Thriller in OT
@@ -500,8 +535,8 @@ public class Game implements Serializable {
     
     /**
      * Run play. Type of play run determined by offensive strengths and type of situation.
-     * @param offense
-     * @param defense 
+     * @param offense offense running the play
+     * @param defense defense defending the play
      */
     private void runPlay( Team offense, Team defense ) {
         if ( gameDown > 4 ) {
@@ -560,8 +595,8 @@ public class Game implements Serializable {
     
     /**
      * Passing play.
-     * @param offense
-     * @param defense 
+     * @param offense throwing the ball
+     * @param defense defending the pass
      */
     private void passingPlay( Team offense, Team defense ) {
         int yardsGain = 0;
@@ -701,8 +736,8 @@ public class Game implements Serializable {
     
     /**
      * Rushing Play using running backs.
-     * @param offense
-     * @param defense 
+     * @param offense running the ball
+     * @param defense defending the run
      */
     private void rushingPlay( Team offense, Team defense ) {
         boolean gotTD = false;
@@ -801,7 +836,14 @@ public class Game implements Serializable {
         }
         
     }
-    
+
+    /**
+     * Attempt a field goal using the offense's kicker.
+     * If successful, add 3 points and kick off.
+     * If not, turn the ball over.
+     * @param offense kicking the ball
+     * @param defense defending the kick
+     */
     private void fieldGoalAtt( Team offense, Team defense ) {
         double fgDistRatio = Math.pow((110 - gameYardLine)/50,2);
         double fgAccRatio = Math.pow((110 - gameYardLine)/50,1.25);
@@ -844,7 +886,13 @@ public class Game implements Serializable {
         gameTime -= 20;
         
     }
-    
+
+    /**
+     * Kick the extra point after the touchdown.
+     * Will decide to go for 2 under certain circumstances.
+     * @param offense going for the point after
+     * @param defense defending the point after
+     */
     private void kickXP( Team offense, Team defense ) {
         if ( ((gamePoss && (awayScore - homeScore) == 2) || (!gamePoss && (homeScore - awayScore) == 2)) && gameTime < 300 ) {
             //go for 2
@@ -906,7 +954,11 @@ public class Game implements Serializable {
             offense.getK(0).statsXPAtt++;
         }
     }
-    
+
+    /**
+     * Kick the ball off, turning the ball over to the other team.
+     * @param offense kicking the ball off
+     */
     private void kickOff( Team offense ) {
         //Decide whether to onside kick. Only if losing but within 8 points with < 3 min to go
         if ( gameTime < 180 && ((gamePoss && (awayScore - homeScore) <= 8 && (awayScore - homeScore) > 0)
@@ -934,7 +986,12 @@ public class Game implements Serializable {
 
         gameTime -= 15*Math.random();
     }
-    
+
+    /**
+     * Punt the ball if it is a 4th down and decided not to go for it.
+     * Will turnover possession.
+     * @param offense kicking the punt
+     */
     private void puntPlay( Team offense ) {
         gameYardLine = (int) (100 - ( gameYardLine + offense.getK(0).ratKickPow/3 + 20 - 10*Math.random() ));
         if ( gameYardLine < 0 ) {
@@ -946,7 +1003,11 @@ public class Game implements Serializable {
         
         gameTime -= 20 + 15*Math.random();
     }
-    
+
+    /**
+     * Sack the offense's QB. If it is past 0 yard line, call for a safety.
+     * @param offense offense that is gettign sacked
+     */
     private void qbSack( Team offense ) {
         offense.getQB(0).statsSacked++;
         gameYardsNeed += 3;
@@ -964,6 +1025,9 @@ public class Game implements Serializable {
         }
     }
 
+    /**
+     * Perform safety. Will add 2 to the correct team and give the ball over via a kick off.
+     */
     private void safety() {
         //addPointsQuarter(2);
         if (gamePoss) {
@@ -978,7 +1042,11 @@ public class Game implements Serializable {
             kickOff(awayTeam);
         }
     }
-    
+
+    /**
+     * Perform an interception on the offense's QB. Will turn the ball over and add the needed stats.
+     * @param offense offense that has been intercepted.
+     */
     private void qbInterception( Team offense ) {
         if ( gamePoss ) { // home possession
             HomeQBStats[3]++;
@@ -996,7 +1064,14 @@ public class Game implements Serializable {
         gamePoss = !gamePoss;
         gameYardLine = 100 - gameYardLine;
     }
-    
+
+    /**
+     * Passing touchdown stat tracking. Add 6 points and yards for QB/WR.
+     * @param offense offense who got the TD
+     * @param selWR WR who caught the TD
+     * @param selWRStats stats array for that WR
+     * @param yardsGain number of yards gained by the TD
+     */
     private void passingTD( Team offense, PlayerWR selWR, int[] selWRStats, int yardsGain ){
         if ( gamePoss ) { // home possession
             homeScore += 6;
@@ -1011,7 +1086,15 @@ public class Game implements Serializable {
         offense.getQB(0).statsTD++;
         selWR.statsTD++;
     }
-    
+
+    /**
+     * Pass completion stat tracking. used for team mostly.
+     * @param offense offense who threw the pass
+     * @param defense defense who defended the pass
+     * @param selWR WR who caught the pass
+     * @param selWRStats stat array for that WR
+     * @param yardsGain number of yards gained by that pass
+     */
     private void passCompletion( Team offense, Team defense, PlayerWR selWR, int[] selWRStats, int yardsGain ) {
         offense.getQB(0).statsPassComp++;
         offense.getQB(0).statsPassYards += yardsGain;
@@ -1029,7 +1112,14 @@ public class Game implements Serializable {
             selWRStats[0]++;
         }
     }
-    
+
+    /**
+     * Stat tracking for a pass attempt (not necessarily completion). Used for QB mostly.
+     * @param offense offense who threw the pass
+     * @param selWR WR who tries to catch the pass
+     * @param selWRStats stat array for that WR
+     * @param yardsGain yards
+     */
     private void passAttempt( Team offense, PlayerWR selWR, int[] selWRStats, int yardsGain ) {
         offense.getQB(0).statsPassAtt++;
         selWR.statsTargets++;
@@ -1048,7 +1138,16 @@ public class Game implements Serializable {
             selWRStats[1]++;
         }
     }
-    
+
+    /**
+     * Rush attempt stat tracking
+     * @param offense offense who ran the run play
+     * @param defense defense who defended the play
+     * @param selRB RB who ran the ball
+     * @param RB1pref number to compare to see who was chosen
+     * @param RB2pref number to compare to see who was chosen
+     * @param yardsGain yards gained by the rush
+     */
     private void rushAttempt( Team offense, Team defense, PlayerRB selRB, double RB1pref, double RB2pref, int yardsGain ) {
         selRB.statsRushAtt++;
         selRB.statsRushYards += yardsGain;
@@ -1076,7 +1175,11 @@ public class Game implements Serializable {
             }
         }
     }
-    
+
+    /**
+     * Add points to the correct quarter (not used anymore?)
+     * @param points points added
+     */
     private void addPointsQuarter( int points ) {
         if ( gamePoss ) {
             //home poss
@@ -1109,6 +1212,11 @@ public class Game implements Serializable {
         }
     }
 
+    /**
+     * Normalize a rating to make it more even. 80->90, 90->95, etc
+     * @param rating rating to be normalized
+     * @return normalized rating
+     */
     private int normalize(int rating) {
         return (100 + rating)/2;
     }

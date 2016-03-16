@@ -98,11 +98,11 @@ public class Team {
     
     /**
      * Creates new team, recruiting needed players and setting team stats to 0.
-     * @param name
-     * @param abbr
-     * @param conference
-     * @param league
-     * @param prestige 
+     * @param name name of the team
+     * @param abbr abbreviation of the team, 3 letters
+     * @param conference conference the team is in
+     * @param league reference to the league object all must obey
+     * @param prestige prestige of that team, between 0-100
      */
     public Team( String name, String abbr, String conference, League league, int prestige, String rivalTeamAbbr ) {
         this.league = league;
@@ -162,7 +162,7 @@ public class Team {
 
     /**
      * Constructor for team that is being loaded from file.
-     * @param loadStr
+     * @param loadStr String containing the team info that can be loaded
      */
     public Team( String loadStr, League league ) {
         this.league = league;
@@ -873,26 +873,47 @@ public class Team {
             return teamF7s.get(0);
         }
     }
-    
+
+    /**
+     * Get pass proficiency. The higher the more likely the team is to pass.
+     * @return integer of how good the team is at passing
+     */
     public int getPassProf() {
         int avgWRs = ( teamWRs.get(0).ratOvr + teamWRs.get(1).ratOvr + teamWRs.get(2).ratOvr)/3;
         return (getCompositeOLPass() + getQB(0).ratOvr*2 + avgWRs)/4;
     }
-    
+
+    /**
+     * Get run proficiency. The higher the more likely the team is to run.
+     * @return integer of how good the team is at rushing
+     */
     public int getRushProf() {
         int avgRBs = ( teamRBs.get(0).ratOvr + teamRBs.get(1).ratOvr )/2;
         return (getCompositeOLRush() + avgRBs )/2;
     }
-    
+
+    /**
+     * Get how good the team is at defending the pass
+     * @return integer of how good
+     */
     public int getPassDef() {
         int avgCBs = ( teamCBs.get(0).ratOvr + teamCBs.get(1).ratOvr + teamCBs.get(2).ratOvr)/3;
         return (avgCBs*3 + teamSs.get(0).ratOvr + getCompositeF7Pass()*2)/6;
     }
-    
+
+    /**
+     * Get how good the team is at defending the rush
+     * @return integer of how good
+     */
     public int getRushDef() {
         return getCompositeF7Rush();
     }
-    
+
+    /**
+     * Get how good the OL is at defending the pass
+     * Is the average of power and pass blocking.
+     * @return how good they are at blocking the pass.
+     */
     public int getCompositeOLPass() {
         int compositeOL = 0;
         for ( int i = 0; i < 5; ++i ) {
@@ -900,7 +921,12 @@ public class Team {
         }
         return compositeOL / 5;
     }
-    
+
+    /**
+     * Get how good the OL is at defending the rush
+     * Is the average of power and rush blocking.
+     * @return how good they are at blocking the rush.
+     */
     public int getCompositeOLRush() {
         int compositeOL = 0;
         for ( int i = 0; i < 5; ++i ) {
@@ -908,7 +934,12 @@ public class Team {
         }
         return compositeOL / 5;
     }
-    
+
+    /**
+     * Get how good the F7 is at defending the pass.
+     * Is the average of power and pass pressure.
+     * @return how good they are at putting pressure on passer.
+     */
     public int getCompositeF7Pass() {
         int compositeF7 = 0;
         for ( int i = 0; i < 7; ++i ) {
@@ -916,7 +947,12 @@ public class Team {
         }
         return compositeF7 / 7;
     }
-    
+
+    /**
+     * Get how good the F7 is at defending the run.
+     * Is the average of power and run stopping.
+     * @return how good they are at stopping the RB.
+     */
     public int getCompositeF7Rush() {
         int compositeF7 = 0;
         for ( int i = 0; i < 7; ++i ) {
@@ -925,65 +961,10 @@ public class Team {
         return compositeF7 / 7;
     }
 
-    public String[] getTeamStatsStr() {
-        String[] ts = new String[3];
-        StringBuilder ts0 = new StringBuilder();
-        StringBuilder ts1 = new StringBuilder();
-        StringBuilder ts2 = new StringBuilder();
-        ts[0] = "";
-        ts[1] = "";
-        ts[2] = "";
-
-        ts0.append(teamPollScore + "\n");
-        ts1.append("AP Votes" + "\n");
-        ts2.append(getRankStr(rankTeamPollScore) + "\n");
-
-        ts0.append(teamStrengthOfWins + "\n");
-        ts1.append("SOS" + "\n");
-        ts2.append(getRankStr(rankTeamStrengthOfWins) + "\n");
-
-        ts0.append(teamPoints/numGames() + "\n");
-        ts1.append("Points" + "\n");
-        ts2.append(getRankStr(rankTeamPoints) + "\n");
-
-        ts0.append(teamOppPoints/numGames() + "\n");
-        ts1.append("Opp Points" + "\n");
-        ts2.append(getRankStr(rankTeamOppPoints) + "\n");
-
-        ts0.append(teamYards/numGames() + "\n");
-        ts1.append("Yards" + "\n");
-        ts2.append(getRankStr(rankTeamYards) + "\n");
-
-        ts0.append(teamOppYards/numGames() + "\n");
-        ts1.append("Opp Yards" + "\n");
-        ts2.append(getRankStr(rankTeamOppYards) + "\n");
-
-        ts0.append(teamPassYards/numGames() + "\n");
-        ts1.append("Pass Yards" + "\n");
-        ts2.append(getRankStr(rankTeamPassYards) + "\n");
-
-        ts0.append(teamRushYards/numGames() + "\n");
-        ts1.append("Rush Yards" + "\n");
-        ts2.append(getRankStr(rankTeamRushYards) + "\n");
-
-        ts0.append(teamOffTalent + "\n");
-        ts1.append("Off Talent" + "\n");
-        ts2.append(getRankStr(rankTeamOffTalent) + "\n");
-
-        ts0.append(teamDefTalent + "\n");
-        ts1.append("Def Talent" + "\n");
-        ts2.append(getRankStr(rankTeamDefTalent) + "\n");
-
-        ts0.append(teamPrestige + "\n");
-        ts1.append("Prestige" + "\n");
-        ts2.append(getRankStr(rankTeamPrestige) + "\n");
-
-        ts[0] = ts0.toString();
-        ts[1] = ts1.toString();
-        ts[2] = ts2.toString();
-        return ts;
-    }
-
+    /**
+     * Get comma separated value of the team stats and their rankings.
+     * @return String of CSV stat,name,ranking
+     */
     public String getTeamStatsStrCSV() {
         StringBuilder ts0 = new StringBuilder();
 
@@ -1047,33 +1028,12 @@ public class Team {
         return ts0.toString();
     }
 
-    public String[] getGameScheduleStr() {
-        String[] gs = new String[3];
-        StringBuilder gs0 = new StringBuilder();
-        StringBuilder gs1 = new StringBuilder();
-        StringBuilder gs2 = new StringBuilder();
-        gs[0] = "";
-        gs[1] = "";
-        gs[2] = "";
-
-        Game g;
-        for (int i = 0; i < gameSchedule.size(); ++i) {
-            g = gameSchedule.get(i);
-            gs0.append(g.gameName + "\n\n");
-            if (i < gameWLSchedule.size()) {
-                gs1.append(gameWLSchedule.get(i) + " " + gameSummaryStrScore(g) + "\n\n");
-            } else {
-                gs1.append("---" + "\n\n");
-            }
-            gs2.append(gameSummaryStrOpponent(g) + "\n\n");
-        }
-
-        gs[0] = gs0.toString();
-        gs[1] = gs1.toString();
-        gs[2] = gs2.toString();
-        return gs;
-    }
-
+    /**
+     * Get the game summary of a played game.
+     * [gameName, score summary, who they played]
+     * @param gameNumber number of the game desired
+     * @return array of name, score, who was played
+     */
     public String[] getGameSummaryStr(int gameNumber) {
         String[] gs = new String[3];
         Game g = gameSchedule.get(gameNumber);
@@ -1088,6 +1048,11 @@ public class Team {
         return gs;
     }
 
+    /**
+     * Get a summary of your team's season.
+     * Tells how they finished, if they beat/fell short of expecations, and if they won rivalry game.
+     * @return String of season summary
+     */
     public String seasonSummaryStr() {
         String summary = "Your team, " + name + ", finished the season ranked #" + rankTeamPollScore + " with " + wins + " wins and " + losses + " losses.";
         int expectedPollFinish = 100 - teamPrestige;
@@ -1115,149 +1080,10 @@ public class Team {
         return summary;
     }
 
-    public String[] getPlayerStatsStr() {
-        String[] ps = new String[3];
-        StringBuilder ps0 = new StringBuilder();
-        StringBuilder ps1 = new StringBuilder();
-        StringBuilder ps2 = new StringBuilder();
-        ps[0] = "";
-        ps[1] = "";
-        ps[2] = "";
-
-        ps0.append("\n");
-        ps1.append("QB\n");
-        ps2.append("\n");
-        ps0.append(getQB(0).getInitialName() + "\n");
-        ps1.append(getQB(0).statsTD + " TD\n");
-        ps2.append(getQB(0).statsPassYards + " yds\n");
-        ps0.append(getQB(0).getYrStr() + " " + getQB(0).ratOvr+"/"+getQB(0).ratPot + "\n");
-        ps1.append(getQB(0).statsInt + " Int\n");
-        ps2.append((100*getQB(0).statsPassComp/(getQB(0).statsPassAtt+1)) + " Pass%\n");
-
-        for (int i = 0; i < 2; ++i) {
-            ps0.append("\n\n");
-            ps1.append("\nRB\n");
-            ps2.append("\n\n");
-            ps0.append(getRB(i).getInitialName() + "\n");
-            ps1.append(getRB(i).statsTD + " TD\n");
-            ps2.append(getRB(i).statsRushYards + " yds\n");
-            ps0.append(getRB(i).getYrStr() + " " + getRB(i).ratOvr+"/"+ getRB(i).ratPot + "\n");
-            ps1.append(getRB(i).statsFumbles + " Fum\n");
-            ps2.append(((float) ((int) ((float) getRB(i).statsRushYards / getRB(i).statsRushAtt * 100)) / 100) + " Y/A\n");
-        }
-
-        for (int i = 0; i < 3; ++i) {
-            ps0.append("\n\n");
-            ps1.append("\nWR\n");
-            ps2.append("\n\n");
-            ps0.append(getWR(i).getInitialName() + "\n");
-            ps1.append(getWR(i).statsTD + " TD\n");
-            ps2.append(getWR(i).statsRecYards + " yds\n");
-            ps0.append(getWR(i).getYrStr() + " " + getWR(i).ratOvr + "/" + getWR(i).ratPot + "\n");
-            ps1.append(getWR(i).statsFumbles + " Fum\n");
-            ps2.append(getWR(i).statsTargets + " Tgts\n");
-        }
-
-        ps0.append("\n\n");
-        ps1.append("\nK\n");
-        ps2.append("\n\n");
-        ps0.append(getK(0).getInitialName() + "\n");
-        ps1.append(getK(0).statsFGMade + " FGM\n");
-        ps2.append((100*getK(0).statsFGMade/(getK(0).statsFGAtt+1)) + " FG%\n");
-        ps0.append(getK(0).getYrStr() + " " + getK(0).ratOvr + "/" + getK(0).ratPot + "\n");
-        ps1.append(getK(0).statsXPMade + " XPM\n");
-        ps2.append((100*getK(0).statsXPMade/(getK(0).statsXPAtt+1)) + " XP%\n");
-
-        ps0.append("\n\n");
-        ps1.append("\nOL\n");
-        ps2.append("\n\n");
-        for (int i = 0; i < 5; ++i) {
-            ps0.append(getOL(i).getInitialName() + "\n");
-            ps1.append(getOL(i).ratOvr + "/" + getOL(i).ratPot + "\n");
-            ps2.append(getOL(i).getYrStr() + "\n");
-        }
-
-        ps0.append("\n\n");
-        ps1.append("\nS\n");
-        ps2.append("\n\n");
-        for (int i = 0; i < 1; ++i) {
-            ps0.append(getS(i).getInitialName() + "\n");
-            ps1.append(getS(i).ratOvr + "/" + getS(i).ratPot + "\n");
-            ps2.append(getS(i).getYrStr() + "\n");
-        }
-
-        ps0.append("\n\n");
-        ps1.append("\nCB\n");
-        ps2.append("\n\n");
-        for (int i = 0; i < 3; ++i) {
-            ps0.append(getCB(i).getInitialName() + "\n");
-            ps1.append(getCB(i).ratOvr + "/" + getCB(i).ratPot + "\n");
-            ps2.append(getCB(i).getYrStr() + "\n");
-        }
-
-        ps0.append("\n\n");
-        ps1.append("\nLB/DT\n");
-        ps2.append("\n\n");
-        for (int i = 0; i < 7; ++i) {
-            ps0.append(getF7(i).getInitialName() + "\n");
-            ps1.append(getF7(i).ratOvr + "/" + getF7(i).ratPot + "\n");
-            ps2.append(getF7(i).getYrStr() + "\n");
-        }
-
-        ps0.append("\n\n");
-        ps1.append("\nBackups\n");
-        ps2.append("\n\n");
-        for (int i = 1; i < teamQBs.size(); ++i) {
-            ps0.append(getQB(i).getInitialName() + "\n");
-            ps1.append("QB\n");
-            ps2.append(getQB(i).getYrStr() + " " + getQB(i).ratOvr+"/"+getQB(i).ratPot + "\n");
-        }
-        for (int i = 2; i < teamRBs.size(); ++i) {
-            ps0.append(getRB(i).getInitialName() + "\n");
-            ps1.append("RB\n");
-            ps2.append(getRB(i).getYrStr() + " " + getRB(i).ratOvr + "/" + getRB(i).ratPot + "\n");
-        }
-        for (int i = 3; i < teamWRs.size(); ++i) {
-            ps0.append(getWR(i).getInitialName() + "\n");
-            ps1.append("WR\n");
-            ps2.append(getWR(i).getYrStr() + " " + getWR(i).ratOvr + "/" + getWR(i).ratPot + "\n");
-        }
-        for (int i = 1; i < teamKs.size(); ++i) {
-            ps0.append(getK(i).getInitialName() + "\n");
-            ps1.append("K\n");
-            ps2.append(getK(i).getYrStr() + " " + getK(i).ratOvr + "/" + getK(i).ratPot + "\n");
-        }
-        for (int i = 5; i < teamOLs.size(); ++i) {
-            ps0.append(getOL(i).getInitialName() + "\n");
-            ps1.append("OL\n");
-            ps2.append(getOL(i).getYrStr() + " " + getOL(i).ratOvr + "/" + getOL(i).ratPot + "\n");
-        }
-        for (int i = 1; i < teamSs.size(); ++i) {
-            ps0.append(getS(i).getInitialName() + "\n");
-            ps1.append("S\n");
-            ps2.append(getS(i).getYrStr() + " " + getS(i).ratOvr + "/" + getS(i).ratPot + "\n");
-        }
-        for (int i = 3; i < teamCBs.size(); ++i) {
-            ps0.append(getCB(i).getInitialName() + "\n");
-            ps1.append("CB\n");
-            ps2.append(getCB(i).getYrStr() + " " + getCB(i).ratOvr + "/" + getCB(i).ratPot + "\n");
-        }
-        for (int i = 7; i < teamF7s.size(); ++i) {
-            ps0.append(getF7(i).getInitialName() + "\n");
-            ps1.append("LB/DT\n");
-            ps2.append(getF7(i).getYrStr() + " " + getF7(i).ratOvr + "/" + getF7(i).ratPot + "\n");
-        }
-
-        ps[0] = ps0.toString();
-        ps[1] = ps1.toString();
-        ps[2] = ps2.toString();
-        return ps;
-    }
-
     /**
      * Gets player name or detail strings for displaying in the roster tab via expandable list.
      * Should be separated by a '>' from left text and right text.
-     * @return
+     * @return list of players with their name,ovr,por,etc
      */
     public List<String> getPlayerStatsExpandListStr() {
         ArrayList<String> pList = new ArrayList<String>();
@@ -1295,8 +1121,8 @@ public class Team {
 
     /**
      * Creates the map needed for making the expandable list view used in the player stats.
-     * @param playerStatsGroupHeaders
-     * @return
+     * @param playerStatsGroupHeaders list of players by name,overall,pot,etc
+     * @return mapping of each player to their detail ratings
      */
     public Map<String, List<String>> getPlayerStatsExpandListMap(List<String> playerStatsGroupHeaders) {
         Map<String, List<String>> playerStatsMap = new LinkedHashMap<String, List<String>>();
@@ -1371,7 +1197,11 @@ public class Team {
         return playerStatsMap;
     }
 
-    // Gets rank str, like 21st, 45th, etc
+    /**
+     * Gets rank str, i.e. 12 -> 12th, 3 -> 3rd
+     * @param num ranking
+     * @return string of the ranking with correct ending
+     */
     public String getRankStr(int num) {
         if (num == 11) {
             return "11th";
@@ -1390,6 +1220,11 @@ public class Team {
         }
     }
 
+    /**
+     * Get rank string of the user (no longer used?)
+     * @param num ranking
+     * @return ranking with correct ending
+     */
     public String getRankStrStarUser(int num) {
         if (true) {
             if (num == 11) {
@@ -1426,12 +1261,20 @@ public class Team {
         }
     }
 
+    /**
+     * Gets the number of games played so far
+     * @return number of games played
+     */
     public int numGames() {
         if ( wins + losses > 0 ) {
             return wins + losses;
         } else return 1;
     }
 
+    /**
+     * Gets the number of in-conference wins, used for CCG rankings
+     * @return number of in-conf wins
+     */
     public int getConfWins() {
         int confWins = 0;
         Game g;
@@ -1449,14 +1292,26 @@ public class Team {
         return confWins;
     }
 
+    /**
+     * Str rep of team, no bowl results
+     * @return ranking abbr (w-l)
+     */
     public String strRep() {
         return "#" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ")";
     }
 
+    /**
+     * Str rep of team, with bowl results
+     * @return ranking abbr (w-l) BW
+     */
     public String strRepWithBowlResults() {
         return "#" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ") " + confChampion + " " + semiFinalWL + natChampWL;
     }
 
+    /**
+     * Get what happened during the week for the team
+     * @return name W/L gameSum, new poll rank #1
+     */
     public String weekSummaryStr() {
         int i = wins + losses - 1;
         Game g = gameSchedule.get(i);
@@ -1469,6 +1324,11 @@ public class Team {
         return rivalryGameStr + name + " " + gameSummary + "\nNew poll rank: #" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ")";
     }
 
+    /**
+     * Gets the one-line summary of a game
+     * @param g Game to get summary from
+     * @return 31 - 43 @ GEO #60
+     */
     public String gameSummaryStr(Game g) {
         if (g.homeTeam == this) {
             return g.homeScore + " - " + g.awayScore + " vs " + g.awayTeam.abbr + " #" + g.awayTeam.rankTeamPollScore;
@@ -1477,6 +1337,11 @@ public class Team {
         }
     }
 
+    /**
+     * Get just the score of the game
+     * @param g Game to get score from
+     * @return "myTeamScore - otherTeamScore"
+     */
     public String gameSummaryStrScore(Game g) {
         if (g.homeTeam == this) {
             return g.homeScore + " - " + g.awayScore;
@@ -1485,6 +1350,11 @@ public class Team {
         }
     }
 
+    /**
+     * Get the vs/@ part of the game summary
+     * @param g Game to get from
+     * @return vs OPP #45
+     */
     public String gameSummaryStrOpponent(Game g) {
         if (g.homeTeam == this) {
             return "vs " + g.awayTeam.abbr + " #" + g.awayTeam.rankTeamPollScore;
@@ -1493,6 +1363,10 @@ public class Team {
         }
     }
 
+    /**
+     * Get String of who all is graduating from the team
+     * @return string of everyone who is graduating sorted by position
+     */
     public String getGraduatingPlayersStr() {
         StringBuilder sb = new StringBuilder();
         for ( PlayerQB p : teamQBs ) {
@@ -1538,6 +1412,10 @@ public class Team {
         return sb.toString();
     }
 
+    /**
+     * Get string of the current team needs (not used anymore?)
+     * @return String of all the position needs
+     */
     public String getTeamNeeds() {
         StringBuilder needs = new StringBuilder();
         needs.append("\t\t"+(2-teamQBs.size())+ "QBs, ");
@@ -1646,6 +1524,10 @@ public class Team {
         return recruits;
     }
 
+    /**
+     * Save all the recruits into a string to be used by RecruitingActivity
+     * @return String of all the recruits
+     */
     public String getRecruitsInfoSaveFile() {
         StringBuilder sb = new StringBuilder();
         PlayerQB[] qbs = getQBRecruits();
@@ -1683,7 +1565,10 @@ public class Team {
         return sb.toString();
     }
 
-
+    /**
+     * Save all the current players into a string to be loaded from later
+     * @return string of all the players in csv form
+     */
     public String getPlayerInfoSaveFile() {
         StringBuilder sb = new StringBuilder();
         for (PlayerQB qb : teamQBs) {
@@ -1721,6 +1606,10 @@ public class Team {
         return sb.toString();
     }
 
+    /**
+     * Generate all the offense team strategies that can be selected
+     * @return array of all the offense team strats
+     */
     public TeamStrategy[] getTeamStrategiesOff() {
         TeamStrategy[] ts = new TeamStrategy[3];
 
@@ -1738,6 +1627,10 @@ public class Team {
         return ts;
     }
 
+    /**
+     * Generate all the defense team strategies that can be selected
+     * @return array of all the defense team strats
+     */
     public TeamStrategy[] getTeamStrategiesDef() {
         TeamStrategy[] ts = new TeamStrategy[3];
 
@@ -1756,6 +1649,9 @@ public class Team {
     
 }
 
+/**
+ * Comparator used to sort players by overall
+ */
 class PlayerComparator implements Comparator<Player> {
     @Override
     public int compare( Player a, Player b ) {

@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * League class. Has 8 conferences.
+ * League class. Has 6 conferences of 10 teams each.
  * @author Achi
  */
 public class League {
@@ -51,7 +51,7 @@ public class League {
     Player heisman;
     ArrayList<Player> heismanCandidates;
 
-    public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Flour Bowl", "Salsa Bowl", "Mango Bowl", "Cotton Bowl"};
+    public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl", "Textile Bowl"};
     
     /**
      * Creates League, sets up Conferences, reads team names and conferences from file.
@@ -184,7 +184,7 @@ public class League {
 
     /**
      * Create League from saved file.
-     * @param saveFile
+     * @param saveFile file that league is saved in
      */
     public League(File saveFile, String namesCSV) {
         heismanDecided = false;
@@ -284,6 +284,11 @@ public class League {
         }
     }
 
+    /**
+     * Get conference nmber from string
+     * @param conf conference name
+     * @return int of number 0-5
+     */
     public int getConfNumber(String conf) {
         if (conf.equals("SOUTH")) return 0;
         if (conf.equals("LAKES")) return 1;
@@ -461,6 +466,10 @@ public class League {
         
     }
 
+    /**
+     * Plays a particular bowl game
+     * @param g bowl game to be played
+     */
     private void playBowl(Game g) {
         g.playGame();
         if ( g.homeScore > g.awayScore ) {
@@ -679,6 +688,10 @@ public class League {
         return heismanCandidates;
     }
 
+    /**
+     * Get string of the top 5 heisman candidates. If the heisman is already decided, get the ceremony str.
+     * @return string of top 5 players and their stats
+     */
     public String getTop5HeismanStr() {
         if (heismanDecided) {
             return getHeismanCeremonyStr();
@@ -707,6 +720,10 @@ public class League {
         }
     }
 
+    /**
+     * Perform the heisman ceremony. Congratulate winner and give top 5 vote getters.
+     * @return string of the heisman ceremony.
+     */
     public String getHeismanCeremonyStr() {
         boolean putNewsStory = false;
         if (!heismanDecided) {
@@ -776,6 +793,11 @@ public class League {
         return heismanStats;
     }
 
+    /**
+     * Get list of all the teams and their rankings based on selection
+     * @param selection stat to sort by, 0-13
+     * @return list of the teams: ranking,str rep,stat
+     */
     public ArrayList<String> getTeamRankingsStr(int selection) {
         /*
         0 = poll score
@@ -893,6 +915,11 @@ public class League {
         return rankings;
     }
 
+    /**
+     * Get String of the league's history, year by year.
+     * Saves the NCG winner and the POTY.
+     * @return list of the league's history.
+     */
     public String getLeagueHistoryStr() {
         String hist = "";
         for (int i = 0; i < leagueHistory.size(); ++i) {
@@ -903,6 +930,10 @@ public class League {
         return hist;
     }
 
+    /**
+     * Get list of teams and their prestige, used for selecting when a new game is started
+     * @return array of all the teams
+     */
     public String[] getTeamListStr() {
         String[] teams = new String[teamList.size()];
         for (int i = 0; i < teamList.size(); ++i){
@@ -914,7 +945,7 @@ public class League {
 
     /**
      * Get list of all bowl games and their predicted teams
-     * @return
+     * @return string of all the bowls and their predictions
      */
     public String getBowlGameWatchStr() {
         //if bowls arent scheduled yet, give predictions
@@ -1005,6 +1036,11 @@ public class League {
         }
     }
 
+    /**
+     * Get string of what happened in a particular bowl
+     * @param g Bowl game to be examined
+     * @return string of its summary, ALA W 24 - 40 @ GEO, etc
+     */
     public String getGameSummaryBowl(Game g) {
         StringBuilder sb = new StringBuilder();
         Team winner, loser;
@@ -1029,6 +1065,10 @@ public class League {
         }
     }
 
+    /**
+     * Get a list of all the CCGs and their teams
+     * @return
+     */
     public String getCCGsStr() {
         StringBuilder sb = new StringBuilder();
         for (Conference c : conferences) {
@@ -1037,6 +1077,11 @@ public class League {
         return sb.toString();
     }
 
+    /**
+     * Find team based on a name
+     * @param name team name
+     * @return reference to the Team object
+     */
     public Team findTeam(String name) {
         for (int i = 0; i < teamList.size(); i++){
             if (teamList.get(i).strRep().equals(name)) {
@@ -1046,6 +1091,11 @@ public class League {
         return teamList.get(0);
     }
 
+    /**
+     * Find conference based on a name
+     * @param name conf name
+     * @return reference to the Conference object
+     */
     public Conference findConference(String name) {
         for (int i = 0; i < teamList.size(); i++){
             if (conferences.get(i).confName.equals(name)) {
@@ -1055,6 +1105,10 @@ public class League {
         return conferences.get(0);
     }
 
+    /**
+     * Get summary of what happened in the NCG
+     * @return string of summary
+     */
     public String ncgSummaryStr() {
         // Give summary of what happened in the NCG
         if (ncg.homeScore > ncg.awayScore) {
@@ -1068,6 +1122,10 @@ public class League {
         }
     }
 
+    /**
+     * Get summary of season.
+     * @return ncgSummary, userTeam's summary
+     */
     public String seasonSummaryStr() {
         StringBuilder sb = new StringBuilder();
         sb.append(ncgSummaryStr());
@@ -1077,8 +1135,8 @@ public class League {
 
     /**
      * Save League in a file.
-     * @param saveFile
-     * @return
+     * @param saveFile file to be overwritten
+     * @return true if successful
      */
     public boolean saveLeague(File saveFile) {
         StringBuilder sb = new StringBuilder();
