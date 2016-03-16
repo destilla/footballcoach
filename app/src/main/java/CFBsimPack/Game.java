@@ -446,7 +446,26 @@ public class Game implements Serializable {
     }
 
     public void addNewsStory() {
-        if (homeScore > awayScore && awayTeam.losses == 1 && awayTeam.league.currentWeek > 5) {
+        if (numOT >= 3) {
+            // Thriller in OT
+            Team winner, loser;
+            int winScore, loseScore;
+            if (awayScore > homeScore) {
+                winner = awayTeam;
+                loser = homeTeam;
+                winScore = awayScore;
+                loseScore = homeScore;
+            } else {
+                winner = homeTeam;
+                loser = awayTeam;
+                winScore = homeScore;
+                loseScore = awayScore;
+            }
+            homeTeam.league.newsStories.get(homeTeam.league.currentWeek+1).add(
+                    numOT+"OT Thriller!>"+winner.strRep()+" and "+loser.strRep()+" played an absolutely thrilling game "+
+                            "that went to "+numOT+" overtimes, with "+winner.name+" finally emerging victorious "+winScore+" to "+loseScore+".");
+        }
+        else if (homeScore > awayScore && awayTeam.losses == 1 && awayTeam.league.currentWeek > 5) {
             // 5-0 or better team given first loss
             awayTeam.league.newsStories.get(homeTeam.league.currentWeek+1).add(
                     "Undefeated no more! "+awayTeam.name+" suffers first loss!" +
@@ -475,25 +494,6 @@ public class Game implements Serializable {
                     "Upset! "+homeTeam.strRep()+" beats "+awayTeam.strRep()+
                     ">#"+homeTeam.rankTeamPollScore+" "+homeTeam.name+" was able to pull off the upset at home against #"+
                     awayTeam.rankTeamPollScore+" "+awayTeam.name+", winning "+homeScore+" to "+awayScore+".");
-        }
-        else if (numOT >= 3) {
-            // Thriller in OT
-            Team winner, loser;
-            int winScore, loseScore;
-            if (awayScore > homeScore) {
-                winner = awayTeam;
-                loser = homeTeam;
-                winScore = awayScore;
-                loseScore = homeScore;
-            } else {
-                winner = homeTeam;
-                loser = awayTeam;
-                winScore = homeScore;
-                loseScore = awayScore;
-            }
-            homeTeam.league.newsStories.get(homeTeam.league.currentWeek+1).add(
-                    numOT+"OT Thriller!>"+winner.strRep()+" and "+loser.strRep()+" played an absolutely thrilling game "+
-                    "that went to "+numOT+" overtimes, with "+winner.name+" finally emerging victorious "+winScore+" to "+loseScore+".");
         }
 
     }

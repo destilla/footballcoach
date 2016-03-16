@@ -590,7 +590,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void scrollToLatestGame() {
         if (currTab == 2 && simLeague.currentWeek > 2) {
-            mainList.setSelection(simLeague.currentWeek-3);
+            mainList.setSelection(currentTeam.gameWLSchedule.size()-3);
         }
 
     }
