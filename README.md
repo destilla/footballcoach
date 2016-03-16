@@ -106,7 +106,11 @@ When you press "Begin Recruiting" after the season, you can see who is leaving y
 
 In Football Coach, you can save your game at any time during the season. HOWEVER, since so much data is generated during the course of the season, Save Games are only saved FROM THE BEGINNING OF THE SEASON. For example, if you play through 5 games of the 2017 season, save your game, and then load it back up later, your game will start back at the beginning of the 2017 season.
 
-###Thanks!
+###Donations:
+Football Coach is not monetized and I have no plans to do so. I love college football and seeing people use my app is all the encouragement I need. But if you love the app and you would like to let me know, you can donate via PayPal:
+
+[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GAJZ8MFAY73D6)
+
 
 **Download Football Coach from the Google Play Store: https://play.google.com/store/apps/details?id=achijones.footballcoach**
 
