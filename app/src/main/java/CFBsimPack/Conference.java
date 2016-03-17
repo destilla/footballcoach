@@ -209,6 +209,7 @@ public class Conference {
         if ( ccg.homeScore > ccg.awayScore ) {
             confTeams.get(0).confChampion = "CC";
             confTeams.get(0).totalCCs++;
+            confTeams.get(1).totalCCLosses++;
             league.newsStories.get(13).add(
                     ccg.homeTeam.name + " wins the " + confName +"!>" +
                     ccg.homeTeam.strRep() + " took care of business in the conference championship against " + ccg.awayTeam.strRep() +
@@ -217,6 +218,7 @@ public class Conference {
         } else { 
             confTeams.get(1).confChampion = "CC"; 
             confTeams.get(1).totalCCs++;
+            confTeams.get(0).totalCCLosses++;
             league.newsStories.get(13).add(
                     ccg.awayTeam.name + " wins the " + confName +"!>" +
                             ccg.awayTeam.strRep() + " surprised many in the conference championship against " + ccg.homeTeam.strRep() +

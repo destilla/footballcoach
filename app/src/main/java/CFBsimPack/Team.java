@@ -33,6 +33,10 @@ public class Team {
     public int totalLosses;
     public int totalCCs;
     public int totalNCs;
+    public int totalCCLosses;
+    public int totalNCLosses;
+    public int totalBowls;
+    public int totalBowlLosses;
     
     //Game Log variables
     public ArrayList<Game> gameSchedule;
@@ -136,6 +140,10 @@ public class Team {
         totalLosses = 0;
         totalCCs = 0;
         totalNCs = 0;
+        totalCCLosses = 0;
+        totalNCLosses = 0;
+        totalBowls = 0;
+        totalBowlLosses = 0;
         this.name = name;
         this.abbr = abbr;
         this.conference = conference;
@@ -207,7 +215,7 @@ public class Team {
 
         // Line 0 is team info
         String[] teamInfo = lines[0].split(",");
-        if (teamInfo.length == 9) {
+        if (teamInfo.length >= 9) {
             conference = teamInfo[0];
             name = teamInfo[1];
             abbr = teamInfo[2];
@@ -217,6 +225,17 @@ public class Team {
             totalCCs = Integer.parseInt(teamInfo[6]);
             totalNCs = Integer.parseInt(teamInfo[7]);
             rivalTeam = teamInfo[8];
+            if (teamInfo.length == 13) {
+                totalNCLosses = Integer.parseInt(teamInfo[9]);
+                totalCCLosses = Integer.parseInt(teamInfo[10]);
+                totalBowls = Integer.parseInt(teamInfo[11]);
+                totalBowlLosses = Integer.parseInt(teamInfo[12]);
+            } else {
+                totalCCLosses = 0;
+                totalNCLosses = 0;
+                totalBowls = 0;
+                totalBowlLosses = 0;
+            }
         }
 
         // Rest of lines are player info
@@ -747,8 +766,9 @@ public class Team {
     public String getTeamHistoryStr() {
         String hist = "";
         hist += "Overall W-L: " + totalWins + "-" + totalLosses + "\n";
-        hist += "Conference Championships: " + totalCCs + "\n";
-        hist += "National Championships: " + totalNCs + "\n";
+        hist += "Conf Champ Record: " + totalCCs + "-" + totalCCLosses + "\n";
+        hist += "Bowl Game Record: " + totalBowls + "-" + totalBowlLosses + "\n";
+        hist += "National Champ Record: " + totalNCs + "-" + totalNCLosses + "\n";
         hist += "\nYear by year summary:\n";
         for (int i = 0; i < teamHistory.size(); ++i) {
             hist += teamHistory.get(i) + "\n";
@@ -1317,7 +1337,7 @@ public class Team {
         Game g = gameSchedule.get(i);
         String gameSummary = gameWLSchedule.get(i) + " " + gameSummaryStr(g);
         String rivalryGameStr = "";
-        if (g.homeTeam.rivalTeam.equals(g.awayTeam.abbr)) {
+        if (g.gameName.equals("Rivalry Game")) {
             if ( gameWLSchedule.get(i).equals("W") ) rivalryGameStr = "Won vs Rival! +2 Prestige\n";
             else rivalryGameStr = "Lost vs Rival! -2 Prestige\n";
         }

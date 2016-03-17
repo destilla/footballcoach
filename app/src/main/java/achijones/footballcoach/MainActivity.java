@@ -251,9 +251,15 @@ public class MainActivity extends AppCompatActivity {
                         // Show notification for being invited/not invited to bowl or CCG
                         if (simLeague.currentWeek >= 12) {
                             if (!userTeam.gameSchedule.get(userTeam.gameSchedule.size() - 1).hasPlayed) {
-                                Toast.makeText(MainActivity.this, "Congratulations! " + userTeam.name + " was invited to the " +
-                                                userTeam.gameSchedule.get(userTeam.gameSchedule.size() - 1).gameName + "!",
-                                        Toast.LENGTH_SHORT).show();
+                                String weekGameName = userTeam.gameSchedule.get(userTeam.gameSchedule.size() - 1).gameName;
+                                if (weekGameName.equals("NCG")) {
+                                    Toast.makeText(MainActivity.this, "Congratulations! " + userTeam.name + " was invited to the National Championship Game!",
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Congratulations! " + userTeam.name + " was invited to the " +
+                                                    weekGameName + "!",
+                                            Toast.LENGTH_SHORT).show();
+                                }
                             } else if (simLeague.currentWeek == 12) {
                                 Toast.makeText(MainActivity.this, userTeam.name + " was not invited to the Conference Championship.",
                                         Toast.LENGTH_SHORT).show();
@@ -399,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         } else if (id == R.id.action_team_history) {
             /**
-             * Clicked League History in drop down menu
+             * Clicked Team History in drop down menu
              */
             String historyStr = userTeam.getTeamHistoryStr();
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
