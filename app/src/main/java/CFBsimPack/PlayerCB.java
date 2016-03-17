@@ -36,7 +36,8 @@ public class PlayerCB extends Player {
         ratCBSpd = spd;
         ratCBTkl = tkl;
         position = "CB";
-        cost = (int)Math.pow(ratOvr/6,2) + (int)(Math.random()*100) - 50;
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/4.5) + 50 + (int)(Math.random()*100) - 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");
@@ -58,7 +59,8 @@ public class PlayerCB extends Player {
         ratCBTkl = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratOvr = (ratCBCov*2 + ratCBSpd + ratCBTkl)/4;
         position = "CB";
-        cost = (int)Math.pow(ratOvr/6,2) + (int)(Math.random()*100) - 50;
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/4.5) + 50 + (int)(Math.random()*100) - 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");

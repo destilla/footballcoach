@@ -40,14 +40,15 @@ public class PlayerK extends Player {
         team = t;
         name = nm;
         year = yr;
-        ratOvr = (pow + acc)/2;
+        ratOvr = (pow + acc + 75)/3;
         ratPot = pot;
         ratFootIQ = iq;
         ratKickPow = pow;
         ratKickAcc = acc;
         ratKickFum = fum;
         position = "K";
-        cost = (int)Math.pow((float)ratOvr/5,2) + (int)(Math.random()*100) - 50;
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/3.5) + 100 + (int)(Math.random()*100) - 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");
@@ -72,9 +73,10 @@ public class PlayerK extends Player {
         ratKickPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratKickAcc = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratKickFum = (int) (60 + year*5 + stars*5 - 25*Math.random());
-        ratOvr = (ratKickPow + ratKickAcc)/2;
+        ratOvr = (ratKickPow + ratKickAcc + 75)/3;
         position = "K";
-        cost = (int)Math.pow((float)ratOvr/5,2) + (int)(Math.random()*100) - 50;
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/3.5) + 100 + (int)(Math.random()*100) - 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");

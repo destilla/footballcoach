@@ -41,7 +41,8 @@ public class PlayerF7 extends Player {
         ratF7Rsh = rsh;
         ratF7Pas = pas;
         position = "F7";
-        cost = (int)Math.pow(ratOvr/6,2) + (int)(Math.random()*100) - 50;
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/6) + 50 + (int)(Math.random()*100) - 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");
@@ -64,7 +65,8 @@ public class PlayerF7 extends Player {
         ratF7Pas = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratOvr = (ratF7Pow*3 + ratF7Rsh + ratF7Pas)/5;
         position = "F7";
-        cost = (int)Math.pow(ratOvr/6,2) + (int)(Math.random()*100) - 50;
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/6) + 50 + (int)(Math.random()*100) - 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");
