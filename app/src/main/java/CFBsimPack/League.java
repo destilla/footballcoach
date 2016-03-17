@@ -1206,7 +1206,7 @@ public class League {
      */
     public boolean saveLeague(File saveFile) {
         StringBuilder sb = new StringBuilder();
-        sb.append((2015+leagueHistory.size())+": " + userTeam.abbr + " (" + userTeam.totalWins + "-" + userTeam.totalLosses + ") " +
+        sb.append((2015+leagueHistory.size())+": " + userTeam.abbr + " (" + (userTeam.totalWins-userTeam.wins) + "-" + (userTeam.totalLosses-userTeam.losses) + ") " +
                     userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs%\n");
 
         for (int i = 0; i < leagueHistory.size(); ++i) {
@@ -1224,7 +1224,7 @@ public class League {
 
         for (Team t : teamList) {
             sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
-                    t.totalWins + "," + t.totalLosses + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "%\n");
+                    (t.totalWins-t.wins) + "," + (t.totalLosses-t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }
