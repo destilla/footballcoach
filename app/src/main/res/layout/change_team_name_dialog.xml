@@ -63,13 +63,13 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Cancel"
-            android:id="@+id/buttonCancelChangeName"/>
+            android:id="@+id/buttonCancelChangeName" />
         <Button
             android:layout_width="0dip"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="OK"
-            android:id="@+id/buttonOkChangeName"/>
+            android:id="@+id/buttonOkChangeName" />
     </LinearLayout>
 
 </LinearLayout>

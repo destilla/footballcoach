@@ -634,6 +634,9 @@ public class RecruitingActivity extends AppCompatActivity {
                 Collections.sort(teamF7s, new PlayerTeamStrCompOverall());
             }
 
+            // Remove the player from the top 100 list
+            if (availAll.contains(player)) availAll.remove(player);
+
             Toast.makeText(this, "Recruited " + ps[0] + " " + ps[1],
                     Toast.LENGTH_SHORT).show();
 

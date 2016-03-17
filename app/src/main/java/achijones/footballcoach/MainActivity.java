@@ -838,7 +838,9 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
 
         final EditText changeNameEditText = (EditText) dialog.findViewById(R.id.editTextChangeName);
+        changeNameEditText.setText(userTeam.name);
         final EditText changeAbbrEditText = (EditText) dialog.findViewById(R.id.editTextChangeAbbr);
+        changeAbbrEditText.setText(userTeam.abbr);
 
         final TextView invalidNameText = (TextView) dialog.findViewById(R.id.textViewChangeName);
         final TextView invalidAbbrText = (TextView) dialog.findViewById(R.id.textViewChangeAbbr);
@@ -882,7 +884,7 @@ public class MainActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 newAbbr = s.toString().trim().toUpperCase();
                 if (!simLeague.isAbbrValid(newAbbr)) {
-                    invalidAbbrText.setText("Abbr already in use or has illegal characters!");
+                    invalidAbbrText.setText("Abbreviation already in use or has illegal characters!");
                 } else {
                     invalidAbbrText.setText("");
                 }
@@ -891,7 +893,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 newAbbr = s.toString().trim().toUpperCase();
                 if (!simLeague.isAbbrValid(newAbbr)) {
-                    invalidAbbrText.setText("Abbr already in use or has illegal characters!");
+                    invalidAbbrText.setText("Abbreviation already in use or has illegal characters!");
                 } else {
                     invalidAbbrText.setText("");
                 }
@@ -926,6 +928,9 @@ public class MainActivity extends AppCompatActivity {
                     userTeam.name = newName;
                     userTeam.abbr = newAbbr;
                     getSupportActionBar().setTitle(userTeam.name + " " + season + " Season");
+                    // Have to update rival's rival too!
+                    Team rival = simLeague.findTeamAbbr( userTeam.rivalTeam );
+                    rival.rivalTeam = userTeam.abbr;
                     examineTeam(userTeam.name);
                 } else {
                     Toast.makeText(MainActivity.this, "Invalid name/abbr! Name not changed.",

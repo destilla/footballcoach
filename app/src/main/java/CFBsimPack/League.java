@@ -51,7 +51,7 @@ public class League {
     Player heisman;
     ArrayList<Player> heismanCandidates;
 
-    public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl", "Textile Bowl"};
+    public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl", "Patriot Bowl"};
     
     /**
      * Creates League, sets up Conferences, reads team names and conferences from file.
@@ -1085,6 +1085,20 @@ public class League {
     public Team findTeam(String name) {
         for (int i = 0; i < teamList.size(); i++){
             if (teamList.get(i).strRep().equals(name)) {
+                return teamList.get(i);
+            }
+        }
+        return teamList.get(0);
+    }
+
+    /**
+     * Find team based on a abbr
+     * @param abbr team abbr
+     * @return reference to the Team object
+     */
+    public Team findTeamAbbr(String abbr) {
+        for (int i = 0; i < teamList.size(); i++){
+            if (teamList.get(i).abbr.equals(abbr)) {
                 return teamList.get(i);
             }
         }
