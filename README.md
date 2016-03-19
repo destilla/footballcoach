@@ -1,8 +1,7 @@
 #Football Coach
 ![Football Coach](http://i.imgur.com/NBtg2lC.png)
-Android App for playing/simulating/recruiting as a college football coach!
 
-**Available now and for free on the Play Store: https://play.google.com/store/apps/details?id=achijones.footballcoach**
+#**[Available now and for free on the Play Store!](https://play.google.com/store/apps/details?id=achijones.footballcoach)**
 
 To be clear, **Football Coach is a college football simulator/management game.** Though you yourself won't be controlling the QB via a joystick each play, you will be recruiting players, scouting other teams, setting strategies to help your team win, and simulating through the season week by week.
 
@@ -112,6 +111,6 @@ Football Coach is not monetized and I have no plans to do so. I love college foo
 [![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GAJZ8MFAY73D6)
 
 
-**Download Football Coach from the Google Play Store: https://play.google.com/store/apps/details?id=achijones.footballcoach**
+**[Download Football Coach from the Google Play Store](https://play.google.com/store/apps/details?id=achijones.footballcoach)**
 
 
