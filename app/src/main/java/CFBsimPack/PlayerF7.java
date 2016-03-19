@@ -43,6 +43,7 @@ public class PlayerF7 extends Player {
         position = "F7";
 
         cost = (int)(Math.pow((float)ratOvr - 55,2)/6) + 50 + (int)(Math.random()*100) - 50;
+        if (cost < 50) cost = 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");
@@ -67,6 +68,7 @@ public class PlayerF7 extends Player {
         position = "F7";
 
         cost = (int)(Math.pow((float)ratOvr - 55,2)/6) + 50 + (int)(Math.random()*100) - 50;
+        if (cost < 50) cost = 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");

@@ -109,7 +109,7 @@ public class Home extends AppCompatActivity {
     }
 
     /**
-     * Get info of the 5 save files for printing in the save file list
+     * Get info of the 10 save files for printing in the save file list
      */
     private String[] getSaveFileInfos() {
         String[] infos = new String[10];
@@ -128,6 +128,9 @@ public class Home extends AppCompatActivity {
                 } catch(IOException ex) {
                     System.out.println(
                             "Error reading file");
+                } catch (NullPointerException ex) {
+                    System.out.println(
+                            "Null pointer exception!");
                 }
             } else {
                 infos[i] = "EMPTY";

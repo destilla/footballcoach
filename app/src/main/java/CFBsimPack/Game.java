@@ -932,7 +932,7 @@ public class Game implements Serializable {
 
         } else {
             //kick XP
-            if ( Math.random()*100 < 20 + offense.getK(0).ratKickAcc ) {
+            if ( Math.random()*100 < 23 + offense.getK(0).ratKickAcc && Math.random() > 0.01 ) {
                 //made XP
                 if ( gamePoss ) { // home possession
                     homeScore += 1;

@@ -75,7 +75,6 @@ public class RecruitingActivity extends AppCompatActivity {
     private String currentPosition;
 
     // Android Components to keep track of
-    private TextView positionText;
     private TextView budgetText;
     private Spinner positionSpinner;
     private ExpandableListView recruitList;
@@ -198,9 +197,8 @@ public class RecruitingActivity extends AppCompatActivity {
         /**
          * Assign components to private variables for easier access later
          */
-        positionText = (TextView) findViewById(R.id.textRecPosition);
         budgetText = (TextView) findViewById(R.id.textRecBudget);
-        String budgetStr = teamAbbr + " budget: $" + recruitingBudget;
+        String budgetStr = "Budget: $" + recruitingBudget;
         budgetText.setText(budgetStr);
 
         /**
@@ -263,6 +261,28 @@ public class RecruitingActivity extends AppCompatActivity {
         setPlayerInfoMap("QB");
         expListAdapter = new ExpandableListAdapterRecruiting(this);
         recruitList.setAdapter(expListAdapter);
+
+        /**
+         * Set up "Expand All / Collapse All" button
+         */
+        final Button buttonExpandAll = (Button) findViewById(R.id.buttonRecruitExpandCollapse);
+        buttonExpandAll.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (buttonExpandAll.getText().toString().equals("Expand All")) {
+                    // Expand everyone
+                    for (int i = 0; i < players.size(); ++i) {
+                        recruitList.expandGroup(i, false);
+                        buttonExpandAll.setText("Collapse All");
+                    }
+                } else {
+                    // Collapse everyone
+                    for (int i = 0; i < players.size(); ++i) {
+                        recruitList.collapseGroup(i);
+                        buttonExpandAll.setText("Expand All");
+                    }
+                }
+            }
+        });
     }
 
     @Override

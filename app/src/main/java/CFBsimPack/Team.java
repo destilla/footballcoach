@@ -99,6 +99,8 @@ public class Team {
     
     public TeamStrategy teamStratOff;
     public TeamStrategy teamStratDef;
+    public int teamStratOffNum;
+    public int teamStratDefNum;
     
     /**
      * Creates new team, recruiting needed players and setting team stats to 0.
@@ -165,6 +167,8 @@ public class Team {
 
         teamStratOff = new TeamStrategy();
         teamStratDef = new TeamStrategy();
+        teamStratOffNum = 1; // 1 is the default strats
+        teamStratDefNum = 1;
         numRecruits = 30;
     }
 
@@ -209,6 +213,8 @@ public class Team {
         teamOffTalent = 0;
         teamDefTalent = 0;
         teamPollScore = 0;
+        teamStratOffNum = 1; // 1 is the default strats
+        teamStratDefNum = 1;
 
         // Actually load the team from the string
         String[] lines = loadStr.split("%");
@@ -225,11 +231,15 @@ public class Team {
             totalCCs = Integer.parseInt(teamInfo[6]);
             totalNCs = Integer.parseInt(teamInfo[7]);
             rivalTeam = teamInfo[8];
-            if (teamInfo.length == 13) {
+            if (teamInfo.length >= 13) {
                 totalNCLosses = Integer.parseInt(teamInfo[9]);
                 totalCCLosses = Integer.parseInt(teamInfo[10]);
                 totalBowls = Integer.parseInt(teamInfo[11]);
                 totalBowlLosses = Integer.parseInt(teamInfo[12]);
+                if (teamInfo.length == 15) {
+                    teamStratOffNum = Integer.parseInt(teamInfo[13]);
+                    teamStratDefNum = Integer.parseInt(teamInfo[14]);
+                }
             } else {
                 totalCCLosses = 0;
                 totalNCLosses = 0;
@@ -245,8 +255,8 @@ public class Team {
         }
 
         wonRivalryGame = false;
-        teamStratOff = new TeamStrategy();
-        teamStratDef = new TeamStrategy();
+        teamStratOff = getTeamStrategiesOff()[teamStratOffNum];
+        teamStratDef = getTeamStrategiesOff()[teamStratDefNum];
         numRecruits = 30;
     }
 
@@ -260,7 +270,7 @@ public class Team {
     }
     
     /**
-     * Advance season, hiring new coach if needed and calculating new perstige level.
+     * Advance season, hiring new coach if needed and calculating new prestige level.
      */
     public void advanceSeason() {
         int expectedPollFinish = 100 - teamPrestige;
@@ -275,6 +285,11 @@ public class Team {
             teamPrestige += 2;
         } else {
             teamPrestige -= 2;
+        }
+
+        if ( rankTeamPollScore == 1 ) {
+            // NCW
+            teamPrestige += 3;
         }
 
         if (teamPrestige > 95) teamPrestige = 95;
@@ -1083,6 +1098,10 @@ public class Team {
             newPrestige = (int)Math.pow(teamPrestige, 1 + (float)diffExpected/1500);// + diffExpected/2500);
         }
 
+        if ( natChampWL.equals("NCW") ) {
+            summary += "\n\nYou won the National Championship! Recruits want to play for winners and you have proved that you are one. You gain +3 prestige!";
+        }
+
         if ((newPrestige - oldPrestige) > 0) {
             summary += "\n\nGreat job coach! You exceeded expectations and gained " + (newPrestige - oldPrestige) + " prestige! This will help your recruiting.";
         } else if ((newPrestige - oldPrestige) < 0) {
@@ -1665,6 +1684,104 @@ public class Team {
                 "but will allow more rushing yards.", -1, 0, 1, 1);
 
         return ts;
+    }
+
+    /**
+     * Set the starters for a particular position.
+     * @param starters new starters to be set
+     * @param position position, 0 - 7
+     */
+    public void setStarters(ArrayList<Player> starters, int position) {
+        switch (position) {
+            case 0:
+                ArrayList<PlayerQB> oldQBs = new ArrayList<>();
+                oldQBs.addAll(teamQBs);
+                teamQBs.clear();
+                for (Player p : starters) {
+                    teamQBs.add( (PlayerQB) p );
+                }
+                for (PlayerQB oldP : oldQBs) {
+                    if (!teamQBs.contains(oldP)) teamQBs.add(oldP);
+                }
+                break;
+            case 1:
+                ArrayList<PlayerRB> oldRBs = new ArrayList<>();
+                oldRBs.addAll(teamRBs);
+                teamRBs.clear();
+                for (Player p : starters) {
+                    teamRBs.add( (PlayerRB) p );
+                }
+                for (PlayerRB oldP : oldRBs) {
+                    if (!teamRBs.contains(oldP)) teamRBs.add(oldP);
+                }
+                break;
+            case 2:
+                ArrayList<PlayerWR> oldWRs = new ArrayList<>();
+                oldWRs.addAll(teamWRs);
+                teamWRs.clear();
+                for (Player p : starters) {
+                    teamWRs.add( (PlayerWR) p );
+                }
+                for (PlayerWR oldP : oldWRs) {
+                    if (!teamWRs.contains(oldP)) teamWRs.add(oldP);
+                }
+                break;
+            case 3:
+                ArrayList<PlayerOL> oldOLs = new ArrayList<>();
+                oldOLs.addAll(teamOLs);
+                teamOLs.clear();
+                for (Player p : starters) {
+                    teamOLs.add( (PlayerOL) p );
+                }
+                for (PlayerOL oldP : oldOLs) {
+                    if (!teamOLs.contains(oldP)) teamOLs.add(oldP);
+                }
+                break;
+            case 4:
+                ArrayList<PlayerK> oldKs = new ArrayList<>();
+                oldKs.addAll(teamKs);
+                teamKs.clear();
+                for (Player p : starters) {
+                    teamKs.add( (PlayerK) p );
+                }
+                for (PlayerK oldP : oldKs) {
+                    if (!teamKs.contains(oldP)) teamKs.add(oldP);
+                }
+                break;
+            case 5:
+                ArrayList<PlayerS> oldSs = new ArrayList<>();
+                oldSs.addAll(teamSs);
+                teamSs.clear();
+                for (Player p : starters) {
+                    teamSs.add( (PlayerS) p );
+                }
+                for (PlayerS oldP : oldSs) {
+                    if (!teamSs.contains(oldP)) teamSs.add(oldP);
+                }
+                break;
+            case 6:
+                ArrayList<PlayerCB> oldCBs = new ArrayList<>();
+                oldCBs.addAll(teamCBs);
+                teamCBs.clear();
+                for (Player p : starters) {
+                    teamCBs.add( (PlayerCB) p );
+                }
+                for (PlayerCB oldP : oldCBs) {
+                    if (!teamCBs.contains(oldP)) teamCBs.add(oldP);
+                }
+                break;
+            case 7:
+                ArrayList<PlayerF7> oldF7s = new ArrayList<>();
+                oldF7s.addAll(teamF7s);
+                teamF7s.clear();
+                for (Player p : starters) {
+                    teamF7s.add( (PlayerF7) p );
+                }
+                for (PlayerF7 oldP : oldF7s) {
+                    if (!teamF7s.contains(oldP)) teamF7s.add(oldP);
+                }
+                break;
+        }
     }
     
 }

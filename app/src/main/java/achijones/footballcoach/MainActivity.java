@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.*;
 
+import CFBsimPack.Player;
 import CFBsimPack.TeamStrategy;
 import achijones.footballcoach.R;
 
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     int recruitingStage;
 
     int wantUpdateConf;
+
+    boolean showToasts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
         recruitingStage = -1;
         wantUpdateConf = 2; // 0 and 1, dont update, 2 update
+        showToasts = true;
 
 
         if (!loadedLeague) {
@@ -242,9 +246,11 @@ public class MainActivity extends AppCompatActivity {
                                     });
                             AlertDialog dialog = builder.create();
                             dialog.show();
+                            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+                            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                         } else if (userTeam.gameWLSchedule.size() > numGamesPlayed) {
                             // Played a game, show summary
-                            Toast.makeText(MainActivity.this, userTeam.weekSummaryStr(),
+                            if (showToasts) Toast.makeText(MainActivity.this, userTeam.weekSummaryStr(),
                                     Toast.LENGTH_SHORT).show();
                         }
 
@@ -253,41 +259,40 @@ public class MainActivity extends AppCompatActivity {
                             if (!userTeam.gameSchedule.get(userTeam.gameSchedule.size() - 1).hasPlayed) {
                                 String weekGameName = userTeam.gameSchedule.get(userTeam.gameSchedule.size() - 1).gameName;
                                 if (weekGameName.equals("NCG")) {
-                                    Toast.makeText(MainActivity.this, "Congratulations! " + userTeam.name + " was invited to the National Championship Game!",
+                                    if (showToasts) Toast.makeText(MainActivity.this, "Congratulations! " + userTeam.name + " was invited to the National Championship Game!",
                                             Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(MainActivity.this, "Congratulations! " + userTeam.name + " was invited to the " +
+                                    if (showToasts) Toast.makeText(MainActivity.this, "Congratulations! " + userTeam.name + " was invited to the " +
                                                     weekGameName + "!",
                                             Toast.LENGTH_SHORT).show();
                                 }
                             } else if (simLeague.currentWeek == 12) {
-                                Toast.makeText(MainActivity.this, userTeam.name + " was not invited to the Conference Championship.",
+                                if (showToasts) Toast.makeText(MainActivity.this, userTeam.name + " was not invited to the Conference Championship.",
                                         Toast.LENGTH_SHORT).show();
                             } else if (simLeague.currentWeek == 13) {
-                                Toast.makeText(MainActivity.this, userTeam.name + " was not invited to a bowl game.",
+                                if (showToasts) Toast.makeText(MainActivity.this, userTeam.name + " was not invited to a bowl game.",
                                         Toast.LENGTH_SHORT).show();
                             }
                         }
-
-                        updateCurrTeam();
-                        scrollToLatestGame();
 
                         if (simLeague.currentWeek < 12) {
                             simGameButton.setText("Play Week");
                         } else if (simLeague.currentWeek == 12) {
                             simGameButton.setText("Play Conf Championships");
                             examineTeam(currentTeam.name);
-                            scrollToLatestGame();
                         } else if (simLeague.currentWeek == 13) {
                             heismanCeremony();
                             simGameButton.setText("Play Bowl Games");
                             examineTeam(currentTeam.name);
-                            scrollToLatestGame();
                         } else if (simLeague.currentWeek == 14) {
                             simGameButton.setText("Play National Championship");
                         } else {
                             simGameButton.setText("Begin Recruiting");
                         }
+
+                        updateCurrTeam();
+                        scrollToLatestGame();
+
                     }
                 } else {
                     //in process of recruiting
@@ -470,6 +475,11 @@ public class MainActivity extends AppCompatActivity {
              * Let user change their team name and abbr
              */
             changeTeamNameDialog();
+        } else if (id == R.id.action_team_lineup) {
+            /**
+             * Let user set their team's lineup
+             */
+            showTeamLineupDialog();
         }
 
         return super.onOptionsItemSelected(item);
@@ -603,7 +613,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void scrollToLatestGame() {
         if (currTab == 2 && simLeague.currentWeek > 2) {
-            mainList.setSelection(currentTeam.gameWLSchedule.size()-3);
+            mainList.setSelection(currentTeam.numGames()-3);
         }
 
     }
@@ -755,6 +765,9 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Dialog for coaches to select their team's strategy for offense and defense.
+     */
     private void showTeamStrategyDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Team Strategy")
@@ -803,6 +816,7 @@ public class MainActivity extends AppCompatActivity {
                             AdapterView<?> parent, View view, int position, long id) {
                         offStratDescription.setText(tsOff[position].getStratDescription());
                         userTeam.teamStratOff = tsOff[position];
+                        userTeam.teamStratOffNum = position;
                     }
 
                     public void onNothingSelected(AdapterView<?> parent) {
@@ -824,6 +838,7 @@ public class MainActivity extends AppCompatActivity {
                             AdapterView<?> parent, View view, int position, long id) {
                         defStratDescription.setText(tsDef[position].getStratDescription());
                         userTeam.teamStratDef = tsDef[position];
+                        userTeam.teamStratDefNum = position;
                     }
 
                     public void onNothingSelected(AdapterView<?> parent) {
@@ -838,7 +853,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void changeTeamNameDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Change Team Name and Abbr")
+        builder.setTitle("Settings / Change Name")
                 .setView(getLayoutInflater().inflate(R.layout.change_team_name_dialog, null));
         final AlertDialog dialog = builder.create();
         dialog.show();
@@ -895,6 +910,7 @@ public class MainActivity extends AppCompatActivity {
                     invalidAbbrText.setText("");
                 }
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 newAbbr = s.toString().trim().toUpperCase();
@@ -904,6 +920,7 @@ public class MainActivity extends AppCompatActivity {
                     invalidAbbrText.setText("");
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 newAbbr = s.toString().trim().toUpperCase();
@@ -915,12 +932,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final CheckBox checkboxShowPopup = (CheckBox) dialog.findViewById(R.id.checkboxShowPopups);
+        checkboxShowPopup.setChecked(showToasts);
+
         Button cancelChangeNameButton = (Button) dialog.findViewById(R.id.buttonCancelChangeName);
         Button okChangeNameButton = (Button) dialog.findViewById(R.id.buttonOkChangeName);
 
         cancelChangeNameButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
+                showToasts = checkboxShowPopup.isChecked();
                 dialog.dismiss();
             }
         });
@@ -929,23 +950,128 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Perform action on click
                 String newName = changeNameEditText.getText().toString().trim();
-                String newAbbr = changeAbbrEditText.getText().toString().trim().toUpperCase();;
-                if ( simLeague.isNameValid(newName) && simLeague.isAbbrValid(newAbbr) ) {
+                String newAbbr = changeAbbrEditText.getText().toString().trim().toUpperCase();
+                ;
+                if (simLeague.isNameValid(newName) && simLeague.isAbbrValid(newAbbr)) {
                     userTeam.name = newName;
                     userTeam.abbr = newAbbr;
                     getSupportActionBar().setTitle(userTeam.name + " " + season + " Season");
                     // Have to update rival's rival too!
-                    Team rival = simLeague.findTeamAbbr( userTeam.rivalTeam );
+                    Team rival = simLeague.findTeamAbbr(userTeam.rivalTeam);
                     rival.rivalTeam = userTeam.abbr;
                     examineTeam(userTeam.name);
                 } else {
-                    Toast.makeText(MainActivity.this, "Invalid name/abbr! Name not changed.",
+                    if (showToasts) Toast.makeText(MainActivity.this, "Invalid name/abbr! Name not changed.",
                             Toast.LENGTH_SHORT).show();
                 }
+                showToasts = checkboxShowPopup.isChecked();
                 dialog.dismiss();
             }
         });
 
+    }
+
+    /**
+     * Allow users to set lineups here.
+     */
+    private void showTeamLineupDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Set Team Lineup")
+                .setView(getLayoutInflater().inflate(R.layout.team_lineup_dialog, null));
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        final String[] positionSelection = {"QB (1 starter)", "RB (2 starters)", "WR (3 starters)", "OL (5 starters)",
+                                        "K (1 starter)", "S (1 starter)", "CB (3 starters)", "F7 (7 starters)"};
+        final int[] positionNumberRequired = {1, 2, 3, 5, 1, 1, 3, 7};
+        final Spinner teamLineupPositionSpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamLineupPosition);
+        ArrayAdapter<String> teamLineupPositionSpinnerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, positionSelection);
+        teamLineupPositionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        teamLineupPositionSpinner.setAdapter(teamLineupPositionSpinnerAdapter);
+
+        // List of team's players for selected position
+        final ArrayList<Player> positionPlayers = new ArrayList<>();
+        positionPlayers.addAll(userTeam.teamQBs);
+
+        final ListView teamPositionList = (ListView) dialog.findViewById(R.id.listViewTeamLineup);
+        final TeamLineupArrayAdapter teamLineupAdapter = new TeamLineupArrayAdapter(this, positionPlayers, 1);
+        teamPositionList.setAdapter(teamLineupAdapter);
+
+        teamLineupPositionSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        updateLineupList(position, teamLineupAdapter, positionNumberRequired, positionPlayers);
+                    }
+
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // do nothing
+                    }
+                });
+
+        Button saveLineupsButton = (Button) dialog.findViewById(R.id.buttonSaveLineups);
+        Button doneWithLineupsButton = (Button) dialog.findViewById(R.id.buttonDoneWithLineups);
+
+        doneWithLineupsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                dialog.dismiss();
+            }
+        });
+
+        saveLineupsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Save the lineup that player set for the position
+                int positionSpinner = teamLineupPositionSpinner.getSelectedItemPosition();
+                if (teamLineupAdapter.playersSelected.size() == teamLineupAdapter.playersRequired) {
+                    // Set starters to new selection
+                    userTeam.setStarters(teamLineupAdapter.playersSelected, positionSpinner);
+
+                    // Update list to show the change
+                    updateLineupList(positionSpinner, teamLineupAdapter, positionNumberRequired, positionPlayers);
+
+                    Toast.makeText(MainActivity.this, "Saved lineup for " + positionSelection[positionSpinner] + "!",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, teamLineupAdapter.playersSelected.size() + " players selected.\nNot the correct number of starters (" + teamLineupAdapter.playersRequired + ")",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+    }
+
+    /**
+     * Update the lineup list to a new position.
+     * Has checked boxes for all the starters.
+     * @param position position looking at (0-7)
+     * @param teamLineupAdapter TeamLineupArrayAdapter storing the data
+     * @param positionNumberRequired number of players required by the position (1 for QB, 3 for WR, etc)
+     * @param positionPlayers arraylist of players
+     */
+    private void updateLineupList(int position, TeamLineupArrayAdapter teamLineupAdapter, int[] positionNumberRequired, ArrayList<Player> positionPlayers) {
+        teamLineupAdapter.playersRequired = positionNumberRequired[position];
+        teamLineupAdapter.playersSelected.clear();
+        teamLineupAdapter.players.clear();
+        positionPlayers.clear();
+        // Change position players to correct position
+        switch (position) {
+            case 0: positionPlayers.addAll( userTeam.teamQBs ); break;
+            case 1: positionPlayers.addAll( userTeam.teamRBs ); break;
+            case 2: positionPlayers.addAll( userTeam.teamWRs ); break;
+            case 3: positionPlayers.addAll( userTeam.teamOLs ); break;
+            case 4: positionPlayers.addAll( userTeam.teamKs ); break;
+            case 5: positionPlayers.addAll( userTeam.teamSs ); break;
+            case 6: positionPlayers.addAll( userTeam.teamCBs ); break;
+            case 7: positionPlayers.addAll( userTeam.teamF7s ); break;
+        }
+
+        // Change starters to correct starters
+        for (int i = 0; i < teamLineupAdapter.playersRequired; ++i) {
+            teamLineupAdapter.playersSelected.add( positionPlayers.get(i) );
+        }
+        teamLineupAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -1026,7 +1152,7 @@ public class MainActivity extends AppCompatActivity {
                 // Do something with the selection
                 saveLeagueFile = new File(getFilesDir(), "saveFile" + item + ".cfb");
                 simLeague.saveLeague(saveLeagueFile);
-                Toast.makeText(MainActivity.this, "Saved league!",
+                if (showToasts) Toast.makeText(MainActivity.this, "Saved league!",
                         Toast.LENGTH_SHORT).show();
             }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

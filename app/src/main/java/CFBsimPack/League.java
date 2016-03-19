@@ -48,7 +48,7 @@ public class League {
     private String heismanWinnerStrFull;
 
     public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl",
-            "Patriot Bowl", "Salad Bowl", "Frost Bowl", "Tropical Bowl", "Music Bowl"};
+            "Patriot Bowl", "Salad Bowl", "Frost Bowl", "Tropical Bowl", "I'd Rather Bowl"};
     
     /**
      * Creates League, sets up Conferences, reads team names and conferences from file.
@@ -1258,7 +1258,7 @@ public class League {
         for (Team t : teamList) {
             sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
                     (t.totalWins-t.wins) + "," + (t.totalLosses-t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
-                    t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "%\n");
+                    t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," + t.teamStratOffNum + "," + t.teamStratDefNum + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }

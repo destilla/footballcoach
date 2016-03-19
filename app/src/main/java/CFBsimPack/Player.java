@@ -19,6 +19,7 @@ public class Player {
     public int ratFootIQ;
     public int ratImprovement;
     public int cost;
+    public int gamesPlayed = 0;
     protected final String[] letterGrades = {"F", "F+", "D", "D+", "C", "C+", "B", "B+", "A", "A+"};
     
     public Vector ratingsVector;

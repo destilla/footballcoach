@@ -2,6 +2,7 @@
     <string name="app_name">Football Coach</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_team_strategy">Team Strategy</string>
+    <string name="action_team_lineup">Team Lineup</string>
     <string name="action_league_history">League History</string>
     <string name="action_team_history">My Team History</string>
     <string name="action_rankings">Team Rankings</string>
@@ -11,7 +12,7 @@
     <string name="action_ccg_watch">Conf Championships</string>
     <string name="action_save_league">Save League</string>
     <string name="action_return_main_menu">Return to Main Menu</string>
-    <string name="action_change_team_name">Change Team Name</string>
+    <string name="action_change_team_name">Settings/Change Name</string>
     <string name="title_activity_recruiting">RecruitingActivity</string>
     <string name="league_player_names">
         Tim,
@@ -156,7 +157,9 @@
         Vashan,
         Wendell,
         Wardell,
-        Theo
+        Theo,
+        Isaac,
+        Squires
     </string>
     <string name="tutBasics">
         In Football Coach, you take the role of a newly hired coach at your college of choice.
