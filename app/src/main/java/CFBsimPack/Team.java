@@ -24,6 +24,7 @@ public class Team {
     public boolean wonRivalryGame;
     public ArrayList<String> teamHistory;
     public boolean userControlled;
+    public boolean showPopups;
     public int recruitMoney;
     public int numRecruits;
     
@@ -113,6 +114,7 @@ public class Team {
     public Team( String name, String abbr, String conference, League league, int prestige, String rivalTeamAbbr ) {
         this.league = league;
         userControlled = false;
+        showPopups = true;
         teamHistory = new ArrayList<String>();
         
         teamQBs = new ArrayList<PlayerQB>();
@@ -179,6 +181,7 @@ public class Team {
     public Team( String loadStr, League league ) {
         this.league = league;
         userControlled = false;
+        showPopups = true;
         teamHistory = new ArrayList<String>();
 
         teamQBs = new ArrayList<PlayerQB>();
@@ -236,9 +239,10 @@ public class Team {
                 totalCCLosses = Integer.parseInt(teamInfo[10]);
                 totalBowls = Integer.parseInt(teamInfo[11]);
                 totalBowlLosses = Integer.parseInt(teamInfo[12]);
-                if (teamInfo.length == 15) {
+                if (teamInfo.length == 16) {
                     teamStratOffNum = Integer.parseInt(teamInfo[13]);
                     teamStratDefNum = Integer.parseInt(teamInfo[14]);
+                    showPopups = (Integer.parseInt(teamInfo[15]) == 1);
                 }
             } else {
                 totalCCLosses = 0;
@@ -256,7 +260,7 @@ public class Team {
 
         wonRivalryGame = false;
         teamStratOff = getTeamStrategiesOff()[teamStratOffNum];
-        teamStratDef = getTeamStrategiesOff()[teamStratDefNum];
+        teamStratDef = getTeamStrategiesDef()[teamStratDefNum];
         numRecruits = 30;
     }
 
@@ -273,18 +277,19 @@ public class Team {
      * Advance season, hiring new coach if needed and calculating new prestige level.
      */
     public void advanceSeason() {
+        // subtract for rivalry first
+        if ( wonRivalryGame && (teamPrestige - league.findTeamAbbr(rivalTeam).teamPrestige < 20) ) {
+            teamPrestige += 2;
+        } else if (!wonRivalryGame && (league.findTeamAbbr(rivalTeam).teamPrestige - teamPrestige < 20 || name.equals("American Samoa"))) {
+            teamPrestige -= 2;
+        }
+
         int expectedPollFinish = 100 - teamPrestige;
         int diffExpected = expectedPollFinish - rankTeamPollScore;
         int oldPrestige = teamPrestige;
 
         if ( (teamPrestige > 45 && !name.equals("American Samoa")) || diffExpected > 0 ) {
             teamPrestige = (int)Math.pow(teamPrestige, 1 + (float)diffExpected/1500);// + diffExpected/2500);
-        }
-
-        if ( wonRivalryGame ) {
-            teamPrestige += 2;
-        } else {
-            teamPrestige -= 2;
         }
 
         if ( rankTeamPollScore == 1 ) {
@@ -1094,7 +1099,7 @@ public class Team {
         int diffExpected = expectedPollFinish - rankTeamPollScore;
         int oldPrestige = teamPrestige;
         int newPrestige = oldPrestige;
-        if ( teamPrestige > 55 || diffExpected > 0 ) {
+        if ( teamPrestige > 45 || diffExpected > 0 ) {
             newPrestige = (int)Math.pow(teamPrestige, 1 + (float)diffExpected/1500);// + diffExpected/2500);
         }
 
@@ -1110,10 +1115,14 @@ public class Team {
             summary += "\n\nWell, your team performed exactly how many expected. This won't hurt or help recruiting, but try to improve next year!";
         }
 
-        if (wonRivalryGame) {
+        if ( wonRivalryGame && (teamPrestige - league.findTeamAbbr(rivalTeam).teamPrestige < 20) ) {
             summary += "\n\nFuture recruits were impressed that you won your rivalry game. You gained 2 prestige.";
-        } else {
+        } else if (!wonRivalryGame && (league.findTeamAbbr(rivalTeam).teamPrestige - teamPrestige < 20 || name.equals("American Samoa"))) {
             summary += "\n\nSince you couldn't win your rivalry game, recruits aren't excited to attend your school. You lost 2 prestige.";
+        } else if ( wonRivalryGame ) {
+            summary += "\n\nGood job winning your rivalry game, but it was expected given the state of their program. You gain no prestige for this.";
+        } else {
+            summary += "\n\nYou lost your rivalry game, but this was expected given your rebuilding program. You lost no prestige for this.";
         }
 
         return summary;
@@ -1357,8 +1366,8 @@ public class Team {
         String gameSummary = gameWLSchedule.get(i) + " " + gameSummaryStr(g);
         String rivalryGameStr = "";
         if (g.gameName.equals("Rivalry Game")) {
-            if ( gameWLSchedule.get(i).equals("W") ) rivalryGameStr = "Won vs Rival! +2 Prestige\n";
-            else rivalryGameStr = "Lost vs Rival! -2 Prestige\n";
+            if ( gameWLSchedule.get(i).equals("W") ) rivalryGameStr = "Won against Rival!\n";
+            else rivalryGameStr = "Lost against Rival!\n";
         }
         return rivalryGameStr + name + " " + gameSummary + "\nNew poll rank: #" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ")";
     }
@@ -1700,6 +1709,7 @@ public class Team {
                 for (Player p : starters) {
                     teamQBs.add( (PlayerQB) p );
                 }
+                Collections.sort(teamQBs, new PlayerComparator());
                 for (PlayerQB oldP : oldQBs) {
                     if (!teamQBs.contains(oldP)) teamQBs.add(oldP);
                 }
@@ -1711,6 +1721,7 @@ public class Team {
                 for (Player p : starters) {
                     teamRBs.add( (PlayerRB) p );
                 }
+                Collections.sort(teamRBs, new PlayerComparator());
                 for (PlayerRB oldP : oldRBs) {
                     if (!teamRBs.contains(oldP)) teamRBs.add(oldP);
                 }
@@ -1722,6 +1733,7 @@ public class Team {
                 for (Player p : starters) {
                     teamWRs.add( (PlayerWR) p );
                 }
+                Collections.sort(teamWRs, new PlayerComparator());
                 for (PlayerWR oldP : oldWRs) {
                     if (!teamWRs.contains(oldP)) teamWRs.add(oldP);
                 }
@@ -1733,6 +1745,7 @@ public class Team {
                 for (Player p : starters) {
                     teamOLs.add( (PlayerOL) p );
                 }
+                Collections.sort(teamOLs, new PlayerComparator());
                 for (PlayerOL oldP : oldOLs) {
                     if (!teamOLs.contains(oldP)) teamOLs.add(oldP);
                 }
@@ -1744,6 +1757,7 @@ public class Team {
                 for (Player p : starters) {
                     teamKs.add( (PlayerK) p );
                 }
+                Collections.sort(teamKs, new PlayerComparator());
                 for (PlayerK oldP : oldKs) {
                     if (!teamKs.contains(oldP)) teamKs.add(oldP);
                 }
@@ -1755,6 +1769,7 @@ public class Team {
                 for (Player p : starters) {
                     teamSs.add( (PlayerS) p );
                 }
+                Collections.sort(teamSs, new PlayerComparator());
                 for (PlayerS oldP : oldSs) {
                     if (!teamSs.contains(oldP)) teamSs.add(oldP);
                 }
@@ -1766,6 +1781,7 @@ public class Team {
                 for (Player p : starters) {
                     teamCBs.add( (PlayerCB) p );
                 }
+                Collections.sort(teamCBs, new PlayerComparator());
                 for (PlayerCB oldP : oldCBs) {
                     if (!teamCBs.contains(oldP)) teamCBs.add(oldP);
                 }
@@ -1777,13 +1793,34 @@ public class Team {
                 for (Player p : starters) {
                     teamF7s.add( (PlayerF7) p );
                 }
+                Collections.sort(teamF7s, new PlayerComparator());
                 for (PlayerF7 oldP : oldF7s) {
                     if (!teamF7s.contains(oldP)) teamF7s.add(oldP);
                 }
                 break;
         }
     }
-    
+
+    /**
+     * Add one gamePlayed to all the starters.
+     * The number of games played affects how much players improve.
+     */
+    public void addGamePlayedPlayers() {
+        addGamePlayedList(teamQBs, 1);
+        addGamePlayedList(teamRBs, 2);
+        addGamePlayedList(teamWRs, 3);
+        addGamePlayedList(teamOLs, 5);
+        addGamePlayedList(teamKs, 1);
+        addGamePlayedList(teamSs, 1);
+        addGamePlayedList(teamCBs, 3);
+        addGamePlayedList(teamF7s, 7);
+    }
+
+    private void addGamePlayedList(ArrayList<? extends Player> playerList, int starters) {
+        for (int i = 0; i < starters; ++i) {
+            playerList.get(i).gamesPlayed++;
+        }
+    }
 }
 
 /**

@@ -19,7 +19,7 @@ public class Player {
     public int ratFootIQ;
     public int ratImprovement;
     public int cost;
-    public int gamesPlayed = 0;
+    public int gamesPlayed;
     protected final String[] letterGrades = {"F", "F+", "D", "D+", "C", "C+", "B", "B+", "A", "A+"};
     
     public Vector ratingsVector;
@@ -102,6 +102,10 @@ public class Player {
     }
 
     public ArrayList<String> getDetailStatsList(int games) {
+        return null;
+    }
+
+    public String getInfoForLineup() {
         return null;
     }
     

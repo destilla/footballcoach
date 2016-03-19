@@ -34,6 +34,7 @@ public class PlayerF7 extends Player {
         team = t;
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratOvr = (pow*3 + rsh + pas)/5;
         ratPot = pot;
         ratFootIQ = iq;
@@ -43,7 +44,6 @@ public class PlayerF7 extends Player {
         position = "F7";
 
         cost = (int)(Math.pow((float)ratOvr - 55,2)/6) + 50 + (int)(Math.random()*100) - 50;
-        if (cost < 50) cost = 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");
@@ -59,6 +59,7 @@ public class PlayerF7 extends Player {
     public PlayerF7( String nm, int yr, int stars ) {
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + stars*4 + 30*Math.random());
         ratF7Pow = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -68,7 +69,6 @@ public class PlayerF7 extends Player {
         position = "F7";
 
         cost = (int)(Math.pow((float)ratOvr - 55,2)/6) + 50 + (int)(Math.random()*100) - 50;
-        if (cost < 50) cost = 50;
         
         ratingsVector = new Vector();
         ratingsVector.addElement(name+" ("+getYrStr()+")");
@@ -96,15 +96,15 @@ public class PlayerF7 extends Player {
     public void advanceSeason() {
         year++;
         int oldOvr = ratOvr;
-        ratFootIQ += (int)(Math.random()*(ratPot - 25))/10;
-        ratF7Pow += (int)(Math.random()*(ratPot - 25))/10;
-        ratF7Rsh += (int)(Math.random()*(ratPot - 25))/10;
-        ratF7Pas += (int)(Math.random()*(ratPot - 25))/10;
+        ratFootIQ += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratF7Pow += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratF7Rsh += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratF7Pas += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
         if ( Math.random()*100 < ratPot ) {
             //breakthrough
-            ratF7Pow += (int)(Math.random()*(ratPot - 30))/10;
-            ratF7Rsh += (int)(Math.random()*(ratPot - 30))/10;
-            ratF7Pas += (int)(Math.random()*(ratPot - 30))/10;
+            ratF7Pow += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratF7Rsh += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratF7Pas += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
         }
         ratOvr = (ratF7Pow*3 + ratF7Rsh + ratF7Pas)/5;
         ratImprovement = ratOvr - oldOvr;
@@ -116,6 +116,12 @@ public class PlayerF7 extends Player {
         pStats.add("Potential: " + ratPot + ">Strength: " + getLetterGrade(ratF7Pow));
         pStats.add("Run Stop: " + getLetterGrade(ratF7Rsh) + ">Pass Pressure: " + getLetterGrade(ratF7Pas));
         return pStats;
+    }
+
+    @Override
+    public String getInfoForLineup() {
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+                getLetterGrade(ratF7Pow) + ", " + getLetterGrade(ratF7Rsh) + ", " + getLetterGrade(ratF7Pas) + ")";
     }
     
 }

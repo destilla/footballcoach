@@ -40,6 +40,7 @@ public class PlayerK extends Player {
         team = t;
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratOvr = (pow + acc + 75)/3;
         ratPot = pot;
         ratFootIQ = iq;
@@ -68,6 +69,7 @@ public class PlayerK extends Player {
     public PlayerK( String nm, int yr, int stars ) {
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + stars*4 + 30*Math.random());
         ratKickPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -120,15 +122,15 @@ public class PlayerK extends Player {
     public void advanceSeason() {
         year++;
         int oldOvr = ratOvr;
-        ratFootIQ += (int)(Math.random()*(ratPot - 25))/10;
-        ratKickPow += (int)(Math.random()*(ratPot - 25))/10;
-        ratKickAcc += (int)(Math.random()*(ratPot - 25))/10;
-        ratKickFum += (int)(Math.random()*(ratPot - 25))/10;
+        ratFootIQ += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratKickPow += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratKickAcc += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratKickFum += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
         if ( Math.random()*100 < ratPot ) {
             //breakthrough
-            ratKickPow += (int)(Math.random()*(ratPot - 30))/10;
-            ratKickAcc += (int)(Math.random()*(ratPot - 30))/10;
-            ratKickFum += (int)(Math.random()*(ratPot - 30))/10;
+            ratKickPow += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratKickAcc += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratKickFum += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
         }
         ratOvr = (ratKickPow + ratKickAcc)/2;
         ratImprovement = ratOvr - oldOvr;
@@ -157,5 +159,10 @@ public class PlayerK extends Player {
         pStats.add("Kick Accuracy: " + getLetterGrade(ratKickAcc) + ">Clumsiness: " + getLetterGrade(ratKickFum));
         return pStats;
     }
-    
+
+    @Override
+    public String getInfoForLineup() {
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+                getLetterGrade(ratKickPow) + ", " + getLetterGrade(ratKickAcc) + ", " + getLetterGrade(ratKickFum) + ")";
+    }
 }

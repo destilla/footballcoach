@@ -13,27 +13,15 @@
     tools:context="achijones.footballcoach.Home"
     tools:showIn="@layout/activity_home">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="32sp"
-        android:text="Football Coach"
-        android:id="@+id/textTitle"
-        android:textAlignment="center"
-        android:layout_gravity="center"
-        android:layout_marginTop="40dp"
-        android:padding="5dp" />
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="0dip"
-        android:layout_weight="3"
+        android:layout_weight="5"
+        android:layout_marginTop="10dp"
         android:id="@+id/imageLogo"
         android:adjustViewBounds="true"
-        android:maxWidth="175dp"
-        android:maxHeight="175dp"
+        android:maxWidth="300dp"
+        android:maxHeight="400dp"
         android:scaleType="fitCenter"
         android:layout_gravity="center"
         android:padding="5dp" />

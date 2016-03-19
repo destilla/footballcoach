@@ -15,18 +15,33 @@
         android:id="@+id/spinnerTeamLineupPosition"
         android:layout_gravity="center_horizontal" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dip"
+        android:layout_weight="0.5"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textViewLineupPositionDescription"
+        android:text="Name [Yr] Ovr/Pot (Str, Acc, Eva)"/>
+
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="6"
+        android:layout_height="300dp"
         android:id="@+id/listViewTeamLineup"
         android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_gravity="center"
+        android:text="More playing time = more improvement!"/>
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="5dp">
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

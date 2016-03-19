@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Football Coach</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="action_team_strategy">Team Strategy</string>
-    <string name="action_team_lineup">Team Lineup</string>
+    <string name="action_team_strategy">Set Team Strategy</string>
+    <string name="action_team_lineup">Set Team Lineup</string>
     <string name="action_league_history">League History</string>
     <string name="action_team_history">My Team History</string>
     <string name="action_rankings">Team Rankings</string>

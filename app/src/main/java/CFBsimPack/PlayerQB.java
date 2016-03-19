@@ -35,6 +35,7 @@ public class PlayerQB extends Player {
         team = t;
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratOvr = (pow*3 + acc*4 + eva)/8;
         ratPot = pot;
         ratFootIQ = iq;
@@ -67,6 +68,7 @@ public class PlayerQB extends Player {
         name = nm;
         year = yr;
         team = t;
+        gamesPlayed = 0;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + stars*4 + 30*Math.random());
         ratPassPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -125,15 +127,15 @@ public class PlayerQB extends Player {
     public void advanceSeason() {
         year++;
         int oldOvr = ratOvr;
-        ratFootIQ += (int)(Math.random()*(ratPot - 25))/10;
-        ratPassPow += (int)(Math.random()*(ratPot - 25))/10;
-        ratPassAcc += (int)(Math.random()*(ratPot - 25))/10;
-        ratPassEva += (int)(Math.random()*(ratPot - 25))/10;
+        ratFootIQ += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratPassPow += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratPassAcc += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratPassEva += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
         if ( Math.random()*100 < ratPot ) {
             //breakthrough
-            ratPassPow += (int)(Math.random()*(ratPot - 30))/10;
-            ratPassAcc += (int)(Math.random()*(ratPot - 30))/10;
-            ratPassEva += (int)(Math.random()*(ratPot - 30))/10;
+            ratPassPow += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratPassAcc += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratPassEva += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
         }
         ratOvr = (ratPassPow*3 + ratPassAcc*4 + ratPassEva)/8;
         ratImprovement = ratOvr - oldOvr;
@@ -148,7 +150,7 @@ public class PlayerQB extends Player {
     
     @Override
     public int getHeismanScore() {
-        return statsTD * 150 - statsInt * 250 + statsPassYards;
+        return statsTD * 140 - statsInt * 250 + statsPassYards;
     }
 
     @Override
@@ -159,6 +161,12 @@ public class PlayerQB extends Player {
         pStats.add("Yds/Game: " + (statsPassYards/games) + " yds/g>Pass Strength: " + getLetterGrade(ratPassPow));
         pStats.add("Accuracy: " + getLetterGrade(ratPassAcc) + ">Evasion: " + getLetterGrade(ratPassEva));
         return pStats;
+    }
+
+    @Override
+    public String getInfoForLineup() {
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+                getLetterGrade(ratPassPow) + ", " + getLetterGrade(ratPassAcc) + ", " + getLetterGrade(ratPassEva) + ")";
     }
     
 }

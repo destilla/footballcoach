@@ -35,6 +35,7 @@ public class PlayerRB extends Player {
         team = t;
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratOvr = (pow + spd + eva)/3;
         ratPot = pot;
         ratFootIQ = iq;
@@ -65,6 +66,7 @@ public class PlayerRB extends Player {
         name = nm;
         year = yr;
         team = t;
+        gamesPlayed = 0;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + stars*4 + 30*Math.random());
         ratRushPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -117,15 +119,15 @@ public class PlayerRB extends Player {
     public void advanceSeason() {
         year++;
         int oldOvr = ratOvr;
-        ratFootIQ += (int)(Math.random()*(ratPot - 25))/10;
-        ratRushPow += (int)(Math.random()*(ratPot - 25))/10;
-        ratRushSpd += (int)(Math.random()*(ratPot - 25))/10;
-        ratRushEva += (int)(Math.random()*(ratPot - 25))/10;
+        ratFootIQ += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratRushPow += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratRushSpd += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratRushEva += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
         if ( Math.random()*100 < ratPot ) {
             //breakthrough
-            ratRushPow += (int)(Math.random()*(ratPot - 30))/10;
-            ratRushSpd += (int)(Math.random()*(ratPot - 30))/10;
-            ratRushEva += (int)(Math.random()*(ratPot - 30))/10;
+            ratRushPow += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratRushSpd += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratRushEva += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
         }
         ratOvr = (ratRushPow + ratRushSpd + ratRushEva)/3;
         ratImprovement = ratOvr - oldOvr;
@@ -138,7 +140,7 @@ public class PlayerRB extends Player {
     
     @Override
     public int getHeismanScore() {
-        return statsTD * 100 - statsFumbles * 100 + (int)(statsRushYards * 2.25);
+        return statsTD * 100 - statsFumbles * 80 + (int)(statsRushYards * 2.35);
     }
 
     @Override
@@ -149,6 +151,12 @@ public class PlayerRB extends Player {
         pStats.add("Yds/Game: " + (statsRushYards/games) + " yds/g>Rush Power: " + getLetterGrade(ratRushPow));
         pStats.add("Rush Speed: " + getLetterGrade(ratRushSpd) + ">Evasion: " + getLetterGrade(ratRushEva));
         return pStats;
+    }
+
+    @Override
+    public String getInfoForLineup() {
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+                getLetterGrade(ratRushPow) + ", " + getLetterGrade(ratRushSpd) + ", " + getLetterGrade(ratRushEva) + ")";
     }
     
 }

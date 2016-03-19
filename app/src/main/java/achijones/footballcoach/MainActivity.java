@@ -336,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
             // set rankings so that not everyone is rank #0
             simLeague.setTeamRanks();
             examineTeam(userTeam.name);
+            showToasts = userTeam.showPopups;
         }
 
 
@@ -942,6 +943,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Perform action on click
                 showToasts = checkboxShowPopup.isChecked();
+                userTeam.showPopups = showToasts;
                 dialog.dismiss();
             }
         });
@@ -965,6 +967,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
                 showToasts = checkboxShowPopup.isChecked();
+                userTeam.showPopups = showToasts;
                 dialog.dismiss();
             }
         });
@@ -990,6 +993,9 @@ public class MainActivity extends AppCompatActivity {
         teamLineupPositionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         teamLineupPositionSpinner.setAdapter(teamLineupPositionSpinnerAdapter);
 
+        // Text to show what each attr is
+        final TextView textLineupPositionDescription = (TextView) dialog.findViewById(R.id.textViewLineupPositionDescription);
+
         // List of team's players for selected position
         final ArrayList<Player> positionPlayers = new ArrayList<>();
         positionPlayers.addAll(userTeam.teamQBs);
@@ -1002,7 +1008,7 @@ public class MainActivity extends AppCompatActivity {
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(
                             AdapterView<?> parent, View view, int position, long id) {
-                        updateLineupList(position, teamLineupAdapter, positionNumberRequired, positionPlayers);
+                        updateLineupList(position, teamLineupAdapter, positionNumberRequired, positionPlayers, textLineupPositionDescription);
                     }
 
                     public void onNothingSelected(AdapterView<?> parent) {
@@ -1029,7 +1035,7 @@ public class MainActivity extends AppCompatActivity {
                     userTeam.setStarters(teamLineupAdapter.playersSelected, positionSpinner);
 
                     // Update list to show the change
-                    updateLineupList(positionSpinner, teamLineupAdapter, positionNumberRequired, positionPlayers);
+                    updateLineupList(positionSpinner, teamLineupAdapter, positionNumberRequired, positionPlayers, textLineupPositionDescription);
 
                     Toast.makeText(MainActivity.this, "Saved lineup for " + positionSelection[positionSpinner] + "!",
                             Toast.LENGTH_SHORT).show();
@@ -1050,21 +1056,45 @@ public class MainActivity extends AppCompatActivity {
      * @param positionNumberRequired number of players required by the position (1 for QB, 3 for WR, etc)
      * @param positionPlayers arraylist of players
      */
-    private void updateLineupList(int position, TeamLineupArrayAdapter teamLineupAdapter, int[] positionNumberRequired, ArrayList<Player> positionPlayers) {
+    private void updateLineupList(int position, TeamLineupArrayAdapter teamLineupAdapter, int[] positionNumberRequired,
+                                  ArrayList<Player> positionPlayers, TextView textLineupPositionDescription) {
         teamLineupAdapter.playersRequired = positionNumberRequired[position];
         teamLineupAdapter.playersSelected.clear();
         teamLineupAdapter.players.clear();
         positionPlayers.clear();
         // Change position players to correct position
         switch (position) {
-            case 0: positionPlayers.addAll( userTeam.teamQBs ); break;
-            case 1: positionPlayers.addAll( userTeam.teamRBs ); break;
-            case 2: positionPlayers.addAll( userTeam.teamWRs ); break;
-            case 3: positionPlayers.addAll( userTeam.teamOLs ); break;
-            case 4: positionPlayers.addAll( userTeam.teamKs ); break;
-            case 5: positionPlayers.addAll( userTeam.teamSs ); break;
-            case 6: positionPlayers.addAll( userTeam.teamCBs ); break;
-            case 7: positionPlayers.addAll( userTeam.teamF7s ); break;
+            case 0:
+                textLineupPositionDescription.setText("Name [Yr] Ovr/Pot (Str, Acc, Eva)");
+                positionPlayers.addAll( userTeam.teamQBs );
+                break;
+            case 1:
+                textLineupPositionDescription.setText("Name [Yr] Ovr/Pot (Pow, Spd, Eva)");
+                positionPlayers.addAll( userTeam.teamRBs );
+                break;
+            case 2:
+                textLineupPositionDescription.setText("Name [Yr] Ovr/Pot (Cat, Spd, Eva)");
+                positionPlayers.addAll( userTeam.teamWRs );
+                break;
+            case 3:
+                textLineupPositionDescription.setText("Name [Yr] Ovr/Pot (Str, RunBlk, PassBlk)");
+                positionPlayers.addAll( userTeam.teamOLs );
+                break;
+            case 4:
+                textLineupPositionDescription.setText("Name [Yr] Ovr/Pot (KStr, KAcc, Clum)");
+                positionPlayers.addAll( userTeam.teamKs );
+                break;
+            case 5:
+                textLineupPositionDescription.setText("Name [Yr] Ovr/Pot (Cov, Spd, Tack)");
+                positionPlayers.addAll( userTeam.teamSs );
+                break;
+            case 6:
+                textLineupPositionDescription.setText("Name [Yr] Ovr/Pot (Cov, Spd, Tack)");
+                positionPlayers.addAll( userTeam.teamCBs );
+                break;
+            case 7:
+                textLineupPositionDescription.setText("Name [Yr] Ovr/Pot (Str, RunDef, PassDef)");
+                positionPlayers.addAll( userTeam.teamF7s ); break;
         }
 
         // Change starters to correct starters

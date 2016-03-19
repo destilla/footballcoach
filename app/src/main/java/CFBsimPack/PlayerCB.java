@@ -29,6 +29,7 @@ public class PlayerCB extends Player {
         team = t;
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratOvr = (cov*2 + spd + tkl)/4;
         ratPot = pot;
         ratFootIQ = iq;
@@ -52,6 +53,7 @@ public class PlayerCB extends Player {
     public PlayerCB( String nm, int yr, int stars ) {
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + stars*4 + 30*Math.random());
         ratCBCov = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -74,7 +76,7 @@ public class PlayerCB extends Player {
     
     public Vector getRatingsVector() {
         ratingsVector = new Vector();
-        ratingsVector.addElement(name+" ("+getYrStr()+")");
+        ratingsVector.addElement(name+" ["+getYrStr()+"]");
         ratingsVector.addElement(ratOvr+" (+"+ratImprovement+")");
         ratingsVector.addElement(ratPot);
         ratingsVector.addElement(ratFootIQ);
@@ -88,15 +90,17 @@ public class PlayerCB extends Player {
     public void advanceSeason() {
         year++;
         int oldOvr = ratOvr;
-        ratFootIQ += (int)(Math.random()*(ratPot - 25))/10;
-        ratCBCov += (int)(Math.random()*(ratPot - 25))/10;
-        ratCBSpd += (int)(Math.random()*(ratPot - 25))/10;
-        ratCBTkl += (int)(Math.random()*(ratPot - 25))/10;
+        // old: ratPot - 25
+        // new ratPot + gamesPlayed - 35
+        ratFootIQ += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratCBCov += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratCBSpd += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratCBTkl += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
         if ( Math.random()*100 < ratPot ) {
             //breakthrough
-            ratCBCov += (int)(Math.random()*(ratPot - 30))/10;
-            ratCBSpd += (int)(Math.random()*(ratPot - 30))/10;
-            ratCBTkl += (int)(Math.random()*(ratPot - 30))/10;
+            ratCBCov += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratCBSpd += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratCBTkl += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
         }
         ratOvr = (ratCBCov*2 + ratCBSpd + ratCBTkl)/4;
         ratImprovement = ratOvr - oldOvr;
@@ -109,4 +113,11 @@ public class PlayerCB extends Player {
         pStats.add("Speed: " + getLetterGrade(ratCBSpd) + ">Tackling: " + getLetterGrade(ratCBTkl));
         return pStats;
     }
+
+    @Override
+    public String getInfoForLineup() {
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+                getLetterGrade(ratCBCov) + ", " + getLetterGrade(ratCBSpd) + ", " + getLetterGrade(ratCBTkl) + ")";
+    }
+
 }

@@ -42,6 +42,7 @@ public class PlayerWR extends Player {
         team = t;
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratOvr = (cat*2 + spd + eva)/4;
         ratPot = pot;
         ratFootIQ = iq;
@@ -74,6 +75,7 @@ public class PlayerWR extends Player {
         name = nm;
         year = yr;
         team = t;
+        gamesPlayed = 0;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + stars*4 + 30*Math.random());
         ratRecCat = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -130,15 +132,15 @@ public class PlayerWR extends Player {
     public void advanceSeason() {
         year++;
         int oldOvr = ratOvr;
-        ratFootIQ += (int)(Math.random()*(ratPot - 25))/10;
-        ratRecCat += (int)(Math.random()*(ratPot - 25))/10;
-        ratRecSpd += (int)(Math.random()*(ratPot - 25))/10;
-        ratRecEva += (int)(Math.random()*(ratPot - 25))/10;
+        ratFootIQ += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratRecCat += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratRecSpd += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratRecEva += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
         if ( Math.random()*100 < ratPot ) {
             //breakthrough
-            ratRecCat += (int)(Math.random()*(ratPot - 30))/10;
-            ratRecSpd += (int)(Math.random()*(ratPot - 30))/10;
-            ratRecEva += (int)(Math.random()*(ratPot - 30))/10;
+            ratRecCat += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratRecSpd += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratRecEva += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
         }
         ratOvr = (ratRecCat*2 + ratRecSpd + ratRecEva)/4;
         ratImprovement = ratOvr - oldOvr;
@@ -164,5 +166,11 @@ public class PlayerWR extends Player {
         pStats.add("Yds/Game: " + (statsRecYards/games) + " yds/g>Catching: " + getLetterGrade(ratRecCat));
         pStats.add("Rec Speed: " + getLetterGrade(ratRecSpd) + ">Evasion: " + getLetterGrade(ratRecEva));
         return pStats;
+    }
+
+    @Override
+    public String getInfoForLineup() {
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+                getLetterGrade(ratRecCat) + ", " + getLetterGrade(ratRecSpd) + ", " + getLetterGrade(ratRecEva) + ")";
     }
 }

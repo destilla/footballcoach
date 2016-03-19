@@ -48,7 +48,7 @@ public class TeamLineupArrayAdapter extends ArrayAdapter<Player> {
         if (showPlayer) {
             TextView playerInfo = (TextView) rowView.findViewById(R.id.textViewLineupPlayerInfo);
 
-            playerInfo.setText(players.get(position).getPosNameYrOvrPot_OneLine());
+            playerInfo.setText(players.get(position).getInfoForLineup());
 
             CheckBox isPlayerStarting = (CheckBox) rowView.findViewById(R.id.checkboxPlayerStartingLineup);
             if (playersSelected.contains(players.get(position))) {

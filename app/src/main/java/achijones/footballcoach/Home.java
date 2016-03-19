@@ -31,7 +31,7 @@ public class Home extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         ImageView imageLogo = (ImageView) findViewById(R.id.imageLogo);
-        imageLogo.setImageResource(R.drawable.football_icon);
+        imageLogo.setImageResource(R.drawable.main_menu_logo);
 
         Button newGameButton = (Button) findViewById(R.id.buttonNewGame);
         newGameButton.setOnClickListener(new View.OnClickListener() {

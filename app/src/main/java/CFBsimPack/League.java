@@ -553,6 +553,22 @@ public class League {
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).advanceSeason();
         }
+
+        // Bless a random team with lots of prestige
+        int blessNumber = (int)(Math.random()*9);
+        Team blessTeam = teamList.get(50 + blessNumber);
+        if (!blessTeam.userControlled) {
+            blessTeam.teamPrestige += 30;
+            if (blessTeam.teamPrestige > 90) blessTeam.teamPrestige = 90;
+        }
+
+        //Curse a good team
+        int curseNumber = (int)(Math.random()*7);
+        Team curseTeam = teamList.get(3 + curseNumber);
+        if (!curseTeam.userControlled && curseTeam.teamPrestige > 85) {
+            curseTeam.teamPrestige -= 20;
+        }
+
         for (int c = 0; c < conferences.size(); ++c) {
             conferences.get(c).robinWeek = 0;
             conferences.get(c).week = 0;
@@ -1226,6 +1242,7 @@ public class League {
      * @return ncgSummary, userTeam's summary
      */
     public String seasonSummaryStr() {
+        setTeamRanks();
         StringBuilder sb = new StringBuilder();
         sb.append(ncgSummaryStr());
         sb.append("\n\n" + userTeam.seasonSummaryStr());
@@ -1258,7 +1275,8 @@ public class League {
         for (Team t : teamList) {
             sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
                     (t.totalWins-t.wins) + "," + (t.totalLosses-t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
-                    t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," + t.teamStratOffNum + "," + t.teamStratDefNum + "%\n");
+                    t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," +
+                    t.teamStratOffNum + "," + t.teamStratDefNum + "," + (t.showPopups ? 1 : 0) + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }

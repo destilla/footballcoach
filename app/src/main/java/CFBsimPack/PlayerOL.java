@@ -29,6 +29,7 @@ public class PlayerOL extends Player {
         team = t;
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratOvr = (pow*3 + bkr + bkp)/5;
         ratPot = pot;
         ratFootIQ = iq;
@@ -52,6 +53,7 @@ public class PlayerOL extends Player {
     public PlayerOL( String nm, int yr, int stars ) {
         name = nm;
         year = yr;
+        gamesPlayed = 0;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + stars*4 + 30*Math.random());
         ratOLPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -88,15 +90,15 @@ public class PlayerOL extends Player {
     public void advanceSeason() {
         year++;
         int oldOvr = ratOvr;
-        ratFootIQ += (int)(Math.random()*(ratPot - 25))/10;
-        ratOLPow += (int)(Math.random()*(ratPot - 25))/10;
-        ratOLBkR += (int)(Math.random()*(ratPot - 25))/10;
-        ratOLBkP += (int)(Math.random()*(ratPot - 25))/10;
+        ratFootIQ += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratOLPow += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratOLBkR += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
+        ratOLBkP += (int)(Math.random()*(ratPot + gamesPlayed - 35))/10;
         if ( Math.random()*100 < ratPot ) {
             //breakthrough
-            ratOLPow += (int)(Math.random()*(ratPot - 30))/10;
-            ratOLBkR += (int)(Math.random()*(ratPot - 30))/10;
-            ratOLBkP += (int)(Math.random()*(ratPot - 30))/10;
+            ratOLPow += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratOLBkR += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
+            ratOLBkP += (int)(Math.random()*(ratPot + gamesPlayed - 40))/10;
         }
         ratOvr = (ratOLPow*3 + ratOLBkR + ratOLBkP)/5;
         ratImprovement = ratOvr - oldOvr;
@@ -108,5 +110,11 @@ public class PlayerOL extends Player {
         pStats.add("Potential: " + ratPot + ">Strength: " + getLetterGrade(ratOLPow));
         pStats.add("Run Block: " + getLetterGrade(ratOLBkR) + ">Pass Block: " + getLetterGrade(ratOLBkP));
         return pStats;
+    }
+
+    @Override
+    public String getInfoForLineup() {
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+                getLetterGrade(ratOLPow) + ", " + getLetterGrade(ratOLBkR) + ", " + getLetterGrade(ratOLBkP) + ")";
     }
 }
