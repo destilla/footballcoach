@@ -82,6 +82,7 @@ public class League {
                 "on your mind, or just a winning season, good luck!");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         
         //read first names from file
         firstNameList = new ArrayList<String>();
@@ -95,6 +96,8 @@ public class League {
         for (String n : lastNamesSplit) {
             lastNameList.add(n.trim());
 =======
+=======
+>>>>>>> refs/remotes/jonesguy14/master
         leagueRecords = new LeagueRecords();
         longestWinStreak = new TeamStreak(getYear(), getYear(), 0, null);
 
@@ -658,15 +661,21 @@ public class League {
      */
     public String getRandName() {
 <<<<<<< HEAD
+<<<<<<< HEAD
         int fn = (int)(Math.random()*firstNameList.size());
         int ln = (int)(Math.random()*lastNameList.size());
         return firstNameList.get(fn) + " " + lastNameList.get(ln);
 =======
+=======
+>>>>>>> refs/remotes/jonesguy14/master
         if (Math.random() > 0.001) {
             int fn = (int) (Math.random() * nameList.size());
             int ln = (int) (Math.random() * nameList.size());
             return nameList.get(fn) + " " + nameList.get(ln);
         } else return "Mark Eeslee";
+<<<<<<< HEAD
+>>>>>>> refs/remotes/jonesguy14/master
+=======
 >>>>>>> refs/remotes/jonesguy14/master
     }
     

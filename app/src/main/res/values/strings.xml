@@ -162,6 +162,7 @@
         Isaac,
         Squires,
         Lee
+<<<<<<< HEAD
     </string>
     <string name="league_player_first_names">
         Tim,
@@ -474,6 +475,8 @@
         Doughty,
         Richardson,
         Malik
+=======
+>>>>>>> refs/remotes/jonesguy14/master
     </string>
     <string name="tutBasics">
         In Football Coach, you take the role of a newly hired coach at your college of choice.
