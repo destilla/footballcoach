@@ -26,7 +26,7 @@ public class Player {
     
     public String getYrStr() {
         if (year == 0) {
-            return "HS";
+            return "RS";
         } else if ( year == 1 ) {
             return "Fr";
         } else if ( year == 2 ) {

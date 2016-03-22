@@ -28,6 +28,9 @@ public class League {
     public ArrayList<Team> teamList;
     public ArrayList<String> nameList;
     public ArrayList< ArrayList<String> > newsStories;
+
+    public LeagueRecords leagueRecords;
+    public TeamStreak longestWinStreak;
     
     //Current week, 1-14
     public int currentWeek;
@@ -77,7 +80,9 @@ public class League {
         newsStories.get(0).add("New Season!>Ready for the new season, coach? Whether the National Championship is " +
                 "on your mind, or just a winning season, good luck!");
 
-        
+        leagueRecords = new LeagueRecords();
+        longestWinStreak = new TeamStreak(getYear(), getYear(), 0, null);
+
         //read names from file
         nameList = new ArrayList<String>();
         String[] namesSplit = namesCSV.split(",");
@@ -191,6 +196,10 @@ public class League {
         // This will reference one line at a time
         String line = null;
         currentWeek = 0;
+
+        leagueRecords = new LeagueRecords();
+        longestWinStreak = new TeamStreak(2015, 2015, 0, null);
+
         try {
             // Always wrap FileReader in BufferedReader.
             BufferedReader bufferedReader = new BufferedReader( new FileReader(saveFile) );
@@ -557,7 +566,7 @@ public class League {
         // Bless a random team with lots of prestige
         int blessNumber = (int)(Math.random()*9);
         Team blessTeam = teamList.get(50 + blessNumber);
-        if (!blessTeam.userControlled) {
+        if (!blessTeam.userControlled && blessTeam.name.equals("American Samoa")) {
             blessTeam.teamPrestige += 30;
             if (blessTeam.teamPrestige > 90) blessTeam.teamPrestige = 90;
         }
@@ -586,6 +595,24 @@ public class League {
 
         hasScheduledBowls = false;
     }
+
+    /**
+     * Check the longest win streak. If the given streak is longer, replace.
+     * @param streak streak to check
+     */
+    public void checkLongestWinStreak(TeamStreak streak) {
+        if (streak.getStreakLength() > longestWinStreak.getStreakLength()) {
+            longestWinStreak = new TeamStreak(streak.getStartYear(), streak.getEndYear(), streak.getStreakLength(), streak.getTeam());
+        }
+    }
+
+    /**
+     * Gets the current year, starting from 2015
+     * @return the current year
+     */
+    public int getYear() {
+        return 2015 + leagueHistory.size();
+    }
     
     /**
      * Updates team history for each team.
@@ -610,9 +637,11 @@ public class League {
      * @return random name
      */
     public String getRandName() {
-        int fn = (int)(Math.random()*nameList.size());
-        int ln = (int)(Math.random()*nameList.size());
-        return nameList.get(fn) + " " + nameList.get(ln);
+        if (Math.random() > 0.001) {
+            int fn = (int) (Math.random() * nameList.size());
+            int ln = (int) (Math.random() * nameList.size());
+            return nameList.get(fn) + " " + nameList.get(ln);
+        } else return "Mark Eeslee";
     }
     
     /**
@@ -1012,7 +1041,6 @@ public class League {
             Collections.sort(teamList, new TeamCompPoll());
 
             StringBuilder sb = new StringBuilder();
-            sb.append("Bowl Game Forecast:\n\n");
             Team t1;
             Team t2;
 
@@ -1068,7 +1096,6 @@ public class League {
         } else {
             // Games have already been scheduled, give actual teams
             StringBuilder sb = new StringBuilder();
-            sb.append("Bowl Game Results:\n\n");
 
             sb.append("Semifinal 1v4:\n");
             sb.append(getGameSummaryBowl(semiG14));

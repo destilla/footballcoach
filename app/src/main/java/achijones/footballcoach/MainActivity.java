@@ -233,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         int numGamesPlayed = userTeam.gameWLSchedule.size();
                         simLeague.playWeek();
+
                         if (simLeague.currentWeek == 15) {
                             // Show NCG summary
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -425,42 +426,11 @@ public class MainActivity extends AppCompatActivity {
                     });
             AlertDialog dialog = builder.create();
             dialog.show();
-        } else if (id == R.id.action_bowlgame_watch) {
+        } else if (id == R.id.action_ccg_bowl_watch) {
             /**
-             * Clicked Bowl Game Watch in drop down menu
+             * Clicked CCG / Bowl Watch in drop down menu
              */
-            String bowlGameWatchStr = simLeague.getBowlGameWatchStr();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(bowlGameWatchStr)
-                    .setTitle(getString(R.string.action_bowlgame_watch))
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //do nothing?
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-            TextView msgTxt = (TextView) dialog.findViewById(android.R.id.message);
-            msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        } else if (id == R.id.action_ccg_watch) {
-            /**
-             * Clicked CCG Watch in drop down menu
-             */
-            String ccgWatchStr = simLeague.getCCGsStr();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(ccgWatchStr)
-                    .setTitle(getString(R.string.action_ccg_watch))
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //do nothing?
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-            TextView msgTxt = (TextView) dialog.findViewById(android.R.id.message);
-            msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            showBowlCCGDialog();
         } else if (id == R.id.action_save_league) {
             /**
              * Clicked Save League in drop down menu
@@ -702,6 +672,45 @@ public class MainActivity extends AppCompatActivity {
                         teamRankingsAdapter.clear();
                         teamRankingsAdapter.addAll(rankings);
                         teamRankingsAdapter.notifyDataSetChanged();
+                    }
+
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // do nothing
+                    }
+                });
+    }
+
+    public void showBowlCCGDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("CCGs / Bowl Games")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing?
+                    }
+                })
+                .setView(getLayoutInflater().inflate(R.layout.bowl_ccg_dialog, null));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        String[] selection = {"Conf Championships", "Bowl Games"};
+        Spinner bowlCCGSpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
+        ArrayAdapter<String> bowlCCGadapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, selection);
+        bowlCCGadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bowlCCGSpinner.setAdapter(bowlCCGadapter);
+
+        final TextView bowlCCGscores = (TextView) dialog.findViewById(R.id.textViewBowlCCGDialog);
+
+        bowlCCGSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) {
+                            bowlCCGscores.setText(simLeague.getCCGsStr());
+                        } else {
+                            bowlCCGscores.setText(simLeague.getBowlGameWatchStr());
+                        }
                     }
 
                     public void onNothingSelected(AdapterView<?> parent) {

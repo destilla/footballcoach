@@ -23,14 +23,9 @@
         android:title="@string/action_rankings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_bowlgame_watch"
+        android:id="@+id/action_ccg_bowl_watch"
         android:orderInCategory="100"
-        android:title="@string/action_bowlgame_watch"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_ccg_watch"
-        android:orderInCategory="100"
-        android:title="@string/action_ccg_watch"
+        android:title="@string/action_ccg_bowl_watch"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_heisman"

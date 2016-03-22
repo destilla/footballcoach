@@ -262,11 +262,11 @@ public class Game implements Serializable {
          * Ks
          */
         gameL.append("\nKs\nName\nYr Ovr/Pot\nFGM/FGA\nXPM/XPA\n");
-        gameC.append("\n"+awayTeam.abbr+"\n"+awayTeam.getK(1).getInitialName()+"\n");
-        gameC.append(awayTeam.getK(1).getYrStr()+" "+awayTeam.getK(1).ratOvr+"/"+awayTeam.getK(1).ratPot+"\n");
+        gameC.append("\n"+awayTeam.abbr+"\n"+awayTeam.getK(0).getInitialName()+"\n");
+        gameC.append(awayTeam.getK(0).getYrStr()+" "+awayTeam.getK(0).ratOvr+"/"+awayTeam.getK(0).ratPot+"\n");
         gameC.append(AwayKStats[2]+"/"+AwayKStats[3]+" FG\n"+AwayKStats[0]+"/"+AwayKStats[1]+" XP\n");
-        gameR.append("\n"+homeTeam.abbr+"\n"+homeTeam.getK(1).getInitialName()+"\n");
-        gameR.append(homeTeam.getK(1).getYrStr()+" "+homeTeam.getK(1).ratOvr+"/"+homeTeam.getK(1).ratPot+"\n");
+        gameR.append("\n"+homeTeam.abbr+"\n"+homeTeam.getK(0).getInitialName()+"\n");
+        gameR.append(homeTeam.getK(0).getYrStr()+" "+homeTeam.getK(0).ratOvr+"/"+homeTeam.getK(0).ratPot+"\n");
         gameR.append(HomeKStats[2]+"/"+HomeKStats[3]+" FG\n"+HomeKStats[0]+"/"+HomeKStats[1]+" XP\n");
 
         gameSum[0] = gameL.toString();
@@ -431,6 +431,9 @@ public class Game implements Serializable {
                 awayTeam.totalLosses++;
                 awayTeam.gameWLSchedule.add("L");
                 homeTeam.gameWinsAgainst.add(awayTeam);
+                homeTeam.winStreak.addWin();
+                homeTeam.league.checkLongestWinStreak(homeTeam.winStreak);
+                awayTeam.winStreak.resetStreak(awayTeam.league.getYear());
             } else {
                 homeTeam.losses++;
                 homeTeam.totalLosses++;
@@ -439,6 +442,9 @@ public class Game implements Serializable {
                 awayTeam.totalWins++;
                 awayTeam.gameWLSchedule.add("W");
                 awayTeam.gameWinsAgainst.add(homeTeam);
+                awayTeam.winStreak.addWin();
+                awayTeam.league.checkLongestWinStreak(awayTeam.winStreak);
+                homeTeam.winStreak.resetStreak(homeTeam.league.getYear());
             }
 
             // Add points/opp points
