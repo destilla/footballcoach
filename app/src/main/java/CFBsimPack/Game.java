@@ -997,6 +997,40 @@ public class Game implements Serializable {
     }
 
     /**
+     * Kick the ball off following a safety, turning the ball over to the other team.
+     * Safety free kicks happen from the 20 instead of the 35, so start the kicker from further back.
+     * @param offense kicking the ball off
+     */
+    private void freeKick( Team offense ) {
+        //Decide whether to onside kick. Only if losing but within 8 points with < 3 min to go
+        if ( gameTime < 180 && ((gamePoss && (awayScore - homeScore) <= 8 && (awayScore - homeScore) > 0)
+                || (!gamePoss && (homeScore - awayScore) <=8 && (homeScore - awayScore) > 0))) {
+            // Yes, do onside
+            if (offense.getK(0).ratKickFum * Math.random() > 60 || Math.random() < 0.1) {
+                //Success!
+                gameEventLog += getEventPrefix() + offense.abbr + " K " + offense.getK(0).name + " successfully executes onside kick! " + offense.abbr + " has possession!";
+            } else {
+                // Fail
+                gameEventLog += getEventPrefix() + offense.abbr + " K " + offense.getK(0).name + " failed the onside kick and lost possession.";
+                gamePoss = !gamePoss;
+            }
+            gameYardLine = 50;
+            gameDown = 1;
+            gameYardsNeed = 10;
+        } else {
+            // Just regular kick off
+            gameYardLine = (int) (115 - ( offense.getK(0).ratKickPow + 20 - 40*Math.random() ));
+            if ( gameYardLine <= 0 ) gameYardLine = 20;
+            gameDown = 1;
+            gameYardsNeed = 10;
+            gamePoss = !gamePoss;
+        }
+
+        gameTime -= 15*Math.random();
+    }
+
+
+    /**
      * Punt the ball if it is a 4th down and decided not to go for it.
      * Will turnover possession.
      * @param offense kicking the punt
@@ -1035,7 +1069,7 @@ public class Game implements Serializable {
     }
 
     /**
-     * Perform safety. Will add 2 to the correct team and give the ball over via a kick off.
+     * Perform safety. Will add 2 to the correct team and give the ball over via a free kick.
      */
     private void safety() {
         //addPointsQuarter(2);
@@ -1043,12 +1077,12 @@ public class Game implements Serializable {
             awayScore += 2;
             gameEventLog += getEventPrefix() + "SAFETY!\n" + homeTeam.abbr + " QB " + homeTeam.getQB(0).name +
                     " was tackled in the endzone! Result is a safety and " + awayTeam.abbr + " will get possession.";
-            kickOff(homeTeam);
+            freeKick(homeTeam);
         } else {
             homeScore += 2;
             gameEventLog += getEventPrefix() + "SAFETY!\n" + awayTeam.abbr + " QB " + awayTeam.getQB(0).name +
                     " was tackled in the endzone! Result is a safety and " + homeTeam.abbr + " will get possession.";
-            kickOff(awayTeam);
+            freeKick(awayTeam);
         }
     }
 
