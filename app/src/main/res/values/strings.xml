@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Football Coach</string>
+    <string name="app_name">CFB Coach</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_team_strategy">Set Team Strategy</string>
     <string name="action_team_lineup">Set Team Lineup</string>
@@ -160,6 +160,22 @@
         Theo,
         Isaac,
         Squires
+    </string>
+    <string name="league_player_first_names">
+        First1,
+        First2,
+        First3,
+        First4,
+        First5,
+        First6,
+    </string>
+    <string name="league_player_last_names">
+        Last1,
+        Last2,
+        Last3,
+        Last4,
+        Last5,
+        Last6
     </string>
     <string name="tutBasics">
         In Football Coach, you take the role of a newly hired coach at your college of choice.

@@ -26,7 +26,8 @@ public class League {
     public ArrayList<String> heismanHistory;
     public ArrayList<Conference> conferences;
     public ArrayList<Team> teamList;
-    public ArrayList<String> nameList;
+    public ArrayList<String> firstNameList;
+    public ArrayList<String> lastNameList;
     public ArrayList< ArrayList<String> > newsStories;
     
     //Current week, 1-14
@@ -54,7 +55,7 @@ public class League {
      * Creates League, sets up Conferences, reads team names and conferences from file.
      * Also schedules games for every team.
      */
-    public League(String namesCSV) {
+    public League(String firstNamesCSV, String lastNamesCSV) {
         heismanDecided = false;
         hasScheduledBowls = false;
         bowlGames = new Game[10];
@@ -66,7 +67,7 @@ public class League {
         conferences.add( new Conference("LAKES", this) );
         conferences.add( new Conference("NORTH", this) );
         conferences.add( new Conference("COWBY", this) );
-        conferences.add( new Conference("PACIF", this) );
+        conferences.add( new Conference("PAC10", this) );
         conferences.add( new Conference("MOUNT", this) );
 
         // Initialize new stories lists
@@ -78,11 +79,17 @@ public class League {
                 "on your mind, or just a winning season, good luck!");
 
         
-        //read names from file
-        nameList = new ArrayList<String>();
-        String[] namesSplit = namesCSV.split(",");
-        for (String n : namesSplit) {
-            nameList.add(n.trim());
+        //read first names from file
+        firstNameList = new ArrayList<String>();
+        String[] firstNamesSplit = firstNamesCSV.split(",");
+        for (String n : firstNamesSplit) {
+            firstNameList.add(n.trim());
+        }
+        //read last names from file
+        lastNameList = new ArrayList<String>();
+        String[] lastNamesSplit = lastNamesCSV.split(",");
+        for (String n : lastNamesSplit) {
+            lastNameList.add(n.trim());
         }
 
 
@@ -135,17 +142,17 @@ public class League {
         conferences.get(3).confTeams.add( new Team( "Tulsa", "TUL", "COWBY", this, 55, "OKS" ));
         conferences.get(3).confTeams.add( new Team( "Univ of Austin", "AUS", "COWBY", this, 50, "TXS" ));
 
-        //PACIF
-        conferences.get(4).confTeams.add( new Team( "California", "CAL", "PACIF", this, 90, "ULA" ));
-        conferences.get(4).confTeams.add( new Team( "Oregon", "ORE", "PACIF", this, 85, "WAS" ));
-        conferences.get(4).confTeams.add( new Team( "Los Angeles", "ULA", "PACIF", this, 80, "CAL" ));
-        conferences.get(4).confTeams.add( new Team( "Oakland St", "OAK", "PACIF", this, 75, "HOL" ));
-        conferences.get(4).confTeams.add( new Team( "Washington", "WAS", "PACIF", this, 75, "ORE" ));
-        conferences.get(4).confTeams.add( new Team( "Hawaii", "HAW", "PACIF", this, 70, "SAM" ));
-        conferences.get(4).confTeams.add( new Team( "Seattle", "SEA", "PACIF", this, 70, "SAN" ));
-        conferences.get(4).confTeams.add( new Team( "Hollywood St", "HOL", "PACIF", this, 70, "OAK" ));
-        conferences.get(4).confTeams.add( new Team( "San Diego St", "SAN", "PACIF", this, 60, "SEA" ));
-        conferences.get(4).confTeams.add( new Team( "American Samoa", "SAM", "PACIF", this, 25, "HAW" ));
+        //PAC10
+        conferences.get(4).confTeams.add( new Team( "California", "CAL", "PAC10", this, 70, "STAN" ));
+        conferences.get(4).confTeams.add( new Team( "Oregon", "ORE", "PAC10", this, 85, "UW " ));
+        conferences.get(4).confTeams.add( new Team( "Univ Cal Los Angeles", "UCLA", "PAC10", this, 75, "USC" ));
+        conferences.get(4).confTeams.add( new Team( "Stanford", "STAN", "PAC10", this, 80, "CAL" ));
+        conferences.get(4).confTeams.add( new Team( "Washington", "UW ", "PAC10", this, 75, "ORE" ));
+        conferences.get(4).confTeams.add( new Team( "Washington St", "WSU", "PAC10", this, 60, "LBSU" ));
+        conferences.get(4).confTeams.add( new Team( "Arizona St.", "ASU", "PAC10", this, 70, "ARI" ));
+        conferences.get(4).confTeams.add( new Team( "Univ of Southern Calif", "USC", "PAC10", this, 90, "UCLA" ));
+        conferences.get(4).confTeams.add( new Team( "Arizona", "ARI", "PAC10", this, 70, "ASU" ));
+        conferences.get(4).confTeams.add( new Team( "Long Beach St", "LBSU", "PAC10", this, 40, "WSU" ));
 
         //MOUNT
         conferences.get(5).confTeams.add( new Team( "Colorado", "COL", "MOUNT", this, 80, "DEN" ));
@@ -184,7 +191,7 @@ public class League {
      * Create League from saved file.
      * @param saveFile file that league is saved in
      */
-    public League(File saveFile, String namesCSV) {
+    public League(File saveFile, String firstNamesCSV, String lastNamesCSV) {
         heismanDecided = false;
         hasScheduledBowls = false;
         bowlGames = new Game[10];
@@ -217,7 +224,7 @@ public class League {
             conferences.add( new Conference("LAKES", this) );
             conferences.add( new Conference("NORTH", this) );
             conferences.add( new Conference("COWBY", this) );
-            conferences.add( new Conference("PACIF", this) );
+            conferences.add( new Conference("PAC10", this) );
             conferences.add( new Conference("MOUNT", this) );
             String[] splits;
             for(int i = 0; i < 60; ++i) { //Do for every team (60)
@@ -247,12 +254,16 @@ public class League {
             bufferedReader.close();
 
             //read names from file
-            nameList = new ArrayList<String>();
-            String[] namesSplit = namesCSV.split(",");
-            for (String n : namesSplit) {
-                nameList.add(n.trim());
+            firstNameList = new ArrayList<String>();
+            String[] firstNamesSplit = firstNamesCSV.split(",");
+            for (String n : firstNamesSplit) {
+                firstNameList.add(n.trim());
             }
-
+            lastNameList = new ArrayList<String>();
+            String[] lastNamesSplit = lastNamesCSV.split(",");
+            for (String n : lastNamesSplit) {
+                lastNameList.add(n.trim());
+            }
             //set up schedule
             for (int i = 0; i < conferences.size(); ++i ) {
                 conferences.get(i).setUpSchedule();
@@ -293,7 +304,7 @@ public class League {
         if (conf.equals("LAKES")) return 1;
         if (conf.equals("NORTH")) return 2;
         if (conf.equals("COWBY")) return 3;
-        if (conf.equals("PACIF")) return 4;
+        if (conf.equals("PAC10")) return 4;
         if (conf.equals("MOUNT")) return 5;
         return 0;
     }
@@ -610,9 +621,9 @@ public class League {
      * @return random name
      */
     public String getRandName() {
-        int fn = (int)(Math.random()*nameList.size());
-        int ln = (int)(Math.random()*nameList.size());
-        return nameList.get(fn) + " " + nameList.get(ln);
+        int fn = (int)(Math.random()*firstNameList.size());
+        int ln = (int)(Math.random()*lastNameList.size());
+        return firstNameList.get(fn) + " " + lastNameList.get(ln);
     }
     
     /**

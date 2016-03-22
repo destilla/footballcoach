@@ -83,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
         if(extras != null) {
             String saveFileStr = extras.getString("SAVE_FILE");
             if (saveFileStr.equals("NEW_LEAGUE")) {
-                simLeague = new League(getString(R.string.league_player_names));
+                simLeague = new League(getString(R.string.league_player_first_names), getString(R.string.league_player_last_names));
                 season = 2015;
             } else if (saveFileStr.equals("DONE_RECRUITING")) {
                 File saveFile = new File(getFilesDir(), "saveLeagueRecruiting.cfb");
                 if (saveFile.exists()) {
-                    simLeague = new League(saveFile, getString(R.string.league_player_names));
+                    simLeague = new League(saveFile, getString(R.string.league_player_first_names), getString(R.string.league_player_last_names));
                     userTeam = simLeague.userTeam;
                     userTeamStr = userTeam.name;
                     userTeam.recruitPlayersFromStr(extras.getString("RECRUITS"));
@@ -98,13 +98,13 @@ public class MainActivity extends AppCompatActivity {
                     currentTeam = userTeam;
                     loadedLeague = true;
                 } else {
-                    simLeague = new League(getString(R.string.league_player_names));
+                    simLeague = new League(getString(R.string.league_player_first_names), getString(R.string.league_player_last_names));
                     season = 2015;
                 }
             } else {
                 File saveFile = new File(getFilesDir(), saveFileStr);
                 if (saveFile.exists()) {
-                    simLeague = new League(saveFile, getString(R.string.league_player_names));
+                    simLeague = new League(saveFile, getString(R.string.league_player_first_names), getString(R.string.league_player_last_names));
                     userTeam = simLeague.userTeam;
                     userTeamStr = userTeam.name;
                     simLeague.updateTeamTalentRatings();
@@ -112,12 +112,12 @@ public class MainActivity extends AppCompatActivity {
                     currentTeam = userTeam;
                     loadedLeague = true;
                 } else {
-                    simLeague = new League(getString(R.string.league_player_names));
+                    simLeague = new League(getString(R.string.league_player_first_names), getString(R.string.league_player_last_names));
                     season = 2015;
                 }
             }
         } else {
-            simLeague = new League(getString(R.string.league_player_names));
+            simLeague = new League(getString(R.string.league_player_first_names), getString(R.string.league_player_last_names));
             season = 2015;
         }
 
