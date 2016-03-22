@@ -595,7 +595,7 @@ public class Game implements Serializable {
             }
         } else if ( (gameDown == 3 && gameYardsNeed > 4) || ((gameDown==1 || gameDown==2) && (preferPass >= preferRush)) ) {
             // pass play
-            passingPlay( offense, defense );
+            passingPlay(offense, defense);
         } else {
             //run play
             rushingPlay( offense, defense );
@@ -871,8 +871,6 @@ public class Game implements Serializable {
             }
             gameEventLog += getEventPrefix() + offense.abbr + " K " + offense.getK(0).name + " made the " + (110-gameYardLine) + " yard FG.";
             addPointsQuarter(3);
-            //offense.teamPoints += 3;
-            //defense.teamOppPoints += 3;
             offense.getK(0).statsFGMade++;
             offense.getK(0).statsFGAtt++;
             kickOff( offense );
@@ -884,12 +882,12 @@ public class Game implements Serializable {
             gameYardLine = 100 - gameYardLine;
             gameDown = 1;
             gameYardsNeed = 10;
-            gamePoss = !gamePoss;
             if ( gamePoss ) { // home possession
                 HomeKStats[3]++;
             } else {
                 AwayKStats[3]++;
             }
+            gamePoss = !gamePoss;
         }
 
         gameTime -= 20;
@@ -954,11 +952,15 @@ public class Game implements Serializable {
                 }
                 gameEventLog += getEventPrefix() + " " + tdInfo + " " + offense.getK(0).name + " made the XP.";
                 addPointsQuarter(1);
-                //offense.teamPoints += 1;
-                //defense.teamOppPoints += 1;
                 offense.getK(0).statsXPMade++;
             } else {
                 gameEventLog += getEventPrefix() + " " + tdInfo + " " + offense.getK(0).name + " missed the XP.";
+                // missed XP
+                if ( gamePoss ) { // home possession
+                    HomeKStats[1]++;
+                } else {
+                    AwayKStats[1]++;
+                }
             }
             offense.getK(0).statsXPAtt++;
         }
