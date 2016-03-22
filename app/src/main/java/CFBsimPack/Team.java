@@ -38,6 +38,8 @@ public class Team {
     public int totalNCLosses;
     public int totalBowls;
     public int totalBowlLosses;
+
+    public TeamStreak winStreak;
     
     //Game Log variables
     public ArrayList<Game> gameSchedule;
@@ -142,6 +144,7 @@ public class Team {
         //set stats
         totalWins = 0;
         totalLosses = 0;
+        winStreak = new TeamStreak(league.getYear(), league.getYear(), 0, this);
         totalCCs = 0;
         totalNCs = 0;
         totalCCLosses = 0;
@@ -218,6 +221,7 @@ public class Team {
         teamPollScore = 0;
         teamStratOffNum = 1; // 1 is the default strats
         teamStratDefNum = 1;
+        winStreak = new TeamStreak(league.getYear(), league.getYear(), 0, this);
 
         // Actually load the team from the string
         String[] lines = loadStr.split("%");
@@ -239,10 +243,16 @@ public class Team {
                 totalCCLosses = Integer.parseInt(teamInfo[10]);
                 totalBowls = Integer.parseInt(teamInfo[11]);
                 totalBowlLosses = Integer.parseInt(teamInfo[12]);
-                if (teamInfo.length == 16) {
+                if (teamInfo.length >= 16) {
                     teamStratOffNum = Integer.parseInt(teamInfo[13]);
                     teamStratDefNum = Integer.parseInt(teamInfo[14]);
                     showPopups = (Integer.parseInt(teamInfo[15]) == 1);
+                    if (teamInfo.length == 19) {
+                        winStreak = new TeamStreak(Integer.parseInt(teamInfo[16]),
+                                Integer.parseInt(teamInfo[17]),
+                                Integer.parseInt(teamInfo[18]),
+                                this);
+                    }
                 }
             } else {
                 totalCCLosses = 0;
@@ -301,8 +311,39 @@ public class Team {
         if (teamPrestige < 45 && !name.equals("American Samoa")) teamPrestige = 45;
 
         diffPrestige = teamPrestige - oldPrestige;
+        checkLeagueRecords();
         advanceSeasonPlayers();
         
+    }
+
+    /**
+     * Checks if any of the league records were broken by this team.
+     */
+    public void checkLeagueRecords() {
+        league.leagueRecords.checkRecord("Team PPG", teamPoints/numGames(), abbr, league.getYear());
+        league.leagueRecords.checkRecord("Team Opp PPG", teamOppPoints/numGames(), abbr, league.getYear());
+        league.leagueRecords.checkRecord("Team YPG", teamYards/numGames(), abbr, league.getYear());
+        league.leagueRecords.checkRecord("Team Opp YPG", teamOppYards/numGames(), abbr, league.getYear());
+        league.leagueRecords.checkRecord("Team PPG", teamPoints/numGames(), abbr, league.getYear());
+        league.leagueRecords.checkRecord("Team TO Diff", teamTODiff, abbr, league.getYear());
+
+        league.leagueRecords.checkRecord("Pass Yards", getQB(0).statsPassYards, abbr + " " + getQB(0).getInitialName(), league.getYear());
+        league.leagueRecords.checkRecord("Pass TDs", getQB(0).statsTD, abbr + " " + getQB(0).getInitialName(), league.getYear());
+        league.leagueRecords.checkRecord("Interceptions", getQB(0).statsInt, abbr + " " + getQB(0).getInitialName(), league.getYear());
+        league.leagueRecords.checkRecord("Comp Percent", (100*getQB(0).statsPassComp)/getQB(0).statsPassAtt, abbr + " " + getQB(0).getInitialName(), league.getYear());
+
+        for (int i = 0; i < 2; ++i) {
+            league.leagueRecords.checkRecord("Rush Yards", getRB(i).statsRushYards, abbr + " " + getRB(i).getInitialName(), league.getYear());
+            league.leagueRecords.checkRecord("Rush TDs", getRB(i).statsTD, abbr + " " + getRB(i).getInitialName(), league.getYear());
+            league.leagueRecords.checkRecord("Rush Fumbles", getRB(i).statsFumbles, abbr + " " + getRB(i).getInitialName(), league.getYear());
+        }
+
+        for (int i = 0; i < 3; ++i) {
+            league.leagueRecords.checkRecord("Rec Yards", getWR(i).statsRecYards, abbr + " " + getWR(i).getInitialName(), league.getYear());
+            league.leagueRecords.checkRecord("Rec TDs", getWR(i).statsTD, abbr + " " + getWR(i).getInitialName(), league.getYear());
+            league.leagueRecords.checkRecord("Catch Percent", (100*getWR(i).statsReceptions)/getWR(i).statsTargets, abbr + " " + getWR(i).getInitialName(), league.getYear());
+        }
+
     }
     
     /**
@@ -776,7 +817,7 @@ public class Team {
      * Updates team history.
      */
     public void updateTeamHistory() {
-        teamHistory.add((teamHistory.size() + 2015) + ": #" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ") "
+        teamHistory.add(league.getYear() + ": #" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ") "
                 + confChampion + " " + semiFinalWL + natChampWL);
     }
 

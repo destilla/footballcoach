@@ -262,11 +262,11 @@ public class Game implements Serializable {
          * Ks
          */
         gameL.append("\nKs\nName\nYr Ovr/Pot\nFGM/FGA\nXPM/XPA\n");
-        gameC.append("\n"+awayTeam.abbr+"\n"+awayTeam.getK(1).getInitialName()+"\n");
-        gameC.append(awayTeam.getK(1).getYrStr()+" "+awayTeam.getK(1).ratOvr+"/"+awayTeam.getK(1).ratPot+"\n");
+        gameC.append("\n"+awayTeam.abbr+"\n"+awayTeam.getK(0).getInitialName()+"\n");
+        gameC.append(awayTeam.getK(0).getYrStr()+" "+awayTeam.getK(0).ratOvr+"/"+awayTeam.getK(0).ratPot+"\n");
         gameC.append(AwayKStats[2]+"/"+AwayKStats[3]+" FG\n"+AwayKStats[0]+"/"+AwayKStats[1]+" XP\n");
-        gameR.append("\n"+homeTeam.abbr+"\n"+homeTeam.getK(1).getInitialName()+"\n");
-        gameR.append(homeTeam.getK(1).getYrStr()+" "+homeTeam.getK(1).ratOvr+"/"+homeTeam.getK(1).ratPot+"\n");
+        gameR.append("\n"+homeTeam.abbr+"\n"+homeTeam.getK(0).getInitialName()+"\n");
+        gameR.append(homeTeam.getK(0).getYrStr()+" "+homeTeam.getK(0).ratOvr+"/"+homeTeam.getK(0).ratPot+"\n");
         gameR.append(HomeKStats[2]+"/"+HomeKStats[3]+" FG\n"+HomeKStats[0]+"/"+HomeKStats[1]+" XP\n");
 
         gameSum[0] = gameL.toString();
@@ -431,6 +431,9 @@ public class Game implements Serializable {
                 awayTeam.totalLosses++;
                 awayTeam.gameWLSchedule.add("L");
                 homeTeam.gameWinsAgainst.add(awayTeam);
+                homeTeam.winStreak.addWin();
+                homeTeam.league.checkLongestWinStreak(homeTeam.winStreak);
+                awayTeam.winStreak.resetStreak(awayTeam.league.getYear());
             } else {
                 homeTeam.losses++;
                 homeTeam.totalLosses++;
@@ -439,6 +442,9 @@ public class Game implements Serializable {
                 awayTeam.totalWins++;
                 awayTeam.gameWLSchedule.add("W");
                 awayTeam.gameWinsAgainst.add(homeTeam);
+                awayTeam.winStreak.addWin();
+                awayTeam.league.checkLongestWinStreak(awayTeam.winStreak);
+                homeTeam.winStreak.resetStreak(homeTeam.league.getYear());
             }
 
             // Add points/opp points
@@ -589,7 +595,7 @@ public class Game implements Serializable {
             }
         } else if ( (gameDown == 3 && gameYardsNeed > 4) || ((gameDown==1 || gameDown==2) && (preferPass >= preferRush)) ) {
             // pass play
-            passingPlay( offense, defense );
+            passingPlay(offense, defense);
         } else {
             //run play
             rushingPlay( offense, defense );
@@ -865,8 +871,6 @@ public class Game implements Serializable {
             }
             gameEventLog += getEventPrefix() + offense.abbr + " K " + offense.getK(0).name + " made the " + (110-gameYardLine) + " yard FG.";
             addPointsQuarter(3);
-            //offense.teamPoints += 3;
-            //defense.teamOppPoints += 3;
             offense.getK(0).statsFGMade++;
             offense.getK(0).statsFGAtt++;
             kickOff( offense );
@@ -878,12 +882,12 @@ public class Game implements Serializable {
             gameYardLine = 100 - gameYardLine;
             gameDown = 1;
             gameYardsNeed = 10;
-            gamePoss = !gamePoss;
             if ( gamePoss ) { // home possession
                 HomeKStats[3]++;
             } else {
                 AwayKStats[3]++;
             }
+            gamePoss = !gamePoss;
         }
 
         gameTime -= 20;
@@ -948,11 +952,15 @@ public class Game implements Serializable {
                 }
                 gameEventLog += getEventPrefix() + " " + tdInfo + " " + offense.getK(0).name + " made the XP.";
                 addPointsQuarter(1);
-                //offense.teamPoints += 1;
-                //defense.teamOppPoints += 1;
                 offense.getK(0).statsXPMade++;
             } else {
                 gameEventLog += getEventPrefix() + " " + tdInfo + " " + offense.getK(0).name + " missed the XP.";
+                // missed XP
+                if ( gamePoss ) { // home possession
+                    HomeKStats[1]++;
+                } else {
+                    AwayKStats[1]++;
+                }
             }
             offense.getK(0).statsXPAtt++;
         }
