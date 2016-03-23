@@ -80,9 +80,6 @@ public class League {
         }
         newsStories.get(0).add("New Season!>Ready for the new season, coach? Whether the National Championship is " +
                 "on your mind, or just a winning season, good luck!");
-
-<<<<<<< HEAD
-<<<<<<< HEAD
         
         //read first names from file
         firstNameList = new ArrayList<String>();
@@ -95,9 +92,7 @@ public class League {
         String[] lastNamesSplit = lastNamesCSV.split(",");
         for (String n : lastNamesSplit) {
             lastNameList.add(n.trim());
-=======
-=======
->>>>>>> refs/remotes/jonesguy14/master
+
         leagueRecords = new LeagueRecords();
         longestWinStreak = new TeamStreak(getYear(), getYear(), 0, null);
 
