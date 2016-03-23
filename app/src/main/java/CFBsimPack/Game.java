@@ -556,8 +556,8 @@ public class Game implements Serializable {
      */
     private void runPlay( Team offense, Team defense ) {
         if ( gameDown > 4 ) {
-            // DELETE ME: Add a log to the game log to see if turnover on downs happens right
-            //gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
+            //Add a log to the game log to see if turnover on downs happens right
+            gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
 
             //Turn over on downs, change possession, set to first down and 10 yards to go
             gamePoss = !gamePoss;
@@ -698,7 +698,7 @@ public class Game implements Serializable {
                 }
                 if ( escapeChance > 75 && Math.random() < (0.1 + (offense.teamStratOff.getPAB()-defense.teamStratDef.getPAB())/200)) {
                     //wr escapes for TD
-                    yardsGain += 100 - gameYardLine;
+                    yardsGain += 100;
                 }
 
                 //add yardage
@@ -1085,7 +1085,7 @@ public class Game implements Serializable {
         offense.getQB(0).statsSacked++;
         gameYardsNeed += 3;
         gameYardLine -= 3;
-
+        gameDown++;
         if ( gamePoss ) { // home possession
             HomeQBStats[5]++;
         } else {
