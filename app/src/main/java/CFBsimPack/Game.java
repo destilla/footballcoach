@@ -365,8 +365,15 @@ public class Game implements Serializable {
         else possStr = awayTeam.abbr;
         String yardsNeedAdj = "" + gameYardsNeed;
         if (gameYardLine + gameYardsNeed >= 100) yardsNeedAdj = "Goal";
+        int gameDownAdj;
+        if (gameDown > 4) {
+            gameDownAdj = 4;
+        } else
+        {
+            gameDownAdj = gameDown;
+        }
         return "\n\n" + homeTeam.abbr + " " + homeScore + " - " + awayScore + " " + awayTeam.abbr + ", Time: " + convGameTime() +
-                "\n\t" + possStr + " " + gameDown + " and " + yardsNeedAdj + " at " + gameYardLine + " yard line." + "\n";
+                "\n\t" + possStr + " " + gameDownAdj + " and " + yardsNeedAdj + " at " + gameYardLine + " yard line." + "\n";
     }
 
     /**
@@ -549,8 +556,16 @@ public class Game implements Serializable {
      */
     private void runPlay( Team offense, Team defense ) {
         if ( gameDown > 4 ) {
+            // DELETE ME: Add a log to the game log to see if turnover on downs happens right
+            //gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
+
+            //Turn over on downs, change possession, set to first down and 10 yards to go
             gamePoss = !gamePoss;
             gameDown = 1;
+            gameYardsNeed = 10;
+            //and flip which direction the ball is moving in
+            gameYardLine = 100 - gameYardLine;
+
         }
         double preferPass = (offense.getPassProf()*2 - defense.getPassDef()) * Math.random() - 10;
         double preferRush = (offense.getRushProf()*2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
@@ -666,6 +681,11 @@ public class Game implements Serializable {
                 gameDown++;
                 selWRStats[4]++;
                 selWR.statsDrops++;
+                passAttempt(offense, selWR, selWRStats, yardsGain);
+                //Drop ball = inc pass, so run time for the play, stop clock until next play, move on (aka return;)
+                gameTime -= 15*Math.random();
+                return;
+
             } else {
                 //no drop
                 yardsGain = (int) (( normalize(offense.getQB(0).ratPassPow) + normalize(selWR.ratRecSpd) - normalize(selCB.ratCBSpd) )*Math.random()/3.7
@@ -678,7 +698,7 @@ public class Game implements Serializable {
                 }
                 if ( escapeChance > 75 && Math.random() < (0.1 + (offense.teamStratOff.getPAB()-defense.teamStratDef.getPAB())/200)) {
                     //wr escapes for TD
-                    yardsGain += 100;
+                    yardsGain += 100 - gameYardLine;
                 }
 
                 //add yardage
@@ -713,7 +733,11 @@ public class Game implements Serializable {
 
         } else {
             //no completion, advance downs
+            passAttempt(offense, selWR, selWRStats, yardsGain);
             gameDown++;
+            //Incomplete pass stops the clock, so just run time for how long the play took, then move on
+            gameTime -= 15*Math.random();
+            return;
         }
 
         passAttempt(offense, selWR, selWRStats, yardsGain);
@@ -732,11 +756,15 @@ public class Game implements Serializable {
             }
             gamePoss = !gamePoss;
             gameYardLine = 100 - gameYardLine;
+            gameTime -= 15*Math.random();
+            return;
         }
 
         if ( gotTD ) {
+            gameTime -= 15*Math.random();
             kickXP( offense, defense );
             kickOff( offense );
+            return;
         }
 
         gameTime -= 15 + 15*Math.random();
@@ -1057,7 +1085,7 @@ public class Game implements Serializable {
         offense.getQB(0).statsSacked++;
         gameYardsNeed += 3;
         gameYardLine -= 3;
-        gameDown++;
+
         if ( gamePoss ) { // home possession
             HomeQBStats[5]++;
         } else {
@@ -1066,8 +1094,14 @@ public class Game implements Serializable {
 
         if (gameYardLine < 0) {
             // Safety!
+            // Eat some time up for the play that was run, stop it once play is over
+            gameTime -= 10*Math.random();
             safety();
         }
+
+
+        //Similar amount of time as rushing, minus some in-play time -- sacks are faster (usually)
+        gameTime -= 25 + 10*Math.random();
     }
 
     /**
