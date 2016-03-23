@@ -556,8 +556,8 @@ public class Game implements Serializable {
      */
     private void runPlay( Team offense, Team defense ) {
         if ( gameDown > 4 ) {
-            // DELETE ME: Add a log to the game log to see if I did this right
-            gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
+            // DELETE ME: Add a log to the game log to see if turnover on downs happens right
+            //gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
 
             //Turn over on downs, change possession, set to first down and 10 yards to go
             gamePoss = !gamePoss;
@@ -566,7 +566,6 @@ public class Game implements Serializable {
             //and flip which direction the ball is moving in
             gameYardLine = 100 - gameYardLine;
 
-            gameEventLog += getEventPrefix() + "Takeover on downs\n" + defense.abbr + " gets the ball with " + gameDown + "st down after " + offense.abbr + " failed on 4th down.";
         }
         double preferPass = (offense.getPassProf()*2 - defense.getPassDef()) * Math.random() - 10;
         double preferRush = (offense.getRushProf()*2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
