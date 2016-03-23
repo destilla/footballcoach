@@ -566,7 +566,7 @@ public class Game implements Serializable {
             //and flip which direction the ball is moving in
             gameYardLine = 100 - gameYardLine;
 
-        }
+        } else {
         double preferPass = (offense.getPassProf()*2 - defense.getPassDef()) * Math.random() - 10;
         double preferRush = (offense.getRushProf()*2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
 
@@ -616,7 +616,7 @@ public class Game implements Serializable {
             rushingPlay( offense, defense );
         }
     }
-
+}
     /**
      * Passing play.
      * @param offense throwing the ball
@@ -1136,7 +1136,12 @@ public class Game implements Serializable {
             AwayQBStats[1]++;
             awayTOs++;
         }
+
+        //Log the event before decreasing the time, in keeping with the standard of other logged plays (TD, Fumble, etc.)
         gameEventLog += getEventPrefix() + "TURNOVER!\n" + offense.abbr + " QB " + offense.getQB(0).name + " was intercepted.";
+        //Clock stops after a pick, so just run time off the clock for the play that occurred
+        //NOTE: If the ability to run an interception back is ever added, this should be changed to be more time
+        gameTime -= 15*Math.random();
         offense.getQB(0).statsInt++;
         gameDown = 1;
         gameYardsNeed = 10;
