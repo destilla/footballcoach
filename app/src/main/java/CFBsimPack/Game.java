@@ -45,6 +45,16 @@ public class Game implements Serializable {
     public int[] HomeKStats;
     public int[] AwayKStats;
 
+    // Store reference to players, in case starters are changed later
+    private PlayerQB homeQB;
+    private PlayerRB[] homeRBs;
+    private PlayerWR[] homeWRs;
+    private PlayerK homeK;
+    private PlayerQB awayQB;
+    private PlayerRB[] awayRBs;
+    private PlayerWR[] awayWRs;
+    private PlayerK awayK;
+
     String gameEventLog;
     String tdInfo;
 
@@ -75,10 +85,6 @@ public class Game implements Serializable {
 
         homeTOs = 0;
         awayTOs = 0;
-
-        gameEventLog = "LOG: #" + awayTeam.rankTeamPollScore + " " + awayTeam.abbr + " (" + awayTeam.wins + "-" + awayTeam.losses + ") @ #" +
-                homeTeam.rankTeamPollScore + " " + homeTeam.abbr + " (" + homeTeam.wins + "-" + homeTeam.losses + ")" + "\n" +
-                "---------------------------------------------------------";
 
         //initialize arrays, set everything to zero
         HomeQBStats = new int[6];
@@ -126,10 +132,6 @@ public class Game implements Serializable {
         homeQScore = new int[10];
         awayScore = 0;
         awayQScore = new int[10];
-
-        gameEventLog = "LOG: #" + awayTeam.rankTeamPollScore + " " + awayTeam.abbr + " (" + awayTeam.wins + "-" + awayTeam.losses + ") @ #" +
-                homeTeam.rankTeamPollScore + " " + homeTeam.abbr + " (" + homeTeam.wins + "-" + homeTeam.losses + ")" + "\n" +
-                "---------------------------------------------------------";
 
         //initialize arrays, set everything to zero
         HomeQBStats = new int[6];
@@ -181,13 +183,13 @@ public class Game implements Serializable {
          * QBs
          */
         gameL.append("QBs\nName\nYr Ovr/Pot\nTD/Int\nPass Yards\nComp/Att\n");
-        gameC.append(awayTeam.abbr+"\n"+awayTeam.getQB(0).getInitialName()+"\n");
-        gameC.append(awayTeam.getQB(0).getYrStr()+" "+awayTeam.getQB(0).ratOvr+"/"+awayTeam.getQB(0).ratPot+"\n");
+        gameC.append(awayTeam.abbr+"\n"+awayQB.getInitialName()+"\n");
+        gameC.append(awayQB.getYrStr()+" "+awayQB.ratOvr+"/"+awayQB.ratPot+"\n");
         gameC.append(AwayQBStats[2]+"/"+AwayQBStats[3]+"\n"); //td/int
         gameC.append(AwayQBStats[4]+" yds\n"); //pass yards
         gameC.append(AwayQBStats[0]+"/"+AwayQBStats[1]+"\n"); //pass comp/att
-        gameR.append(homeTeam.abbr+"\n"+homeTeam.getQB(0).getInitialName()+"\n");
-        gameR.append(homeTeam.getQB(0).getYrStr()+" "+homeTeam.getQB(0).ratOvr+"/"+homeTeam.getQB(0).ratPot+"\n");
+        gameR.append(homeTeam.abbr+"\n"+homeQB.getInitialName()+"\n");
+        gameR.append(homeQB.getYrStr()+" "+homeQB.ratOvr+"/"+homeQB.ratPot+"\n");
         gameR.append(HomeQBStats[2]+"/"+HomeQBStats[3]+"\n"); //td/int
         gameR.append(HomeQBStats[4]+" yds\n"); //pass yards
         gameR.append(HomeQBStats[0]+"/"+HomeQBStats[1]+"\n"); //pass comp/att
@@ -196,25 +198,25 @@ public class Game implements Serializable {
          * RBs
          */
         gameL.append("\nRBs\nRB1 Name\nYr Ovr/Pot\nTD/Fum\nRush Yards\nYds/Att\n");
-        gameC.append("\n"+awayTeam.abbr+"\n"+awayTeam.getRB(0).getInitialName()+"\n");
-        gameC.append(awayTeam.getRB(0).getYrStr()+" "+awayTeam.getRB(0).ratOvr+"/"+awayTeam.getRB(0).ratPot+"\n");
+        gameC.append("\n"+awayTeam.abbr+"\n"+awayRBs[0].getInitialName()+"\n");
+        gameC.append(awayRBs[0].getYrStr()+" "+awayRBs[0].ratOvr+"/"+awayRBs[0].ratPot+"\n");
         gameC.append(AwayRB1Stats[2]+"/"+AwayRB1Stats[3]+"\n"); //td/fum
         gameC.append(AwayRB1Stats[1]+" yds\n"); //rush yards
         gameC.append(((double)(10*AwayRB1Stats[1]/AwayRB1Stats[0])/10)+"\n");
-        gameR.append("\n"+homeTeam.abbr+"\n"+homeTeam.getRB(0).getInitialName()+"\n");
-        gameR.append(homeTeam.getRB(0).getYrStr()+" "+homeTeam.getRB(0).ratOvr+"/"+homeTeam.getRB(0).ratPot+"\n");
+        gameR.append("\n"+homeTeam.abbr+"\n"+homeRBs[0].getInitialName()+"\n");
+        gameR.append(homeRBs[0].getYrStr()+" "+homeRBs[0].ratOvr+"/"+homeRBs[0].ratPot+"\n");
         gameR.append(HomeRB1Stats[2]+"/"+HomeRB1Stats[3]+"\n"); //td/fum
         gameR.append(HomeRB1Stats[1]+" yds\n"); //rush yards
         gameR.append(((double)(10*HomeRB1Stats[1]/HomeRB1Stats[0])/10)+"\n");
         gameL.append("\n"); gameC.append("\n"); gameR.append("\n");
         gameL.append("RB2 Name\nYr Ovr/Pot\nTD/Fum\nRush Yards\nYds/Att\n");
-        gameC.append(awayTeam.getRB(1).getInitialName()+"\n");
-        gameC.append(awayTeam.getRB(1).getYrStr()+" "+awayTeam.getRB(1).ratOvr+"/"+awayTeam.getRB(1).ratPot+"\n");
+        gameC.append(awayRBs[1].getInitialName()+"\n");
+        gameC.append(awayRBs[1].getYrStr()+" "+awayRBs[1].ratOvr+"/"+awayRBs[1].ratPot+"\n");
         gameC.append(AwayRB2Stats[2]+"/"+AwayRB2Stats[3]+"\n"); //td/fum
         gameC.append(AwayRB2Stats[1]+" yds\n"); //rush yards
         gameC.append(((double)(10*AwayRB2Stats[1]/AwayRB2Stats[0])/10)+"\n");
-        gameR.append(homeTeam.getRB(1).getInitialName()+"\n");
-        gameR.append(homeTeam.getRB(1).getYrStr()+" "+homeTeam.getRB(1).ratOvr+"/"+homeTeam.getRB(1).ratPot+"\n");
+        gameR.append(homeRBs[1].getInitialName()+"\n");
+        gameR.append(homeRBs[1].getYrStr()+" "+homeRBs[1].ratOvr+"/"+homeRBs[1].ratPot+"\n");
         gameR.append(HomeRB2Stats[2]+"/"+HomeRB2Stats[3]+"\n"); //td/fum
         gameR.append(HomeRB2Stats[1]+" yds\n"); //rush yards
         gameR.append(((double)(10*HomeRB2Stats[1]/HomeRB2Stats[0])/10)+"\n");
@@ -223,37 +225,37 @@ public class Game implements Serializable {
          * WRs
          */
         gameL.append("\nWRs\nWR1 Name\nYr Ovr/Pot\nTD/Fum\nRec Yards\nRec/Tgts\n");
-        gameC.append("\n"+awayTeam.abbr+"\n"+awayTeam.getWR(0).getInitialName()+"\n");
-        gameC.append(awayTeam.getWR(0).getYrStr()+" "+awayTeam.getWR(0).ratOvr+"/"+awayTeam.getWR(0).ratPot+"\n");
+        gameC.append("\n"+awayTeam.abbr+"\n"+awayWRs[0].getInitialName()+"\n");
+        gameC.append(awayWRs[0].getYrStr()+" "+awayWRs[0].ratOvr+"/"+awayWRs[0].ratPot+"\n");
         gameC.append(AwayWR1Stats[3]+"/"+AwayWR1Stats[5]+"\n"); //td/fum
         gameC.append(AwayWR1Stats[2]+" yds\n"); //rec yards
         gameC.append(AwayWR1Stats[0]+"/"+AwayWR1Stats[1]+"\n"); //rec/targets
-        gameR.append("\n"+homeTeam.abbr+"\n"+homeTeam.getWR(0).getInitialName()+"\n");
-        gameR.append(homeTeam.getWR(0).getYrStr()+" "+homeTeam.getWR(0).ratOvr+"/"+homeTeam.getWR(0).ratPot+"\n");
+        gameR.append("\n"+homeTeam.abbr+"\n"+homeWRs[0].getInitialName()+"\n");
+        gameR.append(homeWRs[0].getYrStr()+" "+homeWRs[0].ratOvr+"/"+homeWRs[0].ratPot+"\n");
         gameR.append(HomeWR1Stats[3]+"/"+HomeWR1Stats[5]+"\n"); //td/fum
         gameR.append(HomeWR1Stats[2]+" yds\n"); //rec yards
         gameR.append(HomeWR1Stats[0]+"/"+HomeWR1Stats[1]+"\n"); //rec/targets
         gameL.append("\n"); gameC.append("\n"); gameR.append("\n");
         gameL.append("WR2 Name\nYr Ovr/Pot\nTD/Fum\nRec Yards\nRec/Tgts\n");
-        gameC.append(awayTeam.getWR(1).getInitialName()+"\n");
-        gameC.append(awayTeam.getWR(1).getYrStr()+" "+awayTeam.getWR(1).ratOvr+"/"+awayTeam.getWR(1).ratPot+"\n");
+        gameC.append(awayWRs[1].getInitialName()+"\n");
+        gameC.append(awayWRs[1].getYrStr()+" "+awayWRs[1].ratOvr+"/"+awayWRs[1].ratPot+"\n");
         gameC.append(AwayWR2Stats[3]+"/"+AwayWR2Stats[5]+"\n"); //td/fum
         gameC.append(AwayWR2Stats[2]+" yds\n"); //rec yards
         gameC.append(AwayWR2Stats[0]+"/"+AwayWR2Stats[1]+"\n"); //rec/targets
-        gameR.append(homeTeam.getWR(1).getInitialName()+"\n");
-        gameR.append(homeTeam.getWR(1).getYrStr()+" "+homeTeam.getWR(1).ratOvr+"/"+homeTeam.getWR(1).ratPot+"\n");
+        gameR.append(homeWRs[1].getInitialName()+"\n");
+        gameR.append(homeWRs[1].getYrStr()+" "+homeWRs[1].ratOvr+"/"+homeWRs[1].ratPot+"\n");
         gameR.append(HomeWR2Stats[3]+"/"+HomeWR2Stats[5]+"\n"); //td/fum
         gameR.append(HomeWR2Stats[2]+" yds\n"); //rec yards
         gameR.append(HomeWR2Stats[0]+"/"+HomeWR2Stats[1]+"\n"); //rec/targets
         gameL.append("\n"); gameC.append("\n"); gameR.append("\n");
         gameL.append("WR3 Name\nYr Ovr/Pot\nTD/Fum\nRec Yards\nRec/Tgts\n");
-        gameC.append(awayTeam.getWR(2).getInitialName()+"\n");
-        gameC.append(awayTeam.getWR(2).getYrStr()+" "+awayTeam.getWR(2).ratOvr+"/"+awayTeam.getWR(2).ratPot+"\n");
+        gameC.append(awayWRs[2].getInitialName()+"\n");
+        gameC.append(awayWRs[2].getYrStr()+" "+awayWRs[2].ratOvr+"/"+awayWRs[2].ratPot+"\n");
         gameC.append(AwayWR3Stats[3]+"/"+AwayWR3Stats[5]+"\n"); //td/fum
         gameC.append(AwayWR3Stats[2]+" yds\n"); //rec yards
         gameC.append(AwayWR3Stats[0]+"/"+AwayWR3Stats[1]+"\n"); //rec/targets
-        gameR.append(homeTeam.getWR(2).getInitialName()+"\n");
-        gameR.append(homeTeam.getWR(2).getYrStr()+" "+homeTeam.getWR(2).ratOvr+"/"+homeTeam.getWR(2).ratPot+"\n");
+        gameR.append(homeWRs[2].getInitialName()+"\n");
+        gameR.append(homeWRs[2].getYrStr()+" "+homeWRs[2].ratOvr+"/"+homeWRs[2].ratPot+"\n");
         gameR.append(HomeWR3Stats[3]+"/"+HomeWR3Stats[5]+"\n"); //td/fum
         gameR.append(HomeWR3Stats[2]+" yds\n"); //rec yards
         gameR.append(HomeWR3Stats[0]+"/"+HomeWR3Stats[1]+"\n"); //rec/targets
@@ -262,11 +264,11 @@ public class Game implements Serializable {
          * Ks
          */
         gameL.append("\nKs\nName\nYr Ovr/Pot\nFGM/FGA\nXPM/XPA\n");
-        gameC.append("\n"+awayTeam.abbr+"\n"+awayTeam.getK(0).getInitialName()+"\n");
-        gameC.append(awayTeam.getK(0).getYrStr()+" "+awayTeam.getK(0).ratOvr+"/"+awayTeam.getK(0).ratPot+"\n");
+        gameC.append("\n"+awayTeam.abbr+"\n"+awayK.getInitialName()+"\n");
+        gameC.append(awayK.getYrStr()+" "+awayK.ratOvr+"/"+awayK.ratPot+"\n");
         gameC.append(AwayKStats[2]+"/"+AwayKStats[3]+" FG\n"+AwayKStats[0]+"/"+AwayKStats[1]+" XP\n");
-        gameR.append("\n"+homeTeam.abbr+"\n"+homeTeam.getK(0).getInitialName()+"\n");
-        gameR.append(homeTeam.getK(0).getYrStr()+" "+homeTeam.getK(0).ratOvr+"/"+homeTeam.getK(0).ratPot+"\n");
+        gameR.append("\n"+homeTeam.abbr+"\n"+homeK.getInitialName()+"\n");
+        gameR.append(homeK.getYrStr()+" "+homeK.ratOvr+"/"+homeK.ratPot+"\n");
         gameR.append(HomeKStats[2]+"/"+HomeKStats[3]+" FG\n"+HomeKStats[0]+"/"+HomeKStats[1]+" XP\n");
 
         gameSum[0] = gameL.toString();
@@ -400,7 +402,11 @@ public class Game implements Serializable {
         if ( !hasPlayed ) {
             gameEventLog = "LOG: #" + awayTeam.rankTeamPollScore + " " + awayTeam.abbr + " (" + awayTeam.wins + "-" + awayTeam.losses + ") @ #" +
                     homeTeam.rankTeamPollScore + " " + homeTeam.abbr + " (" + homeTeam.wins + "-" + homeTeam.losses + ")" + "\n" +
-                    "---------------------------------------------------------";
+                    "---------------------------------------------------------\n\n" +
+                    awayTeam.abbr + " Off Strategy: " + awayTeam.teamStratOff.getStratName() + "\n" +
+                    awayTeam.abbr + " Def Strategy: " + awayTeam.teamStratDef.getStratName() + "\n" +
+                    homeTeam.abbr + " Off Strategy: " + homeTeam.teamStratOff.getStratName() + "\n" +
+                    homeTeam.abbr + " Def Strategy: " + homeTeam.teamStratDef.getStratName() + "\n";
             //probably establish some home field advantage before playing
             gameTime = 3600;
             gameDown = 1;
@@ -482,6 +488,30 @@ public class Game implements Serializable {
                     awayTeam.wonRivalryGame = true;
                 }
             }
+
+            // Set reference to right players
+            homeQB = homeTeam.getQB(0);
+            homeRBs = new PlayerRB[2];
+            for (int i = 0; i < 2; ++i) {
+                homeRBs[i] = homeTeam.getRB(i);
+            }
+            homeWRs = new PlayerWR[3];
+            for (int i = 0; i < 3; ++i) {
+                homeWRs[i] = homeTeam.getWR(i);
+            }
+            homeK = homeTeam.getK(0);
+
+            awayQB = awayTeam.getQB(0);
+            awayRBs = new PlayerRB[2];
+            for (int i = 0; i < 2; ++i) {
+                awayRBs[i] = awayTeam.getRB(i);
+            }
+            awayWRs = new PlayerWR[3];
+            for (int i = 0; i < 3; ++i) {
+                awayWRs[i] = awayTeam.getWR(i);
+            }
+            awayK = awayTeam.getK(0);
+
         }
     }
 

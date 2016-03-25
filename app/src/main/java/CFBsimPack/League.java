@@ -540,9 +540,6 @@ public class League {
      */
     public void updateLeagueHistory() {
         //update league history
-        for (int i = 0; i < teamList.size(); ++i) {
-            teamList.get(i).updatePollScore();
-        }
         Collections.sort( teamList, new TeamCompPoll() );
         String[] yearTop10 = new String[10];
         Team tt;

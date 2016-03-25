@@ -20,11 +20,13 @@
         android:layout_marginBottom="5dp"
         android:background="@drawable/button_shape_fc_neutral"/>
 
-    <TextView
+    <Button
         android:id="@+id/gameScheduleRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:paddingEnd="20dp"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="?android:attr/borderlessButtonStyle"/>
 </RelativeLayout>
