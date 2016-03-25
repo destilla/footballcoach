@@ -456,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void examineTeam(String teamName) {
+    public void examineTeam(String teamName) {
         wantUpdateConf = 0;
         // Find team
         Team tempT = simLeague.teamList.get(0);
@@ -609,31 +609,135 @@ public class MainActivity extends AppCompatActivity {
     public void showGameDialog(Game g) {
         String[] gameStr;
         if (g.hasPlayed) {
+            // Show game sumamry dialog
             gameStr = g.getGameSummaryStr();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(g.awayTeam.abbr + " @ " + g.homeTeam.abbr + ": " + g.gameName)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //do nothing?
+                        }
+                    })
+                    .setView(getLayoutInflater().inflate(R.layout.game_dialog, null));
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            final TextView gameL = (TextView) dialog.findViewById(R.id.gameDialogLeft);
+            gameL.setText(gameStr[0]);
+            final TextView gameC = (TextView) dialog.findViewById(R.id.gameDialogCenter);
+            gameC.setText(gameStr[1]);
+            final TextView gameR = (TextView) dialog.findViewById(R.id.gameDialogRight);
+            gameR.setText(gameStr[2]);
+            final TextView gameB = (TextView) dialog.findViewById(R.id.gameDialogBottom);
+            gameB.setText(gameStr[3] + "\n\n");
         } else {
+            // Show game scouting dialog
             gameStr = g.getGameScoutStr();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(g.awayTeam.abbr + " @ " + g.homeTeam.abbr + ": " + g.gameName)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //do nothing?
+                        }
+                    })
+                    .setView(getLayoutInflater().inflate(R.layout.game_scout_dialog, null));
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            final TextView gameL = (TextView) dialog.findViewById(R.id.gameScoutDialogLeft);
+            gameL.setText(gameStr[0]);
+            final TextView gameC = (TextView) dialog.findViewById(R.id.gameScoutDialogCenter);
+            gameC.setText(gameStr[1]);
+            final TextView gameR = (TextView) dialog.findViewById(R.id.gameScoutDialogRight);
+            gameR.setText(gameStr[2]);
+
+            // Set up spinners to choose strategy, if the game involves the user team
+            if (g.awayTeam == userTeam || g.homeTeam == userTeam) {
+
+                // Set text to show user team's abbr
+                TextView textScoutOffenseStrategy = (TextView) dialog.findViewById(R.id.textScoutOffenseStrategy);
+                TextView textScoutDefenseStrategy = (TextView) dialog.findViewById(R.id.textScoutDefenseStrategy);
+                textScoutOffenseStrategy.setText(userTeam.abbr + " Off Strategy:");
+                textScoutDefenseStrategy.setText(userTeam.abbr + " Def Strategy:");
+
+                // Get the strategy options
+                final TeamStrategy[] tsOff = userTeam.getTeamStrategiesOff();
+                final TeamStrategy[] tsDef = userTeam.getTeamStrategiesDef();
+                int offStratNum = 0;
+                int defStratNum = 0;
+
+                String[] stratOffSelection = new String[tsOff.length];
+                for (int i = 0; i < tsOff.length; ++i) {
+                    stratOffSelection[i] = tsOff[i].getStratName();
+                    if (stratOffSelection[i].equals(userTeam.teamStratOff.getStratName()))
+                        offStratNum = i;
+                }
+
+                String[] stratDefSelection = new String[tsDef.length];
+                for (int i = 0; i < tsDef.length; ++i) {
+                    stratDefSelection[i] = tsDef[i].getStratName();
+                    if (stratDefSelection[i].equals(userTeam.teamStratDef.getStratName()))
+                        defStratNum = i;
+                }
+
+                // Offense Strategy Spinner
+                Spinner stratOffSelectionSpinner = (Spinner) dialog.findViewById(R.id.spinnerScoutOffenseStrategy);
+                ArrayAdapter<String> stratOffSpinnerAdapter = new ArrayAdapter<String>(this,
+                        android.R.layout.simple_spinner_item, stratOffSelection);
+                stratOffSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                stratOffSelectionSpinner.setAdapter(stratOffSpinnerAdapter);
+                stratOffSelectionSpinner.setSelection(offStratNum);
+
+                stratOffSelectionSpinner.setOnItemSelectedListener(
+                        new AdapterView.OnItemSelectedListener() {
+                            public void onItemSelected(
+                                    AdapterView<?> parent, View view, int position, long id) {
+                                userTeam.teamStratOff = tsOff[position];
+                                userTeam.teamStratOffNum = position;
+                            }
+
+                            public void onNothingSelected(AdapterView<?> parent) {
+                                // do nothing
+                            }
+                        });
+
+                // Defense Spinner Adapter
+                Spinner stratDefSelectionSpinner = (Spinner) dialog.findViewById(R.id.spinnerScoutDefenseStrategy);
+                ArrayAdapter<String> stratDefSpinnerAdapter = new ArrayAdapter<String>(this,
+                        android.R.layout.simple_spinner_item, stratDefSelection);
+                stratDefSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                stratDefSelectionSpinner.setAdapter(stratDefSpinnerAdapter);
+                stratDefSelectionSpinner.setSelection(defStratNum);
+
+                stratDefSelectionSpinner.setOnItemSelectedListener(
+                        new AdapterView.OnItemSelectedListener() {
+                            public void onItemSelected(
+                                    AdapterView<?> parent, View view, int position, long id) {
+                                userTeam.teamStratDef = tsDef[position];
+                                userTeam.teamStratDefNum = position;
+                            }
+
+                            public void onNothingSelected(AdapterView<?> parent) {
+                                // do nothing
+                            }
+                        });
+            } else {
+                // Make the strategy stuff invisible
+                Spinner stratOffSelectionSpinner = (Spinner) dialog.findViewById(R.id.spinnerScoutOffenseStrategy);
+                Spinner stratDefSelectionSpinner = (Spinner) dialog.findViewById(R.id.spinnerScoutDefenseStrategy);
+                stratOffSelectionSpinner.setVisibility(View.GONE);
+                stratDefSelectionSpinner.setVisibility(View.GONE);
+
+                TextView textScoutOffenseStrategy = (TextView) dialog.findViewById(R.id.textScoutOffenseStrategy);
+                TextView textScoutDefenseStrategy = (TextView) dialog.findViewById(R.id.textScoutDefenseStrategy);
+                textScoutOffenseStrategy.setVisibility(View.GONE);
+                textScoutDefenseStrategy.setVisibility(View.GONE);
+            }
         }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(g.awayTeam.abbr + " @ " + g.homeTeam.abbr + ": " + g.gameName)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //do nothing?
-                    }
-                })
-                .setView(getLayoutInflater().inflate(R.layout.game_dialog, null));
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        final TextView gameL = (TextView) dialog.findViewById(R.id.gameDialogLeft);
-        gameL.setText(gameStr[0]);
-        final TextView gameC = (TextView) dialog.findViewById(R.id.gameDialogCenter);
-        gameC.setText(gameStr[1]);
-        final TextView gameR = (TextView) dialog.findViewById(R.id.gameDialogRight);
-        gameR.setText(gameStr[2]);
-        final TextView gameB = (TextView) dialog.findViewById(R.id.gameDialogBottom);
-        gameB.setText(gameStr[3] + "\n\n");
     }
 
     public void showTeamRankingsDialog() {
@@ -1117,6 +1221,7 @@ public class MainActivity extends AppCompatActivity {
      * Start Recruiting Activity, sending over the user team's players and budget.
      */
     private void beginRecruiting() {
+        userTeam.getPlayersLeaving();
         String gradPlayersStr = userTeam.getGraduatingPlayersStr();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(gradPlayersStr)
@@ -1188,11 +1293,40 @@ public class MainActivity extends AppCompatActivity {
         final String[] fileInfos = getSaveFileInfos();
         builder.setItems(fileInfos, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
+                final int itemy = item;
                 // Do something with the selection
-                saveLeagueFile = new File(getFilesDir(), "saveFile" + item + ".cfb");
-                simLeague.saveLeague(saveLeagueFile);
-                if (showToasts) Toast.makeText(MainActivity.this, "Saved league!",
-                        Toast.LENGTH_SHORT).show();
+                if (fileInfos[itemy].equals("EMPTY")) {
+                    // Empty file, don't show dialog confirmation
+                    saveLeagueFile = new File(getFilesDir(), "saveFile" + itemy + ".cfb");
+                    simLeague.saveLeague(saveLeagueFile);
+                    Toast.makeText(MainActivity.this, "Saved league!",
+                            Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                } else {
+                    // Ask for confirmation to overwrite file
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("Are you sure you want to overwrite this save file?\n" + fileInfos[itemy])
+                            .setPositiveButton("Yes, Overwrite", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Actually go back to main menu
+                                    saveLeagueFile = new File(getFilesDir(), "saveFile" + itemy + ".cfb");
+                                    simLeague.saveLeague(saveLeagueFile);
+                                    Toast.makeText(MainActivity.this, "Saved league!",
+                                            Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Do nothing
+                                    dialog.dismiss();
+                                }
+                            });
+                    AlertDialog dialog2 = builder.create();
+                    dialog2.show();
+                }
             }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override

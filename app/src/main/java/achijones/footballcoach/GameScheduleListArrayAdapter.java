@@ -37,12 +37,12 @@ public class GameScheduleListArrayAdapter extends ArrayAdapter<Game> {
         View rowView = inflater.inflate(R.layout.game_schedule_list_item, parent, false);
         TextView textLeft = (TextView) rowView.findViewById(R.id.gameScheduleLeft);
         Button gameButton = (Button) rowView.findViewById(R.id.gameScheduleButtonList);
-        TextView textRight = (TextView) rowView.findViewById(R.id.gameScheduleRight);
+        Button textRight = (Button) rowView.findViewById(R.id.gameScheduleRight);
 
         String[] gameSummary = team.getGameSummaryStr(position);
         textLeft.setText( gameSummary[0] );
         gameButton.setText( gameSummary[1] );
-        textRight.setText( gameSummary[2] );
+        textRight.setText(gameSummary[2]);
 
         if (team.gameWLSchedule.size() > position) {
             if (team.gameWLSchedule.get(position).equals("W")) {
@@ -56,6 +56,16 @@ public class GameScheduleListArrayAdapter extends ArrayAdapter<Game> {
             public void onClick(View v) {
                 // Perform action on click
                 mainAct.showGameDialog( games[position] );
+            }
+        });
+
+        textRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Do something on click
+                if (games[position].awayTeam == team)
+                    mainAct.examineTeam(games[position].homeTeam.name);
+                else mainAct.examineTeam(games[position].awayTeam.name);
             }
         });
 
