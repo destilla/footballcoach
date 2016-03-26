@@ -818,13 +818,15 @@ public class Game implements Serializable {
                     }
                 }
 
-                //check downs
-                gameYardsNeed -= yardsGain;
-                if ( gameYardsNeed <= 0 && !gotTD ) {
-                    // Only set new down and distance if there wasn't a TD
-                    gameDown = 1;
-                    gameYardsNeed = 10;
-                } else gameDown++;
+                if (!gotTD && !gotFumble) {
+                    //check downs if there wasnt fumble or TD
+                    gameYardsNeed -= yardsGain;
+                    if ( gameYardsNeed <= 0 ) {
+                        // Only set new down and distance if there wasn't a TD
+                        gameDown = 1;
+                        gameYardsNeed = 10;
+                    } else gameDown++;
+                }
 
                 //stats management
                 passCompletion(offense, defense, selWR, selWRStats, yardsGain);
@@ -935,12 +937,16 @@ public class Game implements Serializable {
             gotTD = true;
         }
 
-        //check downs
-        gameYardsNeed -= yardsGain;
-        if ( gameYardsNeed <= 0 ) {
-            gameDown = 1;
-            gameYardsNeed = 10;
-        } else gameDown++;
+        //check downs if there wasn't TD
+        if (!gotTD) {
+            //check downs 
+            gameYardsNeed -= yardsGain;
+            if ( gameYardsNeed <= 0 ) {
+                // Only set new down and distance if there wasn't a TD
+                gameDown = 1;
+                gameYardsNeed = 10;
+            } else gameDown++;
+        }
 
         //stats management
         rushAttempt(offense, defense, selRB, RB1pref, RB2pref, yardsGain);
@@ -974,7 +980,6 @@ public class Game implements Serializable {
                 selRB.statsFumbles++;
                 if (!playingOT) {
                     gameDown = 1;
-
                     gameYardsNeed = 10;
                     gamePoss = !gamePoss;
                     gameYardLine = 100 - gameYardLine;
