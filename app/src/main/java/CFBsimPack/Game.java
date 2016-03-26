@@ -1053,7 +1053,7 @@ public class Game implements Serializable {
      */
     private void kickXP( Team offense, Team defense ) {
         // No XP/2pt try if the TD puts the bottom OT offense ahead (aka wins the game)
-        if (playingOT && bottomOT && (((numOT % 2 == 0) && awayScore > homeScore) || ((numOT % 2 != 0) && homeScore > awayScore))
+        if (playingOT && bottomOT && (((numOT % 2 == 0) && awayScore > homeScore) || ((numOT % 2 != 0) && homeScore > awayScore)))
         {
             gameEventLog += getEventPrefix() + " " + tdInfo + "\n" + offense.abbr + " wins on a walk-off touchdown!";
         }
