@@ -45,14 +45,14 @@ public class Game implements Serializable {
     public int[] HomeKStats;
     public int[] AwayKStats;
 
-    // Store reference to players, in case starters are changed later
-    private PlayerQB homeQB;
-    private PlayerRB[] homeRBs;
-    private PlayerWR[] homeWRs;
-    private PlayerK homeK;
-    private PlayerQB awayQB;
-    private PlayerRB[] awayRBs;
-    private PlayerWR[] awayWRs;
+    // Store reference to players, in case starters are changed later		
+    private PlayerQB homeQB;		
+    private PlayerRB[] homeRBs;		
+    private PlayerWR[] homeWRs;		
+    private PlayerK homeK;		
+    private PlayerQB awayQB;		
+    private PlayerRB[] awayRBs;		
+    private PlayerWR[] awayWRs;		
     private PlayerK awayK;
 
     String gameEventLog;
@@ -64,6 +64,8 @@ public class Game implements Serializable {
     private int gameYardLine;
     private int gameDown;
     private int gameYardsNeed;
+    private boolean playingOT;
+    private boolean bottomOT;
 
     /**
      * Create game with a name (likely a bowl game).
@@ -337,7 +339,7 @@ public class Game implements Serializable {
 
     /**
      * Gets the amount of rush yards by a certain team for this game.
-     * @param ha hoem/away bool, false for home
+     * @param ha home/away bool, false for home
      * @return number of rush yards by speicifed team
      */
     public int getRushYards( boolean ha ) {
@@ -383,22 +385,33 @@ public class Game implements Serializable {
      * @return String of the converted game time
      */
     private String convGameTime() {
-        int qNum = (3600 - gameTime) / 900 + 1;
-        int minTime;
-        int secTime;
-        String secStr;
-        if ( qNum >= 4 && numOT > 0 ) {
-            minTime = gameTime / 60;
-            secTime = gameTime - 60*minTime;
-            if (secTime < 10) secStr = "0" + secTime;
-            else secStr = "" + secTime;
-            return minTime + ":" + secStr + " OT" + numOT;
+        if (!playingOT) {
+            int qNum = (3600 - gameTime) / 900 + 1;
+            int minTime;
+            int secTime;
+            String secStr;
+            if (qNum >= 4 && numOT > 0) {
+                minTime = gameTime / 60;
+                secTime = gameTime - 60 * minTime;
+                if (secTime < 10) secStr = "0" + secTime;
+                else secStr = "" + secTime;
+                return minTime + ":" + secStr + " OT" + numOT;
+            } else if (gameTime < 0 && numOT <= 0) { // Prevent Q5 1X:XX from displaying in the game log
+                return "0:00 Q4";
+            }
+            else {
+                minTime = (gameTime - 900 * (4 - qNum)) / 60;
+                secTime = (gameTime - 900 * (4 - qNum)) - 60 * minTime;
+                if (secTime < 10) secStr = "0" + secTime;
+                else secStr = "" + secTime;
+                return minTime + ":" + secStr + " Q" + qNum;
+            }
         } else {
-            minTime = (gameTime - 900*(4-qNum)) / 60;
-            secTime = (gameTime - 900*(4-qNum)) - 60*minTime;
-            if (secTime < 10) secStr = "0" + secTime;
-            else secStr = "" + secTime;
-            return minTime + ":" + secStr + " Q" + qNum;
+            if (!bottomOT) {
+                return "TOP OT" + numOT;
+            } else {
+                return "BOT OT" + numOT;
+            }
         }
     }
 
@@ -421,17 +434,26 @@ public class Game implements Serializable {
             gameYardsNeed = 10;
             gameYardLine = 20;
 
+            // Regulation
             while ( gameTime > 0 ) {
                 //play ball!
-                if (gamePoss) {
-                    runPlay( homeTeam, awayTeam );
-                } else {
-                    runPlay( awayTeam, homeTeam );
-                }
-                if (gameTime <= 0 && homeScore == awayScore) {
-                    gameTime = 900; //OT
-                    gameYardLine = 20;
-                    numOT++;
+                if (gamePoss) runPlay(homeTeam, awayTeam);
+                else runPlay(awayTeam, homeTeam);
+            }
+
+            //Overtime (if needed)
+            if (gameTime <= 0 && homeScore == awayScore) {
+                playingOT = true;
+                gamePoss = false;
+                gameYardLine = 75;
+                numOT++;
+                gameTime = -1;
+                gameDown = 1;
+                gameYardsNeed = 10;
+
+                while (playingOT) {
+                    if (gamePoss) runPlay(homeTeam, awayTeam);
+                    else runPlay(awayTeam, homeTeam);
                 }
             }
 
@@ -585,68 +607,114 @@ public class Game implements Serializable {
      * @param defense defense defending the play
      */
     private void runPlay( Team offense, Team defense ) {
+
         if ( gameDown > 4 ) {
-            //Add a log to the game log to see if turnover on downs happens right
-            gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
+            if (!playingOT) {
+                //Log the turnover on downs, reset down and distance, give possession to the defense, exit this runPlay()
+                gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
 
-            //Turn over on downs, change possession, set to first down and 10 yards to go
-            gamePoss = !gamePoss;
-            gameDown = 1;
-            gameYardsNeed = 10;
-            //and flip which direction the ball is moving in
-            gameYardLine = 100 - gameYardLine;
+                //Turn over on downs, change possession, set to first down and 10 yards to go
+                gamePoss = !gamePoss;
+                gameDown = 1;
+                gameYardsNeed = 10;
+                //and flip which direction the ball is moving in
+                gameYardLine = 100 - gameYardLine;
 
-        } else {
-        double preferPass = (offense.getPassProf()*2 - defense.getPassDef()) * Math.random() - 10;
-        double preferRush = (offense.getRushProf()*2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
-
-        if ( gameTime <= 30 ) {
-            if ( ((gamePoss && (awayScore - homeScore) <= 3) || (!gamePoss && (homeScore - awayScore) <= 3)) && gameYardLine > 60 ) {
-                //last second FGA
-                fieldGoalAtt( offense, defense );
-            } else {
-                //hail mary
-                passingPlay( offense, defense );
             }
-        }
-        else if ( gameDown >= 4 ) {
-            if ( ((gamePoss && (awayScore - homeScore) > 3) || (!gamePoss && (homeScore - awayScore) > 3)) && gameTime < 300 ) {
-                //go for it since we need 7 to win
-                if ( gameYardsNeed < 3 ) {
-                    rushingPlay( offense, defense );
+            else {
+                //OT is over for the offense, log the turnover on downs, run resetForOT().
+                gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down in OT and their possession is over.";
+                resetForOT();
+
+            }
+        } else {
+            double preferPass = (offense.getPassProf()*2 - defense.getPassDef()) * Math.random() - 10;
+            double preferRush = (offense.getRushProf()*2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
+
+            // If it's 1st and Goal to go, adjust yards needed to reflect distance for a TD so that play selection reflects actual yards to go
+            // If we don't do this, gameYardsNeed may be higher than the actualy distance for a TD and suboptimal plays may be chosen
+            if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine
+
+            if ( gameTime <= 30 && !playingOT ) {
+                if ( ((gamePoss && (awayScore - homeScore) <= 3) || (!gamePoss && (homeScore - awayScore) <= 3)) && gameYardLine > 60 ) {
+                    //last second FGA
+                    fieldGoalAtt( offense, defense );
                 } else {
+                    //hail mary
                     passingPlay( offense, defense );
                 }
-            } else {
-                //4th down
-                if ( gameYardsNeed < 3 ) {
-                    if ( gameYardLine > 65 ) {
+            }
+            else if ( gameDown >= 4 ) {
+                if ( ((gamePoss && (awayScore - homeScore) > 3) || (!gamePoss && (homeScore - awayScore) > 3)) && gameTime < 300 ) {
+                    //go for it since we need 7 to win -- This also forces going for it if down by a TD in BOT OT
+                    if ( gameYardsNeed < 3 ) {
+                        rushingPlay( offense, defense );
+                    } else {
+                        passingPlay( offense, defense );
+                    }
+                } else {
+                    //4th down
+                    if ( gameYardsNeed < 3 ) {
+                        if ( gameYardLine > 65 ) {
+                            //fga
+                            fieldGoalAtt( offense, defense );
+                        } else if ( gameYardLine > 55 ) {
+                            // run play, go for it!
+                            rushingPlay( offense, defense );
+                        } else {
+                            //punt
+                            puntPlay( offense );
+                        }
+                    } else if ( gameYardLine > 60 ) {
                         //fga
                         fieldGoalAtt( offense, defense );
-                    } else if ( gameYardLine > 55 ) {
-                        // run play, go for it!
-                        rushingPlay( offense, defense );
                     } else {
                         //punt
                         puntPlay( offense );
                     }
-                } else if ( gameYardLine > 60 ) {
-                    //fga
-                    fieldGoalAtt( offense, defense );
-                } else {
-                    //punt
-                    puntPlay( offense );
                 }
+            } else if ( (gameDown == 3 && gameYardsNeed > 4) || ((gameDown==1 || gameDown==2) && (preferPass >= preferRush)) ) {
+                // pass play
+                passingPlay(offense, defense);
+            } else {
+                //run play
+                rushingPlay( offense, defense );
             }
-        } else if ( (gameDown == 3 && gameYardsNeed > 4) || ((gameDown==1 || gameDown==2) && (preferPass >= preferRush)) ) {
-            // pass play
-            passingPlay(offense, defense);
+        }
+
+
+    }
+
+    /**
+     * Give ball to correct team and reset yard line/down for new team.
+     * In top OT frame, give the other team the ball, reset down, distance and yard line, and move to bottom OT frame
+     * In bottom OT frame, if score is tied, keep playing.
+     * If not, the game is over.
+     */
+    private void resetForOT() {
+        if (bottomOT && homeScore == awayScore) {
+            gameYardLine = 75;
+            gameYardsNeed = 10;
+            gameDown = 1;
+            numOT++;
+            if ((numOT%2) == 0) gamePoss = true;
+            else gamePoss = false;
+            gameTime = -1;
+            bottomOT = false;
+            //runPlay( awayTeam, homeTeam );
+        } else if (!bottomOT) {
+            gamePoss = !gamePoss;
+            gameYardLine = 75;
+            gameYardsNeed = 10;
+            gameDown = 1;
+            gameTime = -1;
+            bottomOT = true;
+            //runPlay( homeTeam, awayTeam );
         } else {
-            //run play
-            rushingPlay( offense, defense );
+            // game is not tied after both teams had their chance
+            playingOT = false;
         }
     }
-}
     /**
      * Passing play.
      * @param offense throwing the ball
@@ -750,12 +818,15 @@ public class Game implements Serializable {
                     }
                 }
 
-                //check downs
-                gameYardsNeed -= yardsGain;
-                if ( gameYardsNeed <= 0 ) {
-                    gameDown = 1;
-                    gameYardsNeed = 10;
-                } else gameDown++;
+                if (!gotTD && !gotFumble) {
+                    //check downs if there wasnt fumble or TD
+                    gameYardsNeed -= yardsGain;
+                    if ( gameYardsNeed <= 0 ) {
+                        // Only set new down and distance if there wasn't a TD
+                        gameDown = 1;
+                        gameYardsNeed = 10;
+                    } else gameDown++;
+                }
 
                 //stats management
                 passCompletion(offense, defense, selWR, selWRStats, yardsGain);
@@ -777,23 +848,30 @@ public class Game implements Serializable {
             gameEventLog += getEventPrefix() + "TURNOVER!\n" + offense.abbr + " WR " + selWR.name + " fumbled the ball after a catch.";
             selWRStats[5]++;
             selWR.statsFumbles++;
-            gameDown = 1;
-            gameYardsNeed = 10;
-            if ( gamePoss ) { // home possession
+            if (gamePoss) { // home possession
                 homeTOs++;
             } else {
                 awayTOs++;
             }
-            gamePoss = !gamePoss;
-            gameYardLine = 100 - gameYardLine;
-            gameTime -= 15*Math.random();
-            return;
+            if (!playingOT) {
+                gameDown = 1;
+                gameYardsNeed = 10;
+                gamePoss = !gamePoss;
+                gameYardLine = 100 - gameYardLine;
+                gameTime -= 15 * Math.random();
+                return;
+            }
+            else {
+                resetForOT();
+                return;
+            }
         }
 
         if ( gotTD ) {
             gameTime -= 15*Math.random();
             kickXP( offense, defense );
-            kickOff( offense );
+            if (!playingOT) kickOff( offense );
+            else resetForOT();
             return;
         }
 
@@ -859,19 +937,24 @@ public class Game implements Serializable {
             gotTD = true;
         }
 
-        //check downs
-        gameYardsNeed -= yardsGain;
-        if ( gameYardsNeed <= 0 ) {
-            gameDown = 1;
-            gameYardsNeed = 10;
-        } else gameDown++;
+        //check downs if there wasn't TD
+        if (!gotTD) {
+            //check downs 
+            gameYardsNeed -= yardsGain;
+            if ( gameYardsNeed <= 0 ) {
+                // Only set new down and distance if there wasn't a TD
+                gameDown = 1;
+                gameYardsNeed = 10;
+            } else gameDown++;
+        }
 
         //stats management
         rushAttempt(offense, defense, selRB, RB1pref, RB2pref, yardsGain);
 
         if ( gotTD ) {
             kickXP( offense, defense );
-            kickOff( offense );
+            if (!playingOT) kickOff( offense );
+            else resetForOT();
         } else {
             gameTime -= 25 + 15*Math.random();
             //check for fumble
@@ -895,10 +978,13 @@ public class Game implements Serializable {
                 }
                 gameEventLog += getEventPrefix() + "TURNOVER!\n" + offense.abbr + " RB " + selRB.name + " fumbled the ball while rushing.";
                 selRB.statsFumbles++;
-                gameDown = 1;
-                gameYardsNeed = 10;
-                gamePoss = !gamePoss;
-                gameYardLine = 100 - gameYardLine;
+                if (!playingOT) {
+                    gameDown = 1;
+                    gameYardsNeed = 10;
+                    gamePoss = !gamePoss;
+                    gameYardLine = 100 - gameYardLine;
+                }
+                else resetForOT();
             }
         }
 
@@ -931,21 +1017,27 @@ public class Game implements Serializable {
             addPointsQuarter(3);
             offense.getK(0).statsFGMade++;
             offense.getK(0).statsFGAtt++;
-            kickOff( offense );
+            if (!playingOT) kickOff( offense );
+            else resetForOT();
 
         } else {
             //miss
             gameEventLog += getEventPrefix() + offense.abbr + " K " + offense.getK(0).name + " missed the " + (110-gameYardLine) + " yard FG.";
             offense.getK(0).statsFGAtt++;
-            gameYardLine = 100 - gameYardLine;
-            gameDown = 1;
-            gameYardsNeed = 10;
-            if ( gamePoss ) { // home possession
-                HomeKStats[3]++;
-            } else {
-                AwayKStats[3]++;
+            if (!playingOT) {
+                gameYardLine = Math.max(100 - gameYardLine, 20); //Misses inside the 20 = defense takes over on the 20
+                gameDown = 1;
+                gameYardsNeed = 10;
+                if (gamePoss) { // home possession
+                    HomeKStats[3]++;
+                } else {
+                    AwayKStats[3]++;
+                }
+                gamePoss = !gamePoss;
             }
-            gamePoss = !gamePoss;
+            else resetForOT();
+
+
         }
 
         gameTime -= 20;
@@ -959,10 +1051,10 @@ public class Game implements Serializable {
      * @param defense defending the point after
      */
     private void kickXP( Team offense, Team defense ) {
-        if ( ((gamePoss && (awayScore - homeScore) == 2) || (!gamePoss && (homeScore - awayScore) == 2)) && gameTime < 300 ) {
+        if ( (numOT >= 3) || (((gamePoss && (awayScore - homeScore) == 2) || (!gamePoss && (homeScore - awayScore) == 2)) && gameTime < 300 )) {
             //go for 2
             boolean successConversion = false;
-            if ( Math.random() < 0.5 ) {
+            if ( Math.random() <= 0.50 ) {
                 //rushing
                 int blockAdv = offense.getCompositeOLRush() - defense.getCompositeF7Rush();
                 int yardsGain = (int) ((offense.getRB(0).ratRushSpd + blockAdv) * Math.random() / 6);
@@ -1044,10 +1136,12 @@ public class Game implements Serializable {
             gameYardLine = 50;
             gameDown = 1;
             gameYardsNeed = 10;
+
+            gameTime -= 4 + 5*Math.random(); //Onside kicks are very fast, unless there's a weird fight for the ball. Chance to burn a lot of time, odds are you'll burn a little time.
         } else {
             // Just regular kick off
             gameYardLine = (int) (100 - ( offense.getK(0).ratKickPow + 20 - 40*Math.random() ));
-            if ( gameYardLine <= 0 ) gameYardLine = 20;
+            if ( gameYardLine <= 0 ) gameYardLine = 25;
             gameDown = 1;
             gameYardsNeed = 10;
             gamePoss = !gamePoss;
@@ -1069,24 +1163,28 @@ public class Game implements Serializable {
             if (offense.getK(0).ratKickFum * Math.random() > 60 || Math.random() < 0.1) {
                 //Success!
                 gameEventLog += getEventPrefix() + offense.abbr + " K " + offense.getK(0).name + " successfully executes onside kick! " + offense.abbr + " has possession!";
+                gameYardLine = 35;
+                gameDown = 1;
+                gameYardsNeed = 10;
             } else {
                 // Fail
                 gameEventLog += getEventPrefix() + offense.abbr + " K " + offense.getK(0).name + " failed the onside kick and lost possession.";
                 gamePoss = !gamePoss;
+                gameYardLine = 65;
+                gameDown = 1;
+                gameYardsNeed = 10;
             }
-            gameYardLine = 50;
-            gameDown = 1;
-            gameYardsNeed = 10;
+
+            gameTime -= 4 + 4*Math.random(); //Onside kicks are very fast, unless there's a weird fight for the ball. Chance to burn a lot of time, odds are you'll burn a little time.
         } else {
             // Just regular kick off
             gameYardLine = (int) (115 - ( offense.getK(0).ratKickPow + 20 - 40*Math.random() ));
-            if ( gameYardLine <= 0 ) gameYardLine = 20;
+            if ( gameYardLine <= 0 ) gameYardLine = 25;
             gameDown = 1;
             gameYardsNeed = 10;
             gamePoss = !gamePoss;
+            gameTime -= 15*Math.random();
         }
-
-        gameTime -= 15*Math.random();
     }
 
 
@@ -1173,10 +1271,13 @@ public class Game implements Serializable {
         //NOTE: If the ability to run an interception back is ever added, this should be changed to be more time
         gameTime -= 15*Math.random();
         offense.getQB(0).statsInt++;
-        gameDown = 1;
-        gameYardsNeed = 10;
-        gamePoss = !gamePoss;
-        gameYardLine = 100 - gameYardLine;
+        if (!playingOT) {
+            gameDown = 1;
+            gameYardsNeed = 10;
+            gamePoss = !gamePoss;
+            gameYardLine = 100 - gameYardLine;
+        }
+        else resetForOT();
     }
 
     /**
