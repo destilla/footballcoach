@@ -633,7 +633,7 @@ public class Game implements Serializable {
 
             // If it's 1st and Goal to go, adjust yards needed to reflect distance for a TD so that play selection reflects actual yards to go
             // If we don't do this, gameYardsNeed may be higher than the actualy distance for a TD and suboptimal plays may be chosen
-            if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine
+            if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine;
 
             if ( gameTime <= 30 && !playingOT ) {
                 if ( ((gamePoss && (awayScore - homeScore) <= 3) || (!gamePoss && (homeScore - awayScore) <= 3)) && gameYardLine > 60 ) {
@@ -952,6 +952,7 @@ public class Game implements Serializable {
         rushAttempt(offense, defense, selRB, RB1pref, RB2pref, yardsGain);
 
         if ( gotTD ) {
+            gameTime -= 5 + 15*Math.random(); // Clock stops for the TD, just burn time for the play
             kickXP( offense, defense );
             if (!playingOT) kickOff( offense );
             else resetForOT();
@@ -1051,6 +1052,19 @@ public class Game implements Serializable {
      * @param defense defending the point after
      */
     private void kickXP( Team offense, Team defense ) {
+        // No XP/2pt try if the TD puts the bottom OT offense ahead (aka wins the game)
+        if (playingOT && bottomOT && (((numOT % 2 == 0) && awayScore > homeScore) || ((numOT % 2 != 0) && homeScore > awayScore)))
+        {
+            gameEventLog += getEventPrefix() + " " + tdInfo + "\n" + offense.abbr + " wins on a walk-off touchdown!";
+        }
+        // If a TD is scored as time expires, there is no XP/2pt if the score difference is greater than 2
+        else if (!playingOT && gameTime <= 0 && ((homeScore - awayScore > 2) || (awayScore - homeScore > 2))) {
+            //Walkoff TD!
+            if ((Math.abs(homeScore - awayScore) < 7) && ((gamePoss && offense == homeTeam) || (!gamePoss && offense == awayTeam))) gameEventLog += getEventPrefix() + " " + tdInfo + "\n" + offense.abbr + " wins on a walk-off touchdown!";
+            //Just rubbing in the win or saving some pride
+            else gameEventLog += getEventPrefix() + " " + tdInfo;
+        }
+        else {
         if ( (numOT >= 3) || (((gamePoss && (awayScore - homeScore) == 2) || (!gamePoss && (homeScore - awayScore) == 2)) && gameTime < 300 )) {
             //go for 2
             boolean successConversion = false;
@@ -1115,7 +1129,7 @@ public class Game implements Serializable {
             offense.getK(0).statsXPAtt++;
         }
     }
-
+}
     /**
      * Kick the ball off, turning the ball over to the other team.
      * @param offense kicking the ball off
