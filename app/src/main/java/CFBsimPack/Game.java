@@ -952,6 +952,7 @@ public class Game implements Serializable {
         rushAttempt(offense, defense, selRB, RB1pref, RB2pref, yardsGain);
 
         if ( gotTD ) {
+            gameTime -= 5 + 15*Math.random(); // Clock stops for the TD, just burn time for the play
             kickXP( offense, defense );
             if (!playingOT) kickOff( offense );
             else resetForOT();
@@ -1051,6 +1052,16 @@ public class Game implements Serializable {
      * @param defense defending the point after
      */
     private void kickXP( Team offense, Team defense ) {
+        // No XP/2pt try if the TD puts the bottom OT offense ahead (aka wins the game)
+        if (playingOT && bottomOT && (((numOT % 2 == 0) && awayScore > homeScore) || ((numOT % 2 != 0) && homeScore > awayScore))
+        {
+            gameEventLog += getEventPrefix() + " " + tdInfo + "\n" + offense.abbr + " wins on a walk-off touchdown!";
+        }
+        else if (!playingOT && gameTime <= 0 && ((homeScore - awayScore > 2) || (awayScore - homeScore > 2))) {
+            if (Math.abs(homeScore - awayScore) < 7) gameEventLog += getEventPrefix() + " " + tdInfo + "\n" + offense.abbr + " wins on a walk-off touchdown!";
+            else gameEventLog += getEventPrefix() + " " + tdInfo;
+        }
+        else {
         if ( (numOT >= 3) || (((gamePoss && (awayScore - homeScore) == 2) || (!gamePoss && (homeScore - awayScore) == 2)) && gameTime < 300 )) {
             //go for 2
             boolean successConversion = false;
@@ -1115,7 +1126,7 @@ public class Game implements Serializable {
             offense.getK(0).statsXPAtt++;
         }
     }
-
+}
     /**
      * Kick the ball off, turning the ball over to the other team.
      * @param offense kicking the ball off
