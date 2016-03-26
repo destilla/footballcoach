@@ -1057,8 +1057,11 @@ public class Game implements Serializable {
         {
             gameEventLog += getEventPrefix() + " " + tdInfo + "\n" + offense.abbr + " wins on a walk-off touchdown!";
         }
+        // If a TD is scored as time expires, there is no XP/2pt if the score difference is greater than 2
         else if (!playingOT && gameTime <= 0 && ((homeScore - awayScore > 2) || (awayScore - homeScore > 2))) {
+            //Walkoff TD!
             if (Math.abs(homeScore - awayScore) < 7) gameEventLog += getEventPrefix() + " " + tdInfo + "\n" + offense.abbr + " wins on a walk-off touchdown!";
+            //Just rubbing in the win
             else gameEventLog += getEventPrefix() + " " + tdInfo;
         }
         else {
