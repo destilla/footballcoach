@@ -441,9 +441,6 @@ public class Game implements Serializable {
                 else runPlay(awayTeam, homeTeam);
             }
 
-            //Force overtime to test this monster
-            if (gameTime < 100) homeScore = awayScore;
-
             //Overtime (if needed)
             if (gameTime <= 0 && homeScore == awayScore) {
                 playingOT = true;
@@ -520,7 +517,8 @@ public class Game implements Serializable {
                     awayTeam.wonRivalryGame = true;
                 }
             }
-       // Set reference to right players
+
+            // Set reference to right players
             homeQB = homeTeam.getQB(0);
             homeRBs = new PlayerRB[2];
             for (int i = 0; i < 2; ++i) {
@@ -625,7 +623,7 @@ public class Game implements Serializable {
             }
             else {
                 //OT is over for the offense, log the turnover on downs, run resetForOT().
-                gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down in OT and their possesion is over.";
+                gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down in OT and their possession is over.";
                 resetForOT();
 
             }
@@ -822,7 +820,8 @@ public class Game implements Serializable {
 
                 //check downs
                 gameYardsNeed -= yardsGain;
-                if ( gameYardsNeed <= 0 ) {
+                if ( gameYardsNeed <= 0 && !gotTD ) {
+                    // Only set new down and distance if there wasn't a TD
                     gameDown = 1;
                     gameYardsNeed = 10;
                 } else gameDown++;
