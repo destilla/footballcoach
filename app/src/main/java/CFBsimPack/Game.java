@@ -633,7 +633,7 @@ public class Game implements Serializable {
 
             // If it's 1st and Goal to go, adjust yards needed to reflect distance for a TD so that play selection reflects actual yards to go
             // If we don't do this, gameYardsNeed may be higher than the actualy distance for a TD and suboptimal plays may be chosen
-            if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine
+            if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine;
 
             if ( gameTime <= 30 && !playingOT ) {
                 if ( ((gamePoss && (awayScore - homeScore) <= 3) || (!gamePoss && (homeScore - awayScore) <= 3)) && gameYardLine > 60 ) {
