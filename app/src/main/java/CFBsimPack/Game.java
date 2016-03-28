@@ -635,7 +635,7 @@ public class Game implements Serializable {
             // If we don't do this, gameYardsNeed may be higher than the actualy distance for a TD and suboptimal plays may be chosen
             if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine;
 
-            if ( gameTime <= 30 && !playingOT ) {
+            if ( gameTime <= 30 && !playingOT && ((gamePoss && (awayScore > homeScore)) || (!gamePoss && (homeScore > awayScore)))) {
                 if ( ((gamePoss && (awayScore - homeScore) <= 3) || (!gamePoss && (homeScore - awayScore) <= 3)) && gameYardLine > 60 ) {
                     //last second FGA
                     fieldGoalAtt( offense, defense );
