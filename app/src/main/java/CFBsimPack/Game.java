@@ -1135,6 +1135,8 @@ public class Game implements Serializable {
      * @param offense kicking the ball off
      */
     private void kickOff( Team offense ) {
+        if (gameTime <= 0) return;
+        else {
         //Decide whether to onside kick. Only if losing but within 8 points with < 3 min to go
         if ( gameTime < 180 && ((gamePoss && (awayScore - homeScore) <= 8 && (awayScore - homeScore) > 0)
                 || (!gamePoss && (homeScore - awayScore) <=8 && (homeScore - awayScore) > 0))) {
@@ -1163,13 +1165,15 @@ public class Game implements Serializable {
 
         gameTime -= 15*Math.random();
     }
-
+}
     /**
      * Kick the ball off following a safety, turning the ball over to the other team.
      * Safety free kicks happen from the 20 instead of the 35, so start the kicker from further back.
      * @param offense kicking the ball off
      */
     private void freeKick( Team offense ) {
+        if (gameTime <= 0) return;
+        else {
         //Decide whether to onside kick. Only if losing but within 8 points with < 3 min to go
         if ( gameTime < 180 && ((gamePoss && (awayScore - homeScore) <= 8 && (awayScore - homeScore) > 0)
                 || (!gamePoss && (homeScore - awayScore) <=8 && (homeScore - awayScore) > 0))) {
@@ -1198,9 +1202,10 @@ public class Game implements Serializable {
             gameYardsNeed = 10;
             gamePoss = !gamePoss;
             gameTime -= 15*Math.random();
+        
+            }
         }
     }
-
 
     /**
      * Punt the ball if it is a 4th down and decided not to go for it.
@@ -1449,5 +1454,4 @@ public class Game implements Serializable {
     private int normalize(int rating) {
         return (100 + rating)/2;
     }
-
 }

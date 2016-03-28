@@ -657,7 +657,7 @@ public class RecruitingActivity extends AppCompatActivity {
                             }
                         });
 
-                builder.setNeutralButton("Yes, Don't Show Again",
+                builder.setNeutralButton("Yes, Don't Show",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
