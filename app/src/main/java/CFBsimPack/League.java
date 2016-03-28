@@ -92,7 +92,7 @@ public class League {
         String[] lastNamesSplit = lastNamesCSV.split(",");
         for (String n : lastNamesSplit) {
             lastNameList.add(n.trim());
-
+        }
         leagueRecords = new LeagueRecords();
         longestWinStreak = new TeamStreak(getYear(), getYear(), 0, null);
 
