@@ -30,7 +30,7 @@ public class PlayerF7 extends Player {
     
     //public Vector ratingsVector;
     
-    public PlayerF7( String nm, Team t, int yr, int pot, int iq, int pow, int rsh, int pas ) {
+    public PlayerF7( String nm, Team t, int yr, int pot, int iq, int pow, int rsh, int pas, boolean rs ) {
         team = t;
         name = nm;
         year = yr;
@@ -41,6 +41,8 @@ public class PlayerF7 extends Player {
         ratF7Pow = pow;
         ratF7Rsh = rsh;
         ratF7Pas = pas;
+        isRedshirt = rs;
+        if (isRedshirt) year = 0;
         position = "F7";
 
         cost = (int)(Math.pow((float)ratOvr - 55,2)/6) + 50 + (int)(Math.random()*100) - 50;

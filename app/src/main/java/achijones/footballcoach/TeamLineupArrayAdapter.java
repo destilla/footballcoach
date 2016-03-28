@@ -1,6 +1,7 @@
 package achijones.footballcoach;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,36 +41,41 @@ public class TeamLineupArrayAdapter extends ArrayAdapter<Player> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.team_lineup_list_item, parent, false);
 
-        boolean showPlayer = true;
+        /*boolean showPlayer = true;
         for (int i = 0; i < position; ++i) {
             if (players.get(i) == players.get(position)) showPlayer = false;
         }
 
-        if (showPlayer) {
-            TextView playerInfo = (TextView) rowView.findViewById(R.id.textViewLineupPlayerInfo);
+        if (showPlayer) {*/
 
-            playerInfo.setText(players.get(position).getInfoForLineup());
+        TextView playerInfo = (TextView) rowView.findViewById(R.id.textViewLineupPlayerInfo);
 
-            CheckBox isPlayerStarting = (CheckBox) rowView.findViewById(R.id.checkboxPlayerStartingLineup);
-            if (playersSelected.contains(players.get(position))) {
-                isPlayerStarting.setChecked(true);
-            } else {
-                isPlayerStarting.setChecked(false);
-            }
+        playerInfo.setText(players.get(position).getInfoForLineup());
 
-            isPlayerStarting.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        playersSelected.add(players.get(position));
-                    } else {
-                        playersSelected.remove(players.get(position));
-                    }
-                }
-            });
-
+        CheckBox isPlayerStarting = (CheckBox) rowView.findViewById(R.id.checkboxPlayerStartingLineup);
+        if (playersSelected.contains(players.get(position))) {
+            isPlayerStarting.setChecked(true);
+        } else if (players.get(position).year == 0) {
+            // Is redshirt
+            isPlayerStarting.setEnabled(false);
+            playerInfo.setTextColor(Color.RED);
+        } else {
+            isPlayerStarting.setChecked(false);
         }
+
+        isPlayerStarting.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    playersSelected.add(players.get(position));
+                } else {
+                    playersSelected.remove(players.get(position));
+                }
+            }
+        });
+
+
 
         return rowView;
 

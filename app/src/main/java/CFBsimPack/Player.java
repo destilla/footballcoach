@@ -20,6 +20,7 @@ public class Player {
     public int ratImprovement;
     public int cost;
     public int gamesPlayed;
+    public boolean isRedshirt;
     protected final String[] letterGrades = {"F", "F+", "D", "D+", "C", "C+", "B", "B+", "A", "A+"};
     
     public Vector ratingsVector;

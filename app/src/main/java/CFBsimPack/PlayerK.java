@@ -36,7 +36,7 @@ public class PlayerK extends Player {
     public int statsFGAtt;
     public int statsFGMade;
     
-    public PlayerK( String nm, Team t, int yr, int pot, int iq, int pow, int acc, int fum ) {
+    public PlayerK( String nm, Team t, int yr, int pot, int iq, int pow, int acc, int fum, boolean rs ) {
         team = t;
         name = nm;
         year = yr;
@@ -47,6 +47,8 @@ public class PlayerK extends Player {
         ratKickPow = pow;
         ratKickAcc = acc;
         ratKickFum = fum;
+        isRedshirt = rs;
+        if (isRedshirt) year = 0;
         position = "K";
 
         cost = (int)(Math.pow((float)ratOvr - 55,2)/3.5) + 100 + (int)(Math.random()*100) - 50;

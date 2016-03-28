@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
                     userTeam = simLeague.userTeam;
                     userTeamStr = userTeam.name;
                     userTeam.recruitPlayersFromStr(extras.getString("RECRUITS"));
-                    userTeam.recruitWalkOns();
                     simLeague.updateTeamTalentRatings();
                     season = 2015 + userTeam.teamHistory.size();
                     currentTeam = userTeam;
@@ -1076,8 +1075,9 @@ public class MainActivity extends AppCompatActivity {
                     rival.rivalTeam = userTeam.abbr;
                     examineTeam(userTeam.name);
                 } else {
-                    if (showToasts) Toast.makeText(MainActivity.this, "Invalid name/abbr! Name not changed.",
-                            Toast.LENGTH_SHORT).show();
+                    if (showToasts)
+                        Toast.makeText(MainActivity.this, "Invalid name/abbr! Name not changed.",
+                                Toast.LENGTH_SHORT).show();
                 }
                 showToasts = checkboxShowPopup.isChecked();
                 userTeam.showPopups = showToasts;
@@ -1238,6 +1238,7 @@ public class MainActivity extends AppCompatActivity {
 
                         //Get String of user team's players and such
                         StringBuilder sb = new StringBuilder();
+                        userTeam.sortPlayers();
                         sb.append(userTeam.conference + "," + userTeam.name + "," + userTeam.abbr + "," + userTeam.teamPrestige + "%\n");
                         sb.append(userTeam.getPlayerInfoSaveFile());
                         sb.append("END_TEAM_INFO%\n");

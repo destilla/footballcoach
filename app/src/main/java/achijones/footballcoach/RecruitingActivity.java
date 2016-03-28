@@ -41,6 +41,7 @@ public class RecruitingActivity extends AppCompatActivity {
     private final String[] letterGrades = {"F", "F+", "D", "D+", "C", "C+", "B", "B+", "A", "A+"};
 
     private ArrayList<String> playersRecruited;
+    private ArrayList<String> playersRedshirted;
     private ArrayList<String> playersGraduating;
     private ArrayList<String> teamQBs;
     private ArrayList<String> teamRBs;
@@ -96,6 +97,7 @@ public class RecruitingActivity extends AppCompatActivity {
 
         // Init all the ArrayLists
         playersRecruited = new ArrayList<String>();
+        playersRedshirted = new ArrayList<String>();
         playersGraduating = new ArrayList<String>();
         teamQBs = new ArrayList<String>();
         teamRBs = new ArrayList<String>();
@@ -128,7 +130,7 @@ public class RecruitingActivity extends AppCompatActivity {
         String[] teamInfo = lines[0].split(",");
         teamName = teamInfo[1];
         teamAbbr = teamInfo[2];
-        recruitingBudget = Integer.parseInt(teamInfo[3])*150;
+        recruitingBudget = Integer.parseInt(teamInfo[3])*15;
         getSupportActionBar().setTitle(teamName + " Recruiting");
 
         showPopUp = true;
@@ -449,8 +451,24 @@ public class RecruitingActivity extends AppCompatActivity {
     private String getReadablePlayerInfo(String p) {
         String[] pi = p.split(",");
         String improveStr = "";
-        if (!getYrStr(pi[2]).equals("[Fr]")) improveStr = "(+" + pi[9] + ")";
+        if (!playersRecruited.contains(p) && !playersRedshirted.contains(p)) improveStr = "(+" + pi[9] + ")";
         return getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot " + improveStr;
+    }
+
+    /**
+     * Converts the lines from the file into readable lines, without revealing potential
+     */
+    private String getReadablePlayerInfoNoPot(String p) {
+        String[] pi = p.split(",");
+        return getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr";
+    }
+
+    /**
+     * Converts the lines from the file into readable lines, include position
+     */
+    private String getReadablePlayerInfoPos(String p) {
+        String[] pi = p.split(",");
+        return pi[0] + " " + getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot";
     }
 
     /**
@@ -564,6 +582,11 @@ public class RecruitingActivity extends AppCompatActivity {
         sb.append("\nF7s (Need: " + needF7s + ")\n");
         appendPlayers(sb, teamF7s, 7);
 
+        sb.append("\nRedshirted Players:\n");
+        for (String rp : playersRedshirted) {
+            sb.append("\t" + getReadablePlayerInfoPos(rp) + "\n");
+        }
+
         return sb.toString();
     }
 
@@ -582,9 +605,17 @@ public class RecruitingActivity extends AppCompatActivity {
      */
     public String getRecruitsStr() {
         StringBuilder sb = new StringBuilder();
+
         for (String p : playersRecruited) {
             sb.append(p+"%\n");
         }
+        sb.append("END_RECRUITS%\n");
+
+        for (String rp : playersRedshirted) {
+            sb.append(rp+"%\n");
+        }
+        sb.append("END_REDSHIRTS%\n");
+
         return sb.toString();
     }
 
@@ -614,7 +645,7 @@ public class RecruitingActivity extends AppCompatActivity {
     public int getRecruitCost(String p) {
         // format is '$500 P. Name'
         String[] pSplit = p.split(",");
-        return Integer.parseInt( pSplit[9] );
+        return Integer.parseInt(pSplit[9]);
     }
 
     /**
@@ -630,7 +661,7 @@ public class RecruitingActivity extends AppCompatActivity {
             if (showPopUp) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Confirm Recruiting");
-                builder.setMessage("Are you sure you want to recruit " + player.split(",")[0]+ " " + getReadablePlayerInfo(player) + " for $" + moneyNeeded + "?");
+                builder.setMessage("Are you sure you want to recruit " + player.split(",")[0]+ " " + getReadablePlayerInfoNoPot(player) + " for $" + moneyNeeded + "?");
                 builder.setPositiveButton("Yes",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -747,8 +778,6 @@ public class RecruitingActivity extends AppCompatActivity {
         // Remove the player from the top 100 list
         if (availAll.contains(player)) {
             availAll.remove(player);
-        } else {
-            Toast.makeText(this, "Couldn't find player in AvailAll", Toast.LENGTH_SHORT).show();
         }
 
         // Also need to add recruited player to correct team list and remove from avail list
@@ -796,6 +825,173 @@ public class RecruitingActivity extends AppCompatActivity {
         updatePositionNeeds();
     }
 
+    /**
+     * Recruit player, add to correct list and remove from available players list
+     */
+    private void redshirtPlayerDialog(String p, int pos, List<Integer> groupsExp) {
+        final String player = p;
+        final int groupPosition = pos;
+        final List<Integer> groupsExpanded = groupsExp;
+        int moneyNeeded = (5*getRecruitCost(player))/4;
+        if (recruitingBudget >= moneyNeeded) {
+
+            if (showPopUp) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Confirm Redshirting");
+                builder.setMessage("Are you sure you want to redshirt " + player.split(",")[0] + " " + getReadablePlayerInfoNoPot(player) + " for $" + moneyNeeded + "?\n" +
+                        "He will be unavailable to play for the first year.");
+                builder.setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                recruitList.collapseGroup(groupPosition);
+                                for (int i = groupPosition + 1; i < players.size(); ++i) {
+                                    if (recruitList.isGroupExpanded(i)) {
+                                        groupsExpanded.add(i);
+                                    }
+                                    recruitList.collapseGroup(i);
+                                }
+
+                                redshirtPlayer(player);
+
+                                expListAdapter.notifyDataSetChanged();
+                                for (int group : groupsExpanded) {
+                                    recruitList.expandGroup(group - 1);
+                                }
+                                dialog.dismiss();
+                            }
+                        });
+
+                builder.setNeutralButton("Yes, Don't Show",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                recruitList.collapseGroup(groupPosition);
+                                for (int i = groupPosition + 1; i < players.size(); ++i) {
+                                    if (recruitList.isGroupExpanded(i)) {
+                                        groupsExpanded.add(i);
+                                    }
+                                    recruitList.collapseGroup(i);
+                                }
+
+                                redshirtPlayer(player);
+                                setShowPopUp(false);
+
+                                expListAdapter.notifyDataSetChanged();
+                                for (int group : groupsExpanded) {
+                                    recruitList.expandGroup(group - 1);
+                                }
+                                dialog.dismiss();
+                            }
+                        });
+
+                builder.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // not successful
+                                recruitList.collapseGroup(groupPosition);
+                                for (int i = groupPosition + 1; i < players.size(); ++i) {
+                                    if (recruitList.isGroupExpanded(i)) {
+                                        groupsExpanded.add(i);
+                                    }
+                                    recruitList.collapseGroup(i);
+                                }
+
+                                recruitList.expandGroup(groupPosition);
+                                expListAdapter.notifyDataSetChanged();
+                                for (int group : groupsExpanded) {
+                                    recruitList.expandGroup(group);
+                                }
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+                TextView msgTxt = (TextView) dialog.findViewById(android.R.id.message);
+                msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+
+            } else {
+                // Don't show pop up dialog
+                recruitList.collapseGroup(groupPosition);
+                for (int i = groupPosition + 1; i < players.size(); ++i) {
+                    if (recruitList.isGroupExpanded(i)) {
+                        groupsExpanded.add(i);
+                    }
+                    recruitList.collapseGroup(i);
+                }
+
+                redshirtPlayer(player);
+
+                expListAdapter.notifyDataSetChanged();
+                for (int group : groupsExpanded) {
+                    recruitList.expandGroup(group - 1);
+                }
+            }
+
+        } else {
+            recruitList.collapseGroup(groupPosition);
+            for (int i = groupPosition+1; i < players.size(); ++i) {
+                if ( recruitList.isGroupExpanded(i) ) {
+                    groupsExpanded.add(i);
+                }
+                recruitList.collapseGroup(i);
+            }
+            Toast.makeText(this, "Not enough money!",
+                    Toast.LENGTH_SHORT).show();
+            recruitList.expandGroup(groupPosition);
+            expListAdapter.notifyDataSetChanged();
+            for (int group : groupsExpanded) {
+                recruitList.expandGroup(group);
+            }
+        }
+    }
+
+    private void redshirtPlayer(String player) {
+        int moneyNeeded = getRecruitCost(player);
+        recruitingBudget -= moneyNeeded;
+        budgetText.setText("Budget: $" + recruitingBudget);
+
+        // Remove the player from the top 100 list
+        if (availAll.contains(player)) {
+            availAll.remove(player);
+        }
+
+        // Also need to add recruited player to correct team list and remove from avail list
+        String[] ps = player.split(",");
+        if (ps[0].equals("QB")) {
+            availQBs.remove(player);
+        } else if (ps[0].equals("RB")) {
+            availRBs.remove(player);
+        } else if (ps[0].equals("WR")) {
+            availWRs.remove(player);
+        } else if (ps[0].equals("OL")) {
+            availOLs.remove(player);
+        } else if (ps[0].equals("K")) {
+            availKs.remove(player);
+        } else if (ps[0].equals("S")) {
+            availSs.remove(player);
+        } else if (ps[0].equals("CB")) {
+            availCBs.remove(player);
+        } else if (ps[0].equals("F7")) {
+            availF7s.remove(player);
+        }
+
+        playersRedshirted.add(player);
+        players.remove(player);
+
+        Toast.makeText(this, "Redshirted " + ps[0] + " " + ps[1],
+                Toast.LENGTH_SHORT).show();
+
+        updatePositionNeeds();
+    }
+
+    /**
+     * Scout player, revealing the attribute ratings.
+     * @param player
+     * @return true if had enough money, false if not
+     */
     private boolean scoutPlayer(String player) {
         int scoutCost = getRecruitCost(player)/7;
         if (scoutCost < 25) scoutCost = 25;
@@ -808,9 +1004,6 @@ public class RecruitingActivity extends AppCompatActivity {
             if (availAll.contains(player)) {
                 int posTop = availAll.indexOf(player);
                 availAll.set(posTop, player.substring(0, player.length() - 1) + "1");
-                Toast.makeText(this, "found and set in availAll", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Couldn't find player in availAll", Toast.LENGTH_SHORT).show();
             }
 
             // Next check all the position lists
@@ -921,7 +1114,20 @@ public class RecruitingActivity extends AppCompatActivity {
                     if (scoutPlayerButton.isEnabled()) {
                         recruitPlayerDialog(playerCSV, groupPosition, groupsExpanded);
                     } else {
-                        recruitPlayerDialog(playerCSV.substring(0,playerCSV.length()-1)+"1", groupPosition, groupsExpanded);
+                        recruitPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
+                    }
+                }
+            });
+
+            // Set up button for redshirting player
+            redshirtPlayerButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // Save who is currently expanded
+                    List<Integer> groupsExpanded = new ArrayList<>();
+                    if (scoutPlayerButton.isEnabled()) {
+                        redshirtPlayerDialog(playerCSV, groupPosition, groupsExpanded);
+                    } else {
+                        redshirtPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
                     }
                 }
             });

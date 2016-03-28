@@ -271,7 +271,7 @@ public class Team {
         // Rest of lines are player info
         String[] playerInfo;
         for (int i = 1; i < lines.length; ++i) {
-            recruitPlayerCSV(lines[i]);
+            recruitPlayerCSV(lines[i], false);
         }
 
         wonRivalryGame = false;
@@ -864,57 +864,71 @@ public class Team {
      */
     public void recruitPlayersFromStr(String playersStr) {
         String[] players = playersStr.split("%\n");
-        String[] pi; //PlayerInfo
-        for (String p : players) {
-            recruitPlayerCSV(p);
+        String currLine = players[0];
+        int i = 0;
+        while (!currLine.equals("END_RECRUITS")) {
+            recruitPlayerCSV(currLine, false);
+            currLine = players[++i];
         }
+
+        // Recruit Walk-ons before redshirts so that they don't affect position needs
+        recruitWalkOns();
+
+        currLine = players[++i]; // skip over END_RECRUITS line
+        while (!currLine.equals("END_REDSHIRTS")) {
+            recruitPlayerCSV(currLine, true);
+            currLine = players[++i];
+        }
+
     }
 
     /**
-     * Recruit individual player given in a string
+     * Recruit player given a CSV string
+     * @param line player to be recruited
+     * @param isRedshirt whether that player should be recruited as a RS
      */
-    private void recruitPlayerCSV(String line) {
+    private void recruitPlayerCSV(String line, boolean isRedshirt) {
         String[] playerInfo = line.split(",");
         if (playerInfo[0].equals("QB")) {
             teamQBs.add( new PlayerQB(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt));
         } else if (playerInfo[0].equals("RB")) {
             teamRBs.add( new PlayerRB(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt));
         } else if (playerInfo[0].equals("WR")) {
             teamWRs.add( new PlayerWR(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt));
         } else if (playerInfo[0].equals("OL")) {
             teamOLs.add( new PlayerOL(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt));
         } else if (playerInfo[0].equals("K")) {
             teamKs.add( new PlayerK(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt));
         } else if (playerInfo[0].equals("S")) {
             teamSs.add( new PlayerS(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt));
         } else if (playerInfo[0].equals("CB")) {
             teamCBs.add( new PlayerCB(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt));
         } else if (playerInfo[0].equals("F7")) {
             teamF7s.add( new PlayerF7(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt));
         }
     }
     
@@ -1999,6 +2013,13 @@ public class Team {
 class PlayerComparator implements Comparator<Player> {
     @Override
     public int compare( Player a, Player b ) {
-        return a.ratOvr > b.ratOvr ? -1 : a.ratOvr == b.ratOvr ? 0 : 1;
+        if (!a.isRedshirt && !b.isRedshirt)
+            return a.ratOvr > b.ratOvr ? -1 : a.ratOvr == b.ratOvr ? 0 : 1;
+        else if (!a.isRedshirt)
+            return -1;
+        else if (!b.isRedshirt)
+            return 1;
+        else
+            return a.ratOvr > b.ratOvr ? -1 : a.ratOvr == b.ratOvr ? 0 : 1;
     }
 }

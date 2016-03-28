@@ -38,7 +38,7 @@ public class PlayerWR extends Player {
     public int statsDrops;
     public int statsFumbles;
     
-    public PlayerWR( String nm, Team t, int yr, int pot, int iq, int cat, int spd, int eva ) {
+    public PlayerWR( String nm, Team t, int yr, int pot, int iq, int cat, int spd, int eva, boolean rs ) {
         team = t;
         name = nm;
         year = yr;
@@ -49,6 +49,8 @@ public class PlayerWR extends Player {
         ratRecCat = cat;
         ratRecSpd = spd;
         ratRecEva = eva;
+        isRedshirt = rs;
+        if (isRedshirt) year = 0;
 
         cost = (int)(Math.pow((float)ratOvr - 55,2)/3.5) + 80 + (int)(Math.random()*100) - 50;
         
