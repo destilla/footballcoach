@@ -83,7 +83,6 @@ public class RecruitingActivity extends AppCompatActivity {
     private ExpandableListView recruitList;
     private ArrayList<String> positions;
     private ArrayAdapter dataAdapterPosition;
-    private ExpandableListView expListView;
     private ExpandableListAdapterRecruiting expListAdapter;
     private Map<String, List<String>> playersInfo;
     private List<String> players;
@@ -94,8 +93,6 @@ public class RecruitingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recruiting);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Init all the ArrayLists
         playersRecruited = new ArrayList<String>();
@@ -131,7 +128,7 @@ public class RecruitingActivity extends AppCompatActivity {
         String[] teamInfo = lines[0].split(",");
         teamName = teamInfo[1];
         teamAbbr = teamInfo[2];
-        recruitingBudget = Integer.parseInt(teamInfo[3])*15;
+        recruitingBudget = Integer.parseInt(teamInfo[3])*150;
         getSupportActionBar().setTitle(teamName + " Recruiting");
 
         showPopUp = true;
@@ -169,7 +166,6 @@ public class RecruitingActivity extends AppCompatActivity {
 
         // Add extra money if your team was fleeced
         int recBonus = (Integer.parseInt(teamInfo[3])/3)*(33 - teamPlayers.size());
-        //if (recBonus < 0) recBonus = 0;
         recruitingBudget += recBonus;
 
         // Next get recruits info
@@ -374,7 +370,7 @@ public class RecruitingActivity extends AppCompatActivity {
         for (String p : players) {
             ArrayList<String> pInfoList = new ArrayList<String>();
             pInfoList.add(getPlayerDetails(p, pos));
-            playersInfo.put(p, pInfoList);
+            playersInfo.put(p.substring(0,p.length()-2), pInfoList);
         }
     }
 
@@ -422,7 +418,7 @@ public class RecruitingActivity extends AppCompatActivity {
             return "Potential: " + getLetterGradePot(ps[3]) +
                     ", Strength: " + getLetterGrade(ps[5]) +
                     "\nRun Stop: " + getLetterGrade(ps[6]) +
-                    ", Pass Pressure: " + getLetterGrade(ps[7]);
+                    ", Pass Press: " + getLetterGrade(ps[7]);
         }
         return "ERROR";
     }
@@ -497,7 +493,7 @@ public class RecruitingActivity extends AppCompatActivity {
             for (String p : players) {
                 ArrayList<String> pInfoList = new ArrayList<String>();
                 pInfoList.add(getPlayerDetails(p, p.split(",")[0]));
-                playersInfo.put(p, pInfoList);
+                playersInfo.put(p.substring(0, p.length() - 2), pInfoList);
             }
             expListAdapter.notifyDataSetChanged();
         }
@@ -747,8 +743,13 @@ public class RecruitingActivity extends AppCompatActivity {
         int moneyNeeded = getRecruitCost(player);
         recruitingBudget -= moneyNeeded;
         budgetText.setText("Budget: $" + recruitingBudget);
-        playersRecruited.add(player);
-        players.remove(player);
+
+        // Remove the player from the top 100 list
+        if (availAll.contains(player)) {
+            availAll.remove(player);
+        } else {
+            Toast.makeText(this, "Couldn't find player in AvailAll", Toast.LENGTH_SHORT).show();
+        }
 
         // Also need to add recruited player to correct team list and remove from avail list
         String[] ps = player.split(",");
@@ -786,13 +787,64 @@ public class RecruitingActivity extends AppCompatActivity {
             Collections.sort(teamF7s, new PlayerTeamStrCompOverall());
         }
 
-        // Remove the player from the top 100 list
-        if (availAll.contains(player)) availAll.remove(player);
+        playersRecruited.add(player);
+        players.remove(player);
 
         Toast.makeText(this, "Recruited " + ps[0] + " " + ps[1],
                 Toast.LENGTH_SHORT).show();
 
         updatePositionNeeds();
+    }
+
+    private boolean scoutPlayer(String player) {
+        int scoutCost = getRecruitCost(player)/7;
+        if (scoutCost < 25) scoutCost = 25;
+
+        if (recruitingBudget >= scoutCost) {
+            recruitingBudget -= scoutCost;
+            budgetText.setText("Budget: $" + recruitingBudget);
+
+            // Check availAll first
+            if (availAll.contains(player)) {
+                int posTop = availAll.indexOf(player);
+                availAll.set(posTop, player.substring(0, player.length() - 1) + "1");
+                Toast.makeText(this, "found and set in availAll", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Couldn't find player in availAll", Toast.LENGTH_SHORT).show();
+            }
+
+            // Next check all the position lists
+            String[] ps = player.split(",");
+            if (ps[0].equals("QB") && availQBs.contains(player)) {
+                availQBs.set(availQBs.indexOf(player), player.substring(0, player.length() - 1) + "1");
+            } else if (ps[0].equals("RB") && availRBs.contains(player)) {
+                availRBs.set(availRBs.indexOf(player), player.substring(0, player.length() - 1) + "1");
+            } else if (ps[0].equals("WR") && availWRs.contains(player)) {
+                availWRs.set(availWRs.indexOf(player), player.substring(0, player.length() - 1) + "1");
+            } else if (ps[0].equals("OL") && availOLs.contains(player)) {
+                availOLs.set(availOLs.indexOf(player), player.substring(0, player.length() - 1) + "1");
+            } else if (ps[0].equals("K") && availKs.contains(player)) {
+                availKs.set(availKs.indexOf(player), player.substring(0, player.length() - 1) + "1");
+            } else if (ps[0].equals("S") && availSs.contains(player)) {
+                availSs.set(availSs.indexOf(player), player.substring(0, player.length() - 1) + "1");
+            } else if (ps[0].equals("CB") && availCBs.contains(player)) {
+                availCBs.set(availCBs.indexOf(player), player.substring(0, player.length() - 1) + "1");
+            } else if (ps[0].equals("F7") && availF7s.contains(player)) {
+                availF7s.set(availF7s.indexOf(player), player.substring(0, player.length() - 1) + "1");
+            }
+
+            Toast.makeText(this, "Scouted " + ps[0] + " " + ps[1], Toast.LENGTH_SHORT).show();
+
+            expListAdapter.notifyDataSetChanged();
+
+            return true;
+
+        } else {
+            Toast.makeText(this, "Not enough money!",
+                    Toast.LENGTH_SHORT).show();
+
+            return false;
+        }
     }
 
     /**
@@ -802,14 +854,12 @@ public class RecruitingActivity extends AppCompatActivity {
 
         private Activity context;
 
-        public ExpandableListAdapterRecruiting(Activity context) {//, List<String> players, Map<String, List<String>> playersInfo) {
+        public ExpandableListAdapterRecruiting(Activity context) {
             this.context = context;
-            //this.playersInfo = playersInfo;
-            //this.players = players;
         }
 
         public String getChild(int groupPosition, int childPosition) {
-            return playersInfo.get(players.get(groupPosition)).get(childPosition);
+            return playersInfo.get(players.get(groupPosition).substring(0,players.get(groupPosition).length()-2)).get(childPosition);
         }
 
         public long getChildId(int groupPosition, int childPosition) {
@@ -820,6 +870,7 @@ public class RecruitingActivity extends AppCompatActivity {
         public View getChildView(final int groupPosition, final int childPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
             final String playerDetail = getChild(groupPosition, childPosition);
+            final String playerCSV = getGroup(groupPosition);
             LayoutInflater inflater = context.getLayoutInflater();
 
             if (convertView == null) {
@@ -827,24 +878,51 @@ public class RecruitingActivity extends AppCompatActivity {
             }
 
             // Set up Text for player details
-            TextView item = (TextView) convertView.findViewById(R.id.textRecruitDetails);
-            item.setText(playerDetail);
+            final TextView item = (TextView) convertView.findViewById(R.id.textRecruitDetails);
+            final Button scoutPlayerButton = (Button) convertView.findViewById(R.id.buttonScoutPlayer);
+            int scoutCost = getRecruitCost(playerCSV)/7;
+            if (scoutCost < 25) scoutCost = 25;
+            scoutPlayerButton.setText("SCOUT: $" + scoutCost);
+            if (playerCSV.split(",")[10].equals("0")) {
+                // Not scouted
+                item.setText("??????\t\t\t\t??????\n??????\t\t\t\t??????");
+                scoutPlayerButton.setEnabled(true);
+            } else {
+                // Scouted, disable scout button
+                item.setText(playerDetail);
+                scoutPlayerButton.setEnabled(false);
+            }
+
+            // Set up button for scouting player
+            scoutPlayerButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    //Scout player
+                    if (scoutPlayer(playerCSV)) {
+                        // Only update if the scout was successful (had enough money)
+                        item.setText(playerDetail); // Set text to actual attributes
+                        scoutPlayerButton.setEnabled(false);
+                    }
+
+                }
+            });
+
+            // Set up Recruit and Redshirt buttons to display the right price
+            Button recruitPlayerButton = (Button) convertView.findViewById(R.id.buttonRecruitPlayer);
+            recruitPlayerButton.setText("Recruit: $" + getRecruitCost(playerCSV));
+
+            Button redshirtPlayerButton = (Button) convertView.findViewById(R.id.buttonRedshirtPlayer);
+            redshirtPlayerButton.setText("Redshirt: $" + (5*getRecruitCost(playerCSV))/4);
 
             // Set up button for recruiting player
-            Button recruitPlayerButton = (Button) convertView.findViewById(R.id.buttonRecruitPlayer);
             recruitPlayerButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     // Save who is currently expanded
                     List<Integer> groupsExpanded = new ArrayList<>();
-                    /*recruitList.collapseGroup(groupPosition);
-                    for (int i = groupPosition+1; i < players.size(); ++i) {
-                        if ( recruitList.isGroupExpanded(i) ) {
-                            groupsExpanded.add(i);
-                        }
-                        recruitList.collapseGroup(i);
-                    }*/
-
-                    recruitPlayerDialog(getGroup(groupPosition), groupPosition, groupsExpanded);
+                    if (scoutPlayerButton.isEnabled()) {
+                        recruitPlayerDialog(playerCSV, groupPosition, groupsExpanded);
+                    } else {
+                        recruitPlayerDialog(playerCSV.substring(0,playerCSV.length()-1)+"1", groupPosition, groupsExpanded);
+                    }
                 }
             });
 
@@ -852,7 +930,7 @@ public class RecruitingActivity extends AppCompatActivity {
         }
 
         public int getChildrenCount(int groupPosition) {
-            return playersInfo.get(players.get(groupPosition)).size();
+            return playersInfo.get(players.get(groupPosition).substring(0,players.get(groupPosition).length()-2)).size();
         }
 
         public String getGroup(int groupPosition) {
