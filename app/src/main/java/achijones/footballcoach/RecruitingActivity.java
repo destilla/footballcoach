@@ -950,7 +950,7 @@ public class RecruitingActivity extends AppCompatActivity {
     }
 
     private void redshirtPlayer(String player) {
-        int moneyNeeded = getRecruitCost(player);
+        int moneyNeeded = (5*getRecruitCost(player))/4;
         recruitingBudget -= moneyNeeded;
         budgetText.setText("Budget: $" + recruitingBudget);
 
@@ -995,8 +995,8 @@ public class RecruitingActivity extends AppCompatActivity {
      * @return true if had enough money, false if not
      */
     private boolean scoutPlayer(String player) {
-        int scoutCost = getRecruitCost(player)/7;
-        if (scoutCost < 25) scoutCost = 25;
+        int scoutCost = getRecruitCost(player)/10;
+        if (scoutCost < 10) scoutCost = 10;
 
         if (recruitingBudget >= scoutCost) {
             recruitingBudget -= scoutCost;
@@ -1075,8 +1075,8 @@ public class RecruitingActivity extends AppCompatActivity {
             // Set up Text for player details
             final TextView item = (TextView) convertView.findViewById(R.id.textRecruitDetails);
             final Button scoutPlayerButton = (Button) convertView.findViewById(R.id.buttonScoutPlayer);
-            int scoutCost = getRecruitCost(playerCSV)/7;
-            if (scoutCost < 25) scoutCost = 25;
+            int scoutCost = getRecruitCost(playerCSV)/10;
+            if (scoutCost < 10) scoutCost = 10;
             scoutPlayerButton.setText("SCOUT: $" + scoutCost);
             if (playerCSV.split(",")[10].equals("0")) {
                 // Not scouted

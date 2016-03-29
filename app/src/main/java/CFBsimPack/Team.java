@@ -2064,11 +2064,11 @@ public class Team {
 class PlayerComparator implements Comparator<Player> {
     @Override
     public int compare( Player a, Player b ) {
-        if (!a.isRedshirt && !b.isRedshirt)
+        if (a.year>0 && b.year>0)
             return a.ratOvr > b.ratOvr ? -1 : a.ratOvr == b.ratOvr ? 0 : 1;
-        else if (!a.isRedshirt)
+        else if (a.year>0)
             return -1;
-        else if (!b.isRedshirt)
+        else if (b.year>0)
             return 1;
         else
             return a.ratOvr > b.ratOvr ? -1 : a.ratOvr == b.ratOvr ? 0 : 1;

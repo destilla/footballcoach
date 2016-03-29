@@ -588,8 +588,8 @@ public class League {
         // Bless a random team with lots of prestige
         int blessNumber = (int)(Math.random()*9);
         Team blessTeam = teamList.get(50 + blessNumber);
-        if (!blessTeam.userControlled) {
-            blessTeam.teamPrestige += 30;
+        if (!blessTeam.userControlled && !blessTeam.name.equals("American Samoa")) {
+            blessTeam.teamPrestige += 35;
             saveBless = blessTeam;
             if (blessTeam.teamPrestige > 90) blessTeam.teamPrestige = 90;
         }
@@ -599,15 +599,16 @@ public class League {
         int curseNumber = (int)(Math.random()*7);
         Team curseTeam = teamList.get(3 + curseNumber);
         if (!curseTeam.userControlled && curseTeam.teamPrestige > 85) {
-            curseTeam.teamPrestige -= 20;
+            curseTeam.teamPrestige -= 25;
            saveCurse = curseTeam;
         }
         else saveCurse = null;
+
         for (int c = 0; c < conferences.size(); ++c) {
             conferences.get(c).robinWeek = 0;
             conferences.get(c).week = 0;
         }
-        //set up schedule
+        //set up schedule (not needed anymore?)
         for (int i = 0; i < conferences.size(); ++i ) {
             conferences.get(i).setUpSchedule();
         }
