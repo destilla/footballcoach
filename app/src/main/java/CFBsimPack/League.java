@@ -31,7 +31,13 @@ public class League {
 
     public LeagueRecords leagueRecords;
     public TeamStreak longestWinStreak;
-    
+
+    public ArrayList<String> newsBless;
+    public ArrayList<String> newsCurse;
+    public Team saveBless;
+    public Team saveCurse;
+
+
     //Current week, 1-14
     public int currentWeek;
     
@@ -50,7 +56,7 @@ public class League {
     ArrayList<Player> heismanCandidates;
     private String heismanWinnerStrFull;
 
-    ArrayList<Player> allAmericans;
+    ArrayList<Player> allAmericans;		
     private String allAmericanStr;
 
     public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl",
@@ -75,7 +81,7 @@ public class League {
         conferences.add( new Conference("PACIF", this) );
         conferences.add( new Conference("MOUNT", this) );
         allAmericans = new ArrayList<Player>();
-
+        
         // Initialize new stories lists
         newsStories = new ArrayList< ArrayList<String> >();
         for (int i = 0; i < 16; ++i) {
@@ -257,6 +263,15 @@ public class League {
                 userTeam.teamHistory.add(line);
             }
 
+            newsBless = new ArrayList<String>();
+            while((line = bufferedReader.readLine()) != null && !line.equals("END_BLESS_TEAM")) {
+                newsBless.add(line);
+            }
+
+            newsCurse = new ArrayList<String>();
+            while((line = bufferedReader.readLine()) != null && !line.equals("END_CURSE_TEAM")) {
+                newsCurse.add(line);
+            }
             // Always close files.
             bufferedReader.close();
 
@@ -277,7 +292,7 @@ public class League {
             for (int i = 0; i < conferences.size(); ++i ) {
                 conferences.get(i).insertOOCSchedule();
             }
-
+            
             // Initialize new stories lists
             newsStories = new ArrayList< ArrayList<String> >();
             for (int i = 0; i < 16; ++i) {
@@ -285,7 +300,12 @@ public class League {
             }
             newsStories.get(0).add("New Season!>Ready for the new season, coach? Whether the National Championship is " +
                     "on your mind, or just a winning season, good luck!");
-
+            if (newsCurse.size()> 0 && newsCurse.get(0) != null) {
+                newsStories.get(0).add(newsCurse.get(0) + " Rocked by Infractions Scandal!>After an investigation during the offseason, "+newsCurse.get(0)+" has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + getRandName() + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
+            }
+            if (newsBless.size()> 0 && newsBless.get(0) != null){
+                newsStories.get(0).add("Blue Chip hire for Bad Break University>" + newsBless.get(0) + " announced the hire of alumnus and former professional coach " +getRandName()+", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
+            }
         }
         catch(FileNotFoundException ex) {
             System.out.println(
@@ -568,18 +588,21 @@ public class League {
         // Bless a random team with lots of prestige
         int blessNumber = (int)(Math.random()*9);
         Team blessTeam = teamList.get(50 + blessNumber);
-        if (!blessTeam.userControlled && blessTeam.name.equals("American Samoa")) {
+        if (!blessTeam.userControlled) {
             blessTeam.teamPrestige += 30;
+            saveBless = blessTeam;
             if (blessTeam.teamPrestige > 90) blessTeam.teamPrestige = 90;
         }
+        else saveBless = null;
 
         //Curse a good team
         int curseNumber = (int)(Math.random()*7);
         Team curseTeam = teamList.get(3 + curseNumber);
         if (!curseTeam.userControlled && curseTeam.teamPrestige > 85) {
             curseTeam.teamPrestige -= 20;
+           saveCurse = curseTeam;
         }
-
+        else saveCurse = null;
         for (int c = 0; c < conferences.size(); ++c) {
             conferences.get(c).robinWeek = 0;
             conferences.get(c).week = 0;
@@ -878,7 +901,6 @@ public class League {
             return heismanWinnerStrFull;
         }
     }
-
     public String getAllAmericanStr() {
         if (allAmericans.isEmpty()) {
             ArrayList<PlayerQB> qbs = new ArrayList<>();
@@ -955,7 +977,6 @@ public class League {
 
         return sb.toString();
     }
-
     /**
      * Get list of all the teams and their rankings based on selection
      * @param selection stat to sort by, 0-13
@@ -1392,6 +1413,15 @@ public class League {
             sb.append(s + "\n");
         }
         sb.append("END_USER_TEAM\n");
+
+        if (userTeam != saveBless && saveBless != null) {
+            sb.append(saveBless.name + "\n");
+            sb.append("END_BLESS_TEAM\n");
+        }
+        if (userTeam != saveCurse && saveCurse !=null) {
+            sb.append(saveCurse.name + "\n");
+            sb.append("END_CURSE_TEAM\n");
+        }
 
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(saveFile), "utf-8"))) {
