@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             String saveFileStr = extras.getString("SAVE_FILE");
             if (saveFileStr.equals("NEW_LEAGUE")) {
                 simLeague = new League(getString(R.string.league_player_names));
-                season = 2015;
+                season = 2016;
             } else if (saveFileStr.equals("DONE_RECRUITING")) {
                 File saveFile = new File(getFilesDir(), "saveLeagueRecruiting.cfb");
                 if (saveFile.exists()) {
@@ -93,12 +93,12 @@ public class MainActivity extends AppCompatActivity {
                     userTeamStr = userTeam.name;
                     userTeam.recruitPlayersFromStr(extras.getString("RECRUITS"));
                     simLeague.updateTeamTalentRatings();
-                    season = 2015 + userTeam.teamHistory.size();
+                    season = 2016 + userTeam.teamHistory.size();
                     currentTeam = userTeam;
                     loadedLeague = true;
                 } else {
                     simLeague = new League(getString(R.string.league_player_names));
-                    season = 2015;
+                    season = 2016;
                 }
             } else {
                 File saveFile = new File(getFilesDir(), saveFileStr);
@@ -107,17 +107,17 @@ public class MainActivity extends AppCompatActivity {
                     userTeam = simLeague.userTeam;
                     userTeamStr = userTeam.name;
                     simLeague.updateTeamTalentRatings();
-                    season = 2015 + userTeam.teamHistory.size();
+                    season = 2016 + userTeam.teamHistory.size();
                     currentTeam = userTeam;
                     loadedLeague = true;
                 } else {
                     simLeague = new League(getString(R.string.league_player_names));
-                    season = 2015;
+                    season = 2016;
                 }
             }
         } else {
             simLeague = new League(getString(R.string.league_player_names));
-            season = 2015;
+            season = 2016;
         }
 
         recruitingStage = -1;
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             userTeam.userControlled = true;
             userTeamStr = userTeam.name;
             currentTeam = userTeam;
-            // Set toolbar text to '2015 Season' etc
+            // Set toolbar text to '2016 Season' etc
             getSupportActionBar().setTitle(userTeam.name + " " + season + " Season");
 
             currentTeam = simLeague.teamList.get(0);
@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                     currentTeam = userTeam;
                     // set rankings so that not everyone is rank #0
                     simLeague.setTeamRanks();
-                    // Set toolbar text to '2015 Season' etc
+                    // Set toolbar text to '2016 Season' etc
                     getSupportActionBar().setTitle(userTeam.name + " " + season + " Season");
                     examineTeam(currentTeam.name);
                 }
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
         } else {
-            // Set toolbar text to '2015 Season' etc
+            // Set toolbar text to '2016 Season' etc
             getSupportActionBar().setTitle(userTeam.name + " " + season + " Season");
         }
 
@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                             // Show NCG summary
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                             builder.setMessage(simLeague.seasonSummaryStr())
-                                    .setTitle((2015 + userTeam.teamHistory.size()) + " Season Summary")
+                                    .setTitle((2016 + userTeam.teamHistory.size()) + " Season Summary")
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -367,20 +367,25 @@ public class MainActivity extends AppCompatActivity {
             /**
              * Clicked Heisman watch in drop down menu
              */
-            String heismanTop5Str = simLeague.getTop5HeismanStr();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(heismanTop5Str)
-                    .setTitle("Player of the Year Watch")
-                    .setPositiveButton("OK",new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //do nothing?
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            if (simLeague.currentWeek < 13) {
+                String heismanTop5Str = simLeague.getTop5HeismanStr();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(heismanTop5Str)
+                        .setTitle("Player of the Year Watch")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //do nothing?
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            } else {
+                // Show dialog with All American spinner too
+                heismanCeremony();
+            }
         } else if (id == R.id.action_rankings) {
             /**
              * Clicked Team Rankings in drop down menu
@@ -583,13 +588,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void scrollToLatestGame() {
         if (currTab == 2 && simLeague.currentWeek > 2) {
-            mainList.setSelection(currentTeam.numGames()-3);
+            mainList.setSelection(currentTeam.numGames() - 3);
         }
 
     }
 
     private void heismanCeremony() {
-        String heismanStr = simLeague.getHeismanCeremonyStr();
+        /*String heismanStr = simLeague.getHeismanCeremonyStr();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(heismanStr)
                 .setTitle("Player of the Year")
@@ -602,7 +607,58 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
         TextView msgTxt = (TextView) dialog.findViewById(android.R.id.message);
-        msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);*/
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Post Season Awards")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing?
+                    }
+                })
+                .setView(getLayoutInflater().inflate(R.layout.bowl_ccg_dialog, null));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        String[] selection;
+        if (simLeague.currentWeek < 13) {
+            selection = new String[1];
+            selection[0] = "Player of the Year";
+        } else {
+            selection = new String[8];
+            selection[0] = "Player of the Year";
+            selection[1] = "All Americans";
+            for (int i = 0; i < 6; ++i) {
+                selection[i+2] = "All-" + simLeague.conferences.get(i).confName + " Team";
+            }
+        }
+
+        Spinner potySpinner = (Spinner) dialog.findViewById(R.id.spinnerBowlCCG);
+        ArrayAdapter<String> potyAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, selection);
+        potyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        potySpinner.setAdapter(potyAdapter);
+
+        final TextView potyText = (TextView) dialog.findViewById(R.id.textViewBowlCCGDialog);
+
+        potySpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) {
+                            potyText.setText(simLeague.getHeismanCeremonyStr());
+                        } else if (position == 1) {
+                            potyText.setText(simLeague.getAllAmericanStr());
+                        } else {
+                            potyText.setText(simLeague.getAllConfStr(position-2));
+                        }
+                    }
+
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // do nothing
+                    }
+                });
     }
 
     public void showGameDialog(Game g) {
@@ -797,7 +853,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
 
         String[] selection = {"Conf Championships", "Bowl Games"};
-        Spinner bowlCCGSpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
+        Spinner bowlCCGSpinner = (Spinner) dialog.findViewById(R.id.spinnerBowlCCG);
         ArrayAdapter<String> bowlCCGadapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, selection);
         bowlCCGadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -1229,8 +1285,8 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Begin Recruiting", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        simLeague.updateLeagueHistory();
                         simLeague.updateTeamHistories();
+                        simLeague.updateLeagueHistory();
                         userTeam.resetStats();
                         simLeague.advanceSeason();
                         saveLeagueFile = new File(getFilesDir(), "saveLeagueRecruiting.cfb");

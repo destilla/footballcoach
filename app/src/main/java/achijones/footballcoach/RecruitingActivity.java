@@ -130,7 +130,7 @@ public class RecruitingActivity extends AppCompatActivity {
         String[] teamInfo = lines[0].split(",");
         teamName = teamInfo[1];
         teamAbbr = teamInfo[2];
-        recruitingBudget = Integer.parseInt(teamInfo[3])*15;
+        recruitingBudget = Integer.parseInt(teamInfo[3])*20;
         getSupportActionBar().setTitle(teamName + " Recruiting");
 
         showPopUp = true;
@@ -780,6 +780,8 @@ public class RecruitingActivity extends AppCompatActivity {
             availAll.remove(player);
         }
 
+        playersRecruited.add(player);
+
         // Also need to add recruited player to correct team list and remove from avail list
         String[] ps = player.split(",");
         if (ps[0].equals("QB")) {
@@ -816,7 +818,6 @@ public class RecruitingActivity extends AppCompatActivity {
             Collections.sort(teamF7s, new PlayerTeamStrCompOverall());
         }
 
-        playersRecruited.add(player);
         players.remove(player);
 
         Toast.makeText(this, "Recruited " + ps[0] + " " + ps[1],
@@ -958,6 +959,8 @@ public class RecruitingActivity extends AppCompatActivity {
             availAll.remove(player);
         }
 
+        playersRedshirted.add(player);
+
         // Also need to add recruited player to correct team list and remove from avail list
         String[] ps = player.split(",");
         if (ps[0].equals("QB")) {
@@ -978,7 +981,6 @@ public class RecruitingActivity extends AppCompatActivity {
             availF7s.remove(player);
         }
 
-        playersRedshirted.add(player);
         players.remove(player);
 
         Toast.makeText(this, "Redshirted " + ps[0] + " " + ps[1],

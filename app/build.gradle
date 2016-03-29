@@ -8,8 +8,8 @@ android {
         applicationId "achijones.footballcoach"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 11
-        versionName "1.22"
+        versionCode 12
+        versionName "1.25"
     }
     buildTypes {
         release {

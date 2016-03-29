@@ -50,6 +50,9 @@ public class League {
     ArrayList<Player> heismanCandidates;
     private String heismanWinnerStrFull;
 
+    ArrayList<Player> allAmericans;
+    private String allAmericanStr;
+
     public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl",
             "Patriot Bowl", "Salad Bowl", "Frost Bowl", "Tropical Bowl", "I'd Rather Bowl"};
     
@@ -71,6 +74,7 @@ public class League {
         conferences.add( new Conference("COWBY", this) );
         conferences.add( new Conference("PACIF", this) );
         conferences.add( new Conference("MOUNT", this) );
+        allAmericans = new ArrayList<Player>();
 
         // Initialize new stories lists
         newsStories = new ArrayList< ArrayList<String> >();
@@ -198,7 +202,7 @@ public class League {
         currentWeek = 0;
 
         leagueRecords = new LeagueRecords();
-        longestWinStreak = new TeamStreak(2015, 2015, 0, null);
+        longestWinStreak = new TeamStreak(2016, 2016, 0, null);
 
         try {
             // Always wrap FileReader in BufferedReader.
@@ -228,6 +232,7 @@ public class League {
             conferences.add( new Conference("COWBY", this) );
             conferences.add( new Conference("PACIF", this) );
             conferences.add( new Conference("MOUNT", this) );
+            allAmericans = new ArrayList<Player>();
             String[] splits;
             for(int i = 0; i < 60; ++i) { //Do for every team (60)
                 StringBuilder sbTeam = new StringBuilder();
@@ -604,11 +609,11 @@ public class League {
     }
 
     /**
-     * Gets the current year, starting from 2015
+     * Gets the current year, starting from 2016
      * @return the current year
      */
     public int getYear() {
-        return 2015 + leagueHistory.size();
+        return 2016 + leagueHistory.size();
     }
     
     /**
@@ -816,15 +821,15 @@ public class League {
                 if (p instanceof PlayerQB) {
                     PlayerQB pqb = (PlayerQB) p;
                     heismanTop5 += " QB " + pqb.getInitialName() + ": " + p.getHeismanScore() + " votes\n\t("
-                            + pqb.statsTD + " TDs, " + pqb.statsInt + " Int, " + pqb.statsPassYards + " Yds)\n";
+                            + pqb.statsTD + " TDs, " + pqb.statsInt + " Int, " + pqb.statsPassYards + " Yds)\n\n";
                 } else if (p instanceof PlayerRB) {
                     PlayerRB prb = (PlayerRB) p;
                     heismanTop5 += " RB " + prb.getInitialName() + ": " + p.getHeismanScore() + " votes\n\t("
-                            + prb.statsTD + " TDs, " + prb.statsFumbles + " Fum, " + prb.statsRushYards + " Yds)\n";
+                            + prb.statsTD + " TDs, " + prb.statsFumbles + " Fum, " + prb.statsRushYards + " Yds)\n\n";
                 } else if (p instanceof PlayerWR) {
                     PlayerWR pwr = (PlayerWR) p;
                     heismanTop5 += " WR " + pwr.getInitialName() + ": " + p.getHeismanScore() + " votes\n\t("
-                            + pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds)\n";
+                            + pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds)\n\n";
                 }
             }
             String heismanStats = "";
@@ -872,6 +877,83 @@ public class League {
         } else {
             return heismanWinnerStrFull;
         }
+    }
+
+    public String getAllAmericanStr() {
+        if (allAmericans.isEmpty()) {
+            ArrayList<PlayerQB> qbs = new ArrayList<>();
+            ArrayList<PlayerRB> rbs = new ArrayList<>();
+            ArrayList<PlayerWR> wrs = new ArrayList<>();
+
+            for (Conference c : conferences) {
+                c.getAllConfPlayers();
+                qbs.add((PlayerQB) c.allConfPlayers.get(0));
+                rbs.add((PlayerRB) c.allConfPlayers.get(1));
+                rbs.add((PlayerRB) c.allConfPlayers.get(2));
+                wrs.add((PlayerWR) c.allConfPlayers.get(3));
+                wrs.add((PlayerWR) c.allConfPlayers.get(4));
+                wrs.add((PlayerWR) c.allConfPlayers.get(5));
+            }
+
+            Collections.sort(qbs, new PlayerHeismanComp());
+            Collections.sort(rbs, new PlayerHeismanComp());
+            Collections.sort(wrs, new PlayerHeismanComp());
+
+            allAmericans.add(qbs.get(0));
+            allAmericans.add(rbs.get(0));
+            allAmericans.add(rbs.get(1));
+            allAmericans.add(wrs.get(0));
+            allAmericans.add(wrs.get(1));
+            allAmericans.add(wrs.get(2));
+        }
+
+        StringBuilder allAmerican = new StringBuilder();
+        for (int i = 0; i < 6; ++i) {
+            Player p = allAmericans.get(i);
+            allAmerican.append(p.team.abbr + "(" + p.team.wins + "-" + p.team.losses + ")" + " - ");
+            if (p instanceof PlayerQB) {
+                PlayerQB pqb = (PlayerQB) p;
+                allAmerican.append(" QB " + pqb.name + " [" + pqb.getYrStr() + "]\n \t\t" +
+                        pqb.statsTD + " TDs, " + pqb.statsInt + " Int, " + pqb.statsPassYards + " Yds\n");
+            } else if (p instanceof PlayerRB) {
+                PlayerRB prb = (PlayerRB) p;
+                allAmerican.append(" RB " + prb.name + " [" + prb.getYrStr() + "]\n \t\t" +
+                        prb.statsTD + " TDs, " + prb.statsFumbles + " Fum, " + prb.statsRushYards + " Yds\n");
+            } else if (p instanceof PlayerWR) {
+                PlayerWR pwr = (PlayerWR) p;
+                allAmerican.append(" WR " + pwr.name + " [" + pwr.getYrStr() + "]\n \t\t" +
+                        pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds\n");
+            }
+            allAmerican.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.ratPot + "\n\n");
+        }
+
+        // Go through all the all conf players to get the all americans
+        return allAmerican.toString();
+    }
+
+    public String getAllConfStr(int confNum) {
+        ArrayList<Player> allConfPlayers = conferences.get(confNum).getAllConfPlayers();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 6; ++i) {
+            Player p = allConfPlayers.get(i);
+            sb.append(p.team.abbr + "(" + p.team.wins + "-" + p.team.losses + ")" + " - ");
+            if (p instanceof PlayerQB) {
+                PlayerQB pqb = (PlayerQB) p;
+                sb.append(" QB " + pqb.name + " [" + pqb.getYrStr() + "]\n \t\t" +
+                        pqb.statsTD + " TDs, " + pqb.statsInt + " Int, " + pqb.statsPassYards + " Yds\n");
+            } else if (p instanceof PlayerRB) {
+                PlayerRB prb = (PlayerRB) p;
+                sb.append(" RB " + prb.name + " [" + prb.getYrStr() + "]\n \t\t" +
+                        prb.statsTD + " TDs, " + prb.statsFumbles + " Fum, " + prb.statsRushYards + " Yds\n");
+            } else if (p instanceof PlayerWR) {
+                PlayerWR pwr = (PlayerWR) p;
+                sb.append(" WR " + pwr.name + " [" + pwr.getYrStr() + "]\n \t\t" +
+                        pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds\n");
+            }
+            sb.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.ratPot + "\n\n");
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -1004,7 +1086,7 @@ public class League {
     public String getLeagueHistoryStr() {
         String hist = "";
         for (int i = 0; i < leagueHistory.size(); ++i) {
-            hist += (2015+i) + ":\n";
+            hist += (2016+i) + ":\n";
             hist += "\tChampions: " + leagueHistory.get(i)[0] + "\n";
             hist += "\tPOTY: " + heismanHistory.get(i) + "\n";
         }
@@ -1280,7 +1362,7 @@ public class League {
      */
     public boolean saveLeague(File saveFile) {
         StringBuilder sb = new StringBuilder();
-        sb.append((2015+leagueHistory.size())+": " + userTeam.abbr + " (" + (userTeam.totalWins-userTeam.wins) + "-" + (userTeam.totalLosses-userTeam.losses) + ") " +
+        sb.append((2016+leagueHistory.size())+": " + userTeam.abbr + " (" + (userTeam.totalWins-userTeam.wins) + "-" + (userTeam.totalLosses-userTeam.losses) + ") " +
                     userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs%\n");
 
         for (int i = 0; i < leagueHistory.size(); ++i) {

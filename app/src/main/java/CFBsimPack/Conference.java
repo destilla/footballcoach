@@ -22,6 +22,9 @@ public class Conference {
     
     public int week;
     public int robinWeek;
+
+    public String allConfStr;
+    public ArrayList<Player> allConfPlayers;
     
     /**
      * Sets up Conference with empty list of teams.
@@ -35,6 +38,7 @@ public class Conference {
         this.league = league;
         week = 0;
         robinWeek = 0;
+        allConfPlayers = new ArrayList<Player>();
     }
     
     /**
@@ -276,6 +280,40 @@ public class Conference {
                 }
             }
         }
+    }
+
+    /**
+     * Get the allConfPlayers by sorting all the conf's players by their Heisman score
+     * Should be only called after week 13
+     */
+    public ArrayList<Player> getAllConfPlayers() {
+        if (allConfPlayers.isEmpty()) {
+            ArrayList<PlayerQB> qbs = new ArrayList<>();
+            ArrayList<PlayerRB> rbs = new ArrayList<>();
+            ArrayList<PlayerWR> wrs = new ArrayList<>();
+
+            for (Team t : confTeams) {
+                qbs.add(t.getQB(0));
+                rbs.add(t.getRB(0));
+                rbs.add(t.getRB(1));
+                wrs.add(t.getWR(0));
+                wrs.add(t.getWR(1));
+                wrs.add(t.getWR(2));
+            }
+
+            Collections.sort(qbs, new PlayerHeismanComp());
+            Collections.sort(rbs, new PlayerHeismanComp());
+            Collections.sort(wrs, new PlayerHeismanComp());
+
+            allConfPlayers.add(qbs.get(0));
+            allConfPlayers.add(rbs.get(0));
+            allConfPlayers.add(rbs.get(1));
+            allConfPlayers.add(wrs.get(0));
+            allConfPlayers.add(wrs.get(1));
+            allConfPlayers.add(wrs.get(2));
+        }
+
+        return allConfPlayers;
     }
    
 }
