@@ -3,7 +3,8 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="action_team_strategy">Set Team Strategy</string>
     <string name="action_team_lineup">Set Team Lineup</string>
-    <string name="action_league_history">League History</string>
+    <string name="action_league_history">League History/Records</string>
+    <string name="action_league_records">League Records</string>
     <string name="action_team_history">My Team History</string>
     <string name="action_rankings">Team Rankings</string>
     <string name="action_heisman">Post Season Awards</string>

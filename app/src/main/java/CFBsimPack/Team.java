@@ -318,7 +318,6 @@ public class Team {
         if (teamPrestige < 45 && !name.equals("American Samoa")) teamPrestige = 45;
 
         diffPrestige = teamPrestige - oldPrestige;
-        //checkLeagueRecords();
         advanceSeasonPlayers();
         
     }
@@ -2064,8 +2063,12 @@ public class Team {
 class PlayerComparator implements Comparator<Player> {
     @Override
     public int compare( Player a, Player b ) {
-        if (a.year>0 && b.year>0)
-            return a.ratOvr > b.ratOvr ? -1 : a.ratOvr == b.ratOvr ? 0 : 1;
+        if (a.year>0 && b.year>0) {
+            // First sort by overall, potential next
+            if (a.ratOvr > b.ratOvr) return -1;
+            else if (a.ratOvr == b.ratOvr) return a.ratPot > b.ratPot ? -1 : a.ratPot == b.ratPot ? 0 : 1;
+            else return 1;
+        }
         else if (a.year>0)
             return -1;
         else if (b.year>0)

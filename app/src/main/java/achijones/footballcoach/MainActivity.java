@@ -287,6 +287,7 @@ public class MainActivity extends AppCompatActivity {
                         } else if (simLeague.currentWeek == 14) {
                             simGameButton.setText("Play National Championship");
                         } else {
+                            simLeague.checkLeagueRecords();
                             simGameButton.setText("Begin Recruiting");
                         }
 
@@ -400,7 +401,8 @@ public class MainActivity extends AppCompatActivity {
             /**
              * Clicked League History in drop down menu
              */
-            String historyStr = simLeague.getLeagueHistoryStr();
+            showLeagueHistoryDialog();
+            /*String historyStr = simLeague.getLeagueHistoryStr();
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(historyStr)
                     .setTitle("League History")
@@ -413,7 +415,7 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
             TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);*/
         } else if (id == R.id.action_team_history) {
             /**
              * Clicked Team History in drop down menu
@@ -492,7 +494,6 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < currentConference.confTeams.size(); ++i) {
             String[] spinnerSplit = dataAdapterTeam.getItem(i).split(" ");
-            System.out.println("Looking for " + spinnerSplit[1]);
             if (spinnerSplit[1].equals(tempT.abbr)) {
                 examineTeamSpinner.setSelection(i);
                 currentTeam = tempT;
@@ -831,6 +832,49 @@ public class MainActivity extends AppCompatActivity {
                         teamRankingsAdapter.clear();
                         teamRankingsAdapter.addAll(rankings);
                         teamRankingsAdapter.notifyDataSetChanged();
+                    }
+
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // do nothing
+                    }
+                });
+    }
+
+    public void showLeagueHistoryDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("League History / Records")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing?
+                    }
+                })
+                .setView(getLayoutInflater().inflate(R.layout.team_rankings_dialog, null));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        String[] historySelection = {"League History", "League Records"};
+        Spinner leagueHistorySpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
+        ArrayAdapter<String> leagueHistorySpinnerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, historySelection);
+        leagueHistorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        leagueHistorySpinner.setAdapter(leagueHistorySpinnerAdapter);
+
+        final ListView leagueHistoryList = (ListView) dialog.findViewById(R.id.listViewTeamRankings);
+
+        leagueHistorySpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 1) {
+                            final LeagueRecordsListArrayAdapter leagueRecordsAdapter =
+                                    new LeagueRecordsListArrayAdapter(MainActivity.this, simLeague.leagueRecords.getRecordsStr().split("\n"));
+                            leagueHistoryList.setAdapter(leagueRecordsAdapter);
+                        } else {
+                            final LeagueHistoryListArrayAdapter leagueHistoryAdapter =
+                                    new LeagueHistoryListArrayAdapter(MainActivity.this, simLeague.getLeagueHistoryStr().split("%"));
+                            leagueHistoryList.setAdapter(leagueHistoryAdapter);
+                        }
                     }
 
                     public void onNothingSelected(AdapterView<?> parent) {

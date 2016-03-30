@@ -265,13 +265,21 @@ public class League {
 
             newsBless = new ArrayList<String>();
             while((line = bufferedReader.readLine()) != null && !line.equals("END_BLESS_TEAM")) {
-                newsBless.add(line);
+                if (!line.equals("NULL")) newsBless.add(line);
             }
 
             newsCurse = new ArrayList<String>();
             while((line = bufferedReader.readLine()) != null && !line.equals("END_CURSE_TEAM")) {
-                newsCurse.add(line);
+                if (!line.equals("NULL")) newsCurse.add(line);
             }
+
+            String[] record;
+            while((line = bufferedReader.readLine()) != null && !line.equals("END_LEAGUE_RECORDS")) {
+                record = line.split(",");
+                System.out.println("Checking record:" + line);
+                leagueRecords.checkRecord(record[0], Integer.parseInt(record[1]), record[2], Integer.parseInt(record[3]));
+            }
+
             // Always close files.
             bufferedReader.close();
 
@@ -600,7 +608,7 @@ public class League {
         Team curseTeam = teamList.get(3 + curseNumber);
         if (!curseTeam.userControlled && curseTeam.teamPrestige > 85) {
             curseTeam.teamPrestige -= 25;
-           saveCurse = curseTeam;
+            saveCurse = curseTeam;
         }
         else saveCurse = null;
 
@@ -629,6 +637,15 @@ public class League {
     public void checkLongestWinStreak(TeamStreak streak) {
         if (streak.getStreakLength() > longestWinStreak.getStreakLength()) {
             longestWinStreak = new TeamStreak(streak.getStartYear(), streak.getEndYear(), streak.getStreakLength(), streak.getTeam());
+        }
+    }
+
+    /**
+     * Checks if any of the league records were broken by teams.
+     */
+    public void checkLeagueRecords() {
+        for (Team t : teamList) {
+            t.checkLeagueRecords();
         }
     }
 
@@ -1110,7 +1127,7 @@ public class League {
         for (int i = 0; i < leagueHistory.size(); ++i) {
             hist += (2016+i) + ":\n";
             hist += "\tChampions: " + leagueHistory.get(i)[0] + "\n";
-            hist += "\tPOTY: " + heismanHistory.get(i) + "\n";
+            hist += "\tPOTY: " + heismanHistory.get(i) + "\n%";
         }
         return hist;
     }
@@ -1384,9 +1401,12 @@ public class League {
      */
     public boolean saveLeague(File saveFile) {
         StringBuilder sb = new StringBuilder();
+
+        // Save information about the save file, user team info
         sb.append((2016+leagueHistory.size())+": " + userTeam.abbr + " (" + (userTeam.totalWins-userTeam.wins) + "-" + (userTeam.totalLosses-userTeam.losses) + ") " +
                     userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs%\n");
 
+        // Save league history of who was #1 each year
         for (int i = 0; i < leagueHistory.size(); ++i) {
             for (int j = 0; j < leagueHistory.get(i).length; ++j) {
                 sb.append(leagueHistory.get(i)[j] + "%");
@@ -1395,11 +1415,13 @@ public class League {
         }
         sb.append("END_LEAGUE_HIST\n");
 
+        // Save POTY history of who won each year
         for (int i = 0; i < heismanHistory.size(); ++i) {
             sb.append(heismanHistory.get(i) + "\n");
         }
         sb.append("END_HEISMAN_HIST\n");
 
+        // Save information about each team like W-L records, as well as all the players
         for (Team t : teamList) {
             sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
                     (t.totalWins-t.wins) + "," + (t.totalLosses-t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
@@ -1409,21 +1431,35 @@ public class League {
             sb.append("END_PLAYERS\n");
         }
 
+        // Save history of the user's team of the W-L and bowl results each year
         sb.append(userTeam.name + "\n");
         for (String s : userTeam.teamHistory) {
             sb.append(s + "\n");
         }
         sb.append("END_USER_TEAM\n");
 
-        if (userTeam != saveBless && saveBless != null) {
+        // Save who was blessed and cursed this year for news stories the following year
+        if (saveBless != null) {
             sb.append(saveBless.name + "\n");
             sb.append("END_BLESS_TEAM\n");
+        } else {
+            sb.append("NULL\n");
+            sb.append("END_BLESS_TEAM\n");
         }
-        if (userTeam != saveCurse && saveCurse !=null) {
+        if (saveCurse != null) {
             sb.append(saveCurse.name + "\n");
+            sb.append("END_CURSE_TEAM\n");
+        } else {
+            sb.append("NULL\n");
             sb.append("END_CURSE_TEAM\n");
         }
 
+        // Save league records
+        System.out.println("Saving Records!\n" + leagueRecords.getRecordsStr());
+        sb.append(leagueRecords.getRecordsStr());
+        sb.append("END_LEAGUE_RECORDS\n");
+
+        // Actually write to the file
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(saveFile), "utf-8"))) {
             writer.write(sb.toString());
