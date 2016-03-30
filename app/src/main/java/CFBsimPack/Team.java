@@ -149,7 +149,7 @@ public class Team {
         //set stats
         totalWins = 0;
         totalLosses = 0;
-        winStreak = new TeamStreak(league.getYear(), league.getYear(), 0, this);
+        winStreak = new TeamStreak(league.getYear(), league.getYear(), 0, abbr);
         totalCCs = 0;
         totalNCs = 0;
         totalCCLosses = 0;
@@ -227,7 +227,6 @@ public class Team {
         teamPollScore = 0;
         teamStratOffNum = 1; // 1 is the default strats
         teamStratDefNum = 1;
-        winStreak = new TeamStreak(league.getYear(), league.getYear(), 0, this);
 
         // Actually load the team from the string
         String[] lines = loadStr.split("%");
@@ -238,6 +237,7 @@ public class Team {
             conference = teamInfo[0];
             name = teamInfo[1];
             abbr = teamInfo[2];
+            winStreak = new TeamStreak(league.getYear(), league.getYear(), 0, abbr);
             teamPrestige = Integer.parseInt(teamInfo[3]);
             totalWins = Integer.parseInt(teamInfo[4]);
             totalLosses = Integer.parseInt(teamInfo[5]);
@@ -253,11 +253,11 @@ public class Team {
                     teamStratOffNum = Integer.parseInt(teamInfo[13]);
                     teamStratDefNum = Integer.parseInt(teamInfo[14]);
                     showPopups = (Integer.parseInt(teamInfo[15]) == 1);
-                    if (teamInfo.length == 19) {
-                        winStreak = new TeamStreak(Integer.parseInt(teamInfo[16]),
-                                Integer.parseInt(teamInfo[17]),
-                                Integer.parseInt(teamInfo[18]),
-                                this);
+                    if (teamInfo.length == 20) {
+                        winStreak = new TeamStreak(Integer.parseInt(teamInfo[18]),
+                                Integer.parseInt(teamInfo[19]),
+                                Integer.parseInt(teamInfo[16]),
+                                teamInfo[17]);
                     }
                 }
             } else {
@@ -295,7 +295,7 @@ public class Team {
      */
     public void advanceSeason() {
         // subtract for rivalry first
-        if ( wonRivalryGame && (teamPrestige - league.findTeamAbbr(rivalTeam).teamPrestige < 20) ) {
+        if (wonRivalryGame && (teamPrestige - league.findTeamAbbr(rivalTeam).teamPrestige < 20)) {
             teamPrestige += 2;
         } else if (!wonRivalryGame && (league.findTeamAbbr(rivalTeam).teamPrestige - teamPrestige < 20 || name.equals("American Samoa"))) {
             teamPrestige -= 2;
@@ -1119,6 +1119,26 @@ public class Team {
      */
     public int getDefTalent() {
         return ( getRushDef() + getPassDef() ) / 2;
+    }
+
+    /**
+     * Get the composite Football IQ of the team. Is used in game simulation.
+     * @return football iq of the team
+     */
+    public int getCompositeFootIQ() {
+        int comp = 0;
+        comp += getQB(0).ratFootIQ * 5;
+        comp += getRB(0).ratFootIQ + getRB(1).ratFootIQ;
+        comp += getWR(0).ratFootIQ + getWR(1).ratFootIQ + getWR(2).ratFootIQ;
+        for (int i = 0; i < 5; ++i) {
+            comp += getOL(i).ratFootIQ/5;
+        }
+        comp += getS(0).ratFootIQ * 5;
+        comp += getCB(0).ratFootIQ + getCB(1).ratFootIQ + getCB(2).ratFootIQ;
+        for (int i = 0; i < 7; ++i) {
+            comp += getF7(i).ratFootIQ/7;
+        }
+        return comp / 20;
     }
     
     public PlayerQB getQB(int depth) {

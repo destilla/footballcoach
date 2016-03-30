@@ -5,6 +5,7 @@ package achijones.footballcoach;
  */
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,13 @@ import achijones.footballcoach.R;
 public class LeagueRecordsListArrayAdapter extends ArrayAdapter<String> {
     private final Context context;
     private final String[] values;
+    private final String userTeamAbbr;
 
-    public LeagueRecordsListArrayAdapter(Context context, String[] values) {
+    public LeagueRecordsListArrayAdapter(Context context, String[] values, String userTeamAbbr) {
         super(context, R.layout.league_record_list_item, values);
         this.context = context;
         this.values = values;
+        this.userTeamAbbr = userTeamAbbr;
     }
 
     @Override
@@ -38,6 +41,10 @@ public class LeagueRecordsListArrayAdapter extends ArrayAdapter<String> {
             textLeft.setText(record[1]);
             textCenter.setText(record[0]);
             textRight.setText(record[2] + "\n" + record[3]);
+            if (record[2].substring(0,3).equals(userTeamAbbr)) {
+                // User team record, make it special color
+                textRight.setTextColor(Color.parseColor("#1A75FF"));
+            }
         }
 
         return rowView;

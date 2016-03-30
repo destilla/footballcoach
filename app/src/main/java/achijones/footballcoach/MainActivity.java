@@ -234,7 +234,8 @@ public class MainActivity extends AppCompatActivity {
                         simLeague.playWeek();
 
                         if (simLeague.currentWeek == 15) {
-                            // Show NCG summary
+                            // Show NCG summary and check league records
+                            simLeague.checkLeagueRecords();
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                             builder.setMessage(simLeague.seasonSummaryStr())
                                     .setTitle((2016 + userTeam.teamHistory.size()) + " Season Summary")
@@ -287,7 +288,6 @@ public class MainActivity extends AppCompatActivity {
                         } else if (simLeague.currentWeek == 14) {
                             simGameButton.setText("Play National Championship");
                         } else {
-                            simLeague.checkLeagueRecords();
                             simGameButton.setText("Begin Recruiting");
                         }
 
@@ -868,7 +868,7 @@ public class MainActivity extends AppCompatActivity {
                             AdapterView<?> parent, View view, int position, long id) {
                         if (position == 1) {
                             final LeagueRecordsListArrayAdapter leagueRecordsAdapter =
-                                    new LeagueRecordsListArrayAdapter(MainActivity.this, simLeague.leagueRecords.getRecordsStr().split("\n"));
+                                    new LeagueRecordsListArrayAdapter(MainActivity.this, simLeague.getLeagueRecordsStr().split("\n"), userTeam.abbr);
                             leagueHistoryList.setAdapter(leagueRecordsAdapter);
                         } else {
                             final LeagueHistoryListArrayAdapter leagueHistoryAdapter =

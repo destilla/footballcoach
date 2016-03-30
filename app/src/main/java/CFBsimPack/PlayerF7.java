@@ -63,7 +63,7 @@ public class PlayerF7 extends Player {
         year = yr;
         gamesPlayed = 0;
         ratPot = (int) (50 + 50*Math.random());
-        ratFootIQ = (int) (50 + stars*4 + 30*Math.random());
+        ratFootIQ = (int) (50 + 50*Math.random());
         ratF7Pow = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratF7Rsh = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratF7Pas = (int) (60 + year*5 + stars*5 - 25*Math.random());

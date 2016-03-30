@@ -95,24 +95,6 @@ public class LeagueRecords {
         for (String s : recordsList) {
             sb.append(recordStrCSV(s) + "\n");
         }
-        /*sb.append(recordStrCSV("Team PPG"));
-        sb.append(recordStrCSV("Team Opp PPG"));
-        sb.append(recordStrCSV("Team YPG"));
-        sb.append(recordStrCSV("Team Opp YPG"));
-        sb.append(recordStrCSV("Team TO Diff"));
-        sb.append(recordStrCSV("Pass Yards"));
-        sb.append(recordStrCSV("Pass TDs"));
-        sb.append(recordStrCSV("Interceptions"));
-        sb.append(recordStrCSV("Comp Percent"));
-        sb.append(recordStrCSV("Rush Yards"));
-        sb.append(recordStrCSV("Rush TDs"));
-        sb.append(recordStrCSV("Rush Fumbles"));
-        sb.append(recordStrCSV("Team PPG"));Record r;
-        for (Map.Entry<String, Record> record : records.entrySet()) {
-            r = record.getValue();
-            sb.append(record.getKey()+","+r.getNumber()+","+r.getHolder()+","+r.getYear());
-            sb.append("\n");
-        }*/
         return sb.toString();
     }
 
@@ -122,6 +104,23 @@ public class LeagueRecords {
             return key+","+r.getNumber()+","+r.getHolder()+","+r.getYear();
         }
         else return "ERROR,ERROR,ERROR,ERROR";
+    }
+
+    /**
+     * Print out string of all the records broken by a team that year
+     * @return string of all records broken
+     */
+    public String brokenRecordsStr(int year, String abbr) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Record> r : records.entrySet()) {
+            if (r.getValue().getHolder().substring(0, 3).equals(abbr) &&
+                    r.getValue().getYear() == year) {
+                sb.append(r.getValue().getHolder() + " broke the record for " +
+                    r.getKey() + " in a season with " + r.getValue().getNumber() + "!\n");
+            }
+        }
+
+        return sb.toString();
     }
 
 }

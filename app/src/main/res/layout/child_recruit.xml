@@ -14,15 +14,23 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:paddingLeft="10dp" />
+            android:paddingStart="10dp" />
 
-        <Button
+        <TextView
+            android:id="@+id/textRecruitPotential"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:paddingEnd="10dp" />
+
+        <!-- <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:text="Scout: $XX"
-            android:id="@+id/buttonScoutPlayer" />
+            android:id="@+id/buttonScoutPlayer" /> -->
     </RelativeLayout>
 
     <RelativeLayout

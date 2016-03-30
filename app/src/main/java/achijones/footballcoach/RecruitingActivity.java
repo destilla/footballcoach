@@ -130,7 +130,7 @@ public class RecruitingActivity extends AppCompatActivity {
         final String[] teamInfo = lines[0].split(",");
         teamName = teamInfo[1];
         teamAbbr = teamInfo[2];
-        recruitingBudget = Integer.parseInt(teamInfo[3])*20;
+        recruitingBudget = Integer.parseInt(teamInfo[3])*17;
         getSupportActionBar().setTitle(teamName + " Recruiting");
 
         showPopUp = true;
@@ -292,10 +292,48 @@ public class RecruitingActivity extends AppCompatActivity {
             }
         });
 
+        String p;
+        for (i = 0; i < availQBs.size(); ++i) {
+            p = availQBs.get(i);
+            availQBs.set(i, p.substring(0, p.length() - 1) + "1");
+        }
+        for (i = 0; i < availRBs.size(); ++i) {
+            p = availRBs.get(i);
+            availRBs.set(i, p.substring(0, p.length() - 1) + "1");
+        }
+        for (i = 0; i < availWRs.size(); ++i) {
+            p = availWRs.get(i);
+            availWRs.set(i, p.substring(0, p.length() - 1) + "1");
+        }
+        for (i = 0; i < availOLs.size(); ++i) {
+            p = availOLs.get(i);
+            availOLs.set(i, p.substring(0, p.length() - 1) + "1");
+        }
+        for (i = 0; i < availKs.size(); ++i) {
+            p = availKs.get(i);
+            availKs.set(i, p.substring(0, p.length() - 1) + "1");
+        }
+        for (i = 0; i < availSs.size(); ++i) {
+            p = availSs.get(i);
+            availSs.set(i, p.substring(0, p.length() - 1) + "1");
+        }
+        for (i = 0; i < availCBs.size(); ++i) {
+            p = availCBs.get(i);
+            availCBs.set(i, p.substring(0, p.length() - 1) + "1");
+        }
+        for (i = 0; i < availF7s.size(); ++i) {
+            p = availF7s.get(i);
+            availF7s.set(i, p.substring(0, p.length() - 1) + "1");
+        }
+        for (i = 0; i < availAll.size(); ++i) {
+            p = availAll.get(i);
+            availAll.set(i, p.substring(0, p.length() - 1) + "1");
+        }
+
         /**
-         * Ask player if they want scouting. Gives temporary option to players
+         * Ask player if they want scouting. Gives temporary option to players (scouting enabled as default now)
          */
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        /*AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Do you want to enable scouting?\n\nIf you select 'No' then all attributes will be revealed without scouting." +
                 "\n\nIf you select 'Yes' then you will have to scout players using money to see detailed attributes." +
                 "\n\n(This is a temporary option while the devs decide what to do about scouting.)")
@@ -353,7 +391,7 @@ public class RecruitingActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
         TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);*/
     }
 
     @Override
@@ -445,42 +483,42 @@ public class RecruitingActivity extends AppCompatActivity {
     private String getPlayerDetails(String player, String pos) {
         String[] ps = player.split(",");
         if (pos.equals("QB")) {
-            return "Potential: " + getLetterGradePot(ps[3]) +
+            return "Football IQ: " + getLetterGradePot(ps[4]) +
                     ", Strength: " + getLetterGrade(ps[5]) +
                     "\nAccuracy: " + getLetterGrade(ps[6]) +
                     ", Evasion: " + getLetterGrade(ps[7]);
         } else if (pos.equals("RB")) {
-            return "Potential: " + getLetterGradePot(ps[3]) +
+            return "Football IQ: " + getLetterGradePot(ps[4]) +
                     ", Power: " + getLetterGrade(ps[5]) +
                     "\nSpeed: " + getLetterGrade(ps[6]) +
                     ", Evasion: " + getLetterGrade(ps[7]);
         } else if (pos.equals("WR")) {
-            return "Potential: " + getLetterGradePot(ps[3]) +
+            return "Football IQ: " + getLetterGradePot(ps[4]) +
                     ", Catching: " + getLetterGrade(ps[5]) +
                     "\nSpeed: " + getLetterGrade(ps[6]) +
                     ", Evasion: " + getLetterGrade(ps[7]);
         } else if (pos.equals("OL")) {
-            return "Potential: " + getLetterGradePot(ps[3]) +
+            return "Football IQ: " + getLetterGradePot(ps[4]) +
                     ", Strength: " + getLetterGrade(ps[5]) +
                     "\nRush Blk: " + getLetterGrade(ps[6]) +
                     ", Pass Blk: " + getLetterGrade(ps[7]);
         } else if (pos.equals("K")) {
-            return "Potential: " + getLetterGradePot(ps[3]) +
+            return "Football IQ: " + getLetterGradePot(ps[4]) +
                     ", Kick Power: " + getLetterGrade(ps[5]) +
                     "\nAccuracy: " + getLetterGrade(ps[6]) +
                     ", Clumsiness: " + getLetterGrade(ps[7]);
         } else if (pos.equals("S")) {
-            return "Potential: " + getLetterGradePot(ps[3]) +
+            return "Football IQ: " + getLetterGradePot(ps[4]) +
                     ", Coverage: " + getLetterGrade(ps[5]) +
                     "\nSpeed: " + getLetterGrade(ps[6]) +
                     ", Tackling: " + getLetterGrade(ps[7]);
         } else if (pos.equals("CB")) {
-            return "Potential: " + getLetterGradePot(ps[3]) +
+            return "Football IQ: " + getLetterGradePot(ps[4]) +
                     ", Coverage: " + getLetterGrade(ps[5]) +
                     "\nSpeed: " + getLetterGrade(ps[6]) +
                     ", Tackling: " + getLetterGrade(ps[7]);
         } else if (pos.equals("F7")) {
-            return "Potential: " + getLetterGradePot(ps[3]) +
+            return "Football IQ: " + getLetterGradePot(ps[4]) +
                     ", Strength: " + getLetterGrade(ps[5]) +
                     "\nRun Stop: " + getLetterGrade(ps[6]) +
                     ", Pass Press: " + getLetterGrade(ps[7]);
@@ -1117,7 +1155,7 @@ public class RecruitingActivity extends AppCompatActivity {
         }
 
         public String getChild(int groupPosition, int childPosition) {
-            return playersInfo.get(players.get(groupPosition).substring(0,players.get(groupPosition).length()-2)).get(childPosition);
+            return playersInfo.get( players.get(groupPosition).substring(0,players.get(groupPosition).length()-2) ).get(childPosition);
         }
 
         public long getChildId(int groupPosition, int childPosition) {
@@ -1136,33 +1174,36 @@ public class RecruitingActivity extends AppCompatActivity {
             }
 
             // Set up Text for player details
-            final TextView item = (TextView) convertView.findViewById(R.id.textRecruitDetails);
-            final Button scoutPlayerButton = (Button) convertView.findViewById(R.id.buttonScoutPlayer);
-            int scoutCost = getRecruitCost(playerCSV)/10;
-            if (scoutCost < 10) scoutCost = 10;
-            scoutPlayerButton.setText("SCOUT: $" + scoutCost);
+            final TextView details = (TextView) convertView.findViewById(R.id.textRecruitDetails);
+            final TextView potential = (TextView) convertView.findViewById(R.id.textRecruitPotential);
+
             if (playerCSV.split(",")[10].equals("0")) {
                 // Not scouted
-                item.setText("??????\t\t\t\t??????\n??????\t\t\t\t??????");
-                scoutPlayerButton.setEnabled(true);
+                details.setText("??????\t\t\t\t??????\n??????\t\t\t\t??????");
+                potential.setText( "Potential: ??" );
             } else {
                 // Scouted, disable scout button
-                item.setText(playerDetail);
-                scoutPlayerButton.setEnabled(false);
+                details.setText(playerDetail);
+                potential.setText( "Potential: " + getLetterGrade(playerCSV.split(",")[3]) );
             }
 
-            // Set up button for scouting player
+            /* Set up button for scouting player
+            final Button scoutPlayerButton = (Button) convertView.findViewById(R.id.buttonScoutPlayer);
             scoutPlayerButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     //Scout player
                     if (scoutPlayer(playerCSV)) {
                         // Only update if the scout was successful (had enough money)
-                        item.setText(playerDetail); // Set text to actual attributes
+                        details.setText(playerDetail); // Set text to actual attributes
+                        potential.setText( "Potential: " + getLetterGrade(playerCSV.split(",")[3]) );
                         scoutPlayerButton.setEnabled(false);
                     }
 
                 }
             });
+
+            // Bye bye scouting :(
+            scoutPlayerButton.setVisibility(View.GONE);*/
 
             // Set up Recruit and Redshirt buttons to display the right price
             Button recruitPlayerButton = (Button) convertView.findViewById(R.id.buttonRecruitPlayer);
@@ -1176,11 +1217,7 @@ public class RecruitingActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Save who is currently expanded
                     List<Integer> groupsExpanded = new ArrayList<>();
-                    if (scoutPlayerButton.isEnabled()) {
-                        recruitPlayerDialog(playerCSV, groupPosition, groupsExpanded);
-                    } else {
-                        recruitPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
-                    }
+                    recruitPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
                 }
             });
 
@@ -1189,11 +1226,7 @@ public class RecruitingActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Save who is currently expanded
                     List<Integer> groupsExpanded = new ArrayList<>();
-                    if (scoutPlayerButton.isEnabled()) {
-                        redshirtPlayerDialog(playerCSV, groupPosition, groupsExpanded);
-                    } else {
-                        redshirtPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
-                    }
+                    redshirtPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
                 }
             });
 

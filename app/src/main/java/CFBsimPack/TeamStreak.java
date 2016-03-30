@@ -9,17 +9,18 @@ public class TeamStreak {
     private int startYear;
     private int endYear;
     private int streakLength;
-    private Team streakTeam;
+    private String streakTeam;
 
-    public TeamStreak(int start, int end, int len, Team t) {
+    public TeamStreak(int start, int end, int len, String t) {
         startYear = start;
         endYear = end;
         streakLength = len;
         streakTeam = t;
     }
 
-    public void addWin() {
+    public void addWin(int year) {
         streakLength++;
+        endYear = year;
     }
 
     public void resetStreak(int year) {
@@ -40,8 +41,12 @@ public class TeamStreak {
         return endYear;
     }
 
-    public Team getTeam() {
+    public String getTeam() {
         return streakTeam;
+    }
+
+    public String getStreakCSV() {
+        return streakLength + "," + streakTeam + "," + startYear + "," + endYear;
     }
 
 }

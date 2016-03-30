@@ -91,7 +91,7 @@ public class League {
                 "on your mind, or just a winning season, good luck!");
 
         leagueRecords = new LeagueRecords();
-        longestWinStreak = new TeamStreak(getYear(), getYear(), 0, null);
+        longestWinStreak = new TeamStreak(getYear(), getYear(), 0, "XXX");
 
         //read names from file
         nameList = new ArrayList<String>();
@@ -208,7 +208,7 @@ public class League {
         currentWeek = 0;
 
         leagueRecords = new LeagueRecords();
-        longestWinStreak = new TeamStreak(2016, 2016, 0, null);
+        longestWinStreak = new TeamStreak(2016, 2016, 0, "XXX");
 
         try {
             // Always wrap FileReader in BufferedReader.
@@ -276,8 +276,13 @@ public class League {
             String[] record;
             while((line = bufferedReader.readLine()) != null && !line.equals("END_LEAGUE_RECORDS")) {
                 record = line.split(",");
-                System.out.println("Checking record:" + line);
                 leagueRecords.checkRecord(record[0], Integer.parseInt(record[1]), record[2], Integer.parseInt(record[3]));
+            }
+
+            while((line = bufferedReader.readLine()) != null && !line.equals("END_LEAGUE_WIN_STREAK")) {
+                record = line.split(",");
+                longestWinStreak = new TeamStreak(
+                        Integer.parseInt(record[2]), Integer.parseInt(record[3]), Integer.parseInt(record[0]), record[1]);
             }
 
             // Always close files.
@@ -647,6 +652,16 @@ public class League {
         for (Team t : teamList) {
             t.checkLeagueRecords();
         }
+    }
+
+    /**
+     * Gets all the league records, including the longest win streak
+     * @return string of all the records, csv
+     */
+    public String getLeagueRecordsStr() {
+        String winStreakStr = "Longest Win Streak," + longestWinStreak.getStreakLength() + "," +
+                longestWinStreak.getTeam() + "," + longestWinStreak.getStartYear() + "-" + longestWinStreak.getEndYear() + "\n";
+        return winStreakStr + leagueRecords.getRecordsStr();
     }
 
     /**
@@ -1391,6 +1406,7 @@ public class League {
         StringBuilder sb = new StringBuilder();
         sb.append(ncgSummaryStr());
         sb.append("\n\n" + userTeam.seasonSummaryStr());
+        sb.append("\n\n" + leagueRecords.brokenRecordsStr(getYear(), userTeam.abbr));
         return sb.toString();
     }
 
@@ -1426,7 +1442,8 @@ public class League {
             sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
                     (t.totalWins-t.wins) + "," + (t.totalLosses-t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
                     t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," +
-                    t.teamStratOffNum + "," + t.teamStratDefNum + "," + (t.showPopups ? 1 : 0) + "%\n");
+                    t.teamStratOffNum + "," + t.teamStratDefNum + "," + (t.showPopups ? 1 : 0) + "," +
+                    t.winStreak.getStreakCSV() + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }
@@ -1458,6 +1475,9 @@ public class League {
         System.out.println("Saving Records!\n" + leagueRecords.getRecordsStr());
         sb.append(leagueRecords.getRecordsStr());
         sb.append("END_LEAGUE_RECORDS\n");
+
+        sb.append(longestWinStreak.getStreakCSV());
+        sb.append("\nEND_LEAGUE_WIN_STREAK\n");
 
         // Actually write to the file
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(

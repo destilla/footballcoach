@@ -354,8 +354,15 @@ public class Game implements Serializable {
      */
     private int getHFadv() {
         //home field advantage
-        if ( gamePoss ) return 3;
-        else return 0;
+        int footIQadv = (homeTeam.getCompositeFootIQ() - awayTeam.getCompositeFootIQ())/5;
+        if (footIQadv > 3) footIQadv = 3;
+        if (footIQadv < -3) footIQadv = -3;
+        if ( gamePoss ) {
+            return 3 + footIQadv;
+        }
+        else {
+            return -footIQadv;
+        }
     }
 
     /**
@@ -466,7 +473,7 @@ public class Game implements Serializable {
                 awayTeam.totalLosses++;
                 awayTeam.gameWLSchedule.add("L");
                 homeTeam.gameWinsAgainst.add(awayTeam);
-                homeTeam.winStreak.addWin();
+                homeTeam.winStreak.addWin(homeTeam.league.getYear());
                 homeTeam.league.checkLongestWinStreak(homeTeam.winStreak);
                 awayTeam.winStreak.resetStreak(awayTeam.league.getYear());
             } else {
@@ -477,7 +484,7 @@ public class Game implements Serializable {
                 awayTeam.totalWins++;
                 awayTeam.gameWLSchedule.add("W");
                 awayTeam.gameWinsAgainst.add(homeTeam);
-                awayTeam.winStreak.addWin();
+                awayTeam.winStreak.addWin(awayTeam.league.getYear());
                 awayTeam.league.checkLongestWinStreak(awayTeam.winStreak);
                 homeTeam.winStreak.resetStreak(homeTeam.league.getYear());
             }
@@ -510,7 +517,7 @@ public class Game implements Serializable {
 
             addNewsStory();
 
-            if (gameName.equals("Rivalry Game")) {
+            if (homeTeam.rivalTeam.equals(awayTeam.abbr) || awayTeam.rivalTeam.equals(homeTeam.abbr)) {
                 if (homeScore > awayScore) {
                     homeTeam.wonRivalryGame = true;
                 } else {

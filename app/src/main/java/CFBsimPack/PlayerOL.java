@@ -57,7 +57,7 @@ public class PlayerOL extends Player {
         year = yr;
         gamesPlayed = 0;
         ratPot = (int) (50 + 50*Math.random());
-        ratFootIQ = (int) (50 + stars*4 + 30*Math.random());
+        ratFootIQ = (int) (50 + 50*Math.random());
         ratOLPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratOLBkR = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratOLBkP = (int) (60 + year*5 + stars*5 - 25*Math.random());
