@@ -635,7 +635,9 @@ public class Game implements Serializable {
             // If we don't do this, gameYardsNeed may be higher than the actualy distance for a TD and suboptimal plays may be chosen
             if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine;
 
-            if ( gameTime <= 30 && !playingOT && ((gamePoss && (awayScore > homeScore)) || (!gamePoss && (homeScore > awayScore)))) {
+            //Under 30 seconds to play, check that the team with the ball is trailing or tied, do something based on the score difference
+            if ( gameTime <= 30 && !playingOT && ((gamePoss && (awayScore >= homeScore)) || (!gamePoss && (homeScore >= awayScore)))) {
+                //Down by 3 or less, or tied, and you have the ball
                 if ( ((gamePoss && (awayScore - homeScore) <= 3) || (!gamePoss && (homeScore - awayScore) <= 3)) && gameYardLine > 60 ) {
                     //last second FGA
                     fieldGoalAtt( offense, defense );
