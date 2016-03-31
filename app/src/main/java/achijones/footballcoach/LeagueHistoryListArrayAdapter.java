@@ -40,11 +40,11 @@ public class LeagueHistoryListArrayAdapter extends ArrayAdapter<String> {
             textTop.setText(record[0]);
             textMiddle.setText(record[1]);
             textBottom.setText(record[2]);
-            if (record[1].split(" ")[1].substring(0,3).equals(userTeamAbbr)) {
+            if (record[1].split(" ")[1].equals(userTeamAbbr)) {
                 // User team won NCG, make it special color
                 textMiddle.setTextColor(Color.parseColor("#1A75FF"));
             }
-            if (record[2].split(" ")[5].substring(0,3).equals(userTeamAbbr)) {
+            if (record[2].split(" ")[5].equals(userTeamAbbr)) {
                 // User team won POTY, make it special color
                 textBottom.setTextColor(Color.parseColor("#1A75FF"));
             }

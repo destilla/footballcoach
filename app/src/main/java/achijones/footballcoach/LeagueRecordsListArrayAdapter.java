@@ -41,7 +41,7 @@ public class LeagueRecordsListArrayAdapter extends ArrayAdapter<String> {
             textLeft.setText(record[1]);
             textCenter.setText(record[0]);
             textRight.setText(record[2] + "\n" + record[3]);
-            if (record[2].substring(0,3).equals(userTeamAbbr)) {
+            if (record[2].split(" ")[0].equals(userTeamAbbr)) {
                 // User team record, make it special color
                 textRight.setTextColor(Color.parseColor("#1A75FF"));
             }

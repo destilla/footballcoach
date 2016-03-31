@@ -1165,8 +1165,9 @@ public class MainActivity extends AppCompatActivity {
                 // Perform action on click
                 String newName = changeNameEditText.getText().toString().trim();
                 String newAbbr = changeAbbrEditText.getText().toString().trim().toUpperCase();
-                ;
+
                 if (simLeague.isNameValid(newName) && simLeague.isAbbrValid(newAbbr)) {
+                    simLeague.changeAbbrHistoryRecords(userTeam.abbr, newAbbr);
                     userTeam.name = newName;
                     userTeam.abbr = newAbbr;
                     getSupportActionBar().setTitle(userTeam.name + " " + season + " Season");

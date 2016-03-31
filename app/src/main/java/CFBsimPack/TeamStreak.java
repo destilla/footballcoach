@@ -29,6 +29,10 @@ public class TeamStreak {
         streakLength = 0;
     }
 
+    public void changeAbbr(String newAbbr) {
+        streakTeam = newAbbr;
+    }
+
     public int getStreakLength() {
         return streakLength;
     }

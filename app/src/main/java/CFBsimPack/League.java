@@ -664,6 +664,52 @@ public class League {
     }
 
     /**
+     * Change the team abbr of the lognest win streak if the user changed it
+     * @param oldAbbr old abbreviation
+     * @param newAbbr new abbreviation
+     */
+    public void changeAbbrWinStreaks(String oldAbbr, String newAbbr) {
+        if (longestWinStreak.getTeam().equals(oldAbbr)) {
+            longestWinStreak.changeAbbr(newAbbr);
+        }
+    }
+
+    /**
+     * Changes all the abbrs to new abbr, in records and histories.
+     * @param oldAbbr
+     * @param newAbbr
+     */
+    public void changeAbbrHistoryRecords(String oldAbbr, String newAbbr) {
+        // check records and win streaks
+        leagueRecords.changeAbbrRecords(userTeam.abbr, newAbbr);
+        changeAbbrWinStreaks(userTeam.abbr, newAbbr);
+        userTeam.winStreak.changeAbbr(newAbbr);
+
+        // check league and POTY history
+        for (String[] yr : leagueHistory) {
+            for (int i = 0; i < yr.length; ++i) {
+                if (yr[i].split(" ")[0].equals(oldAbbr)) {
+                    yr[i] = newAbbr + " " + yr[i].split(" ")[1];
+                }
+            }
+        }
+
+        for (int i = 0; i < heismanHistory.size(); ++i) {
+            String p = heismanHistory.get(i);
+            if (p.split(" ")[4].equals(oldAbbr)) {
+                heismanHistory.set(i,
+                        p.split(" ")[0] + " " +
+                        p.split(" ")[1] + " " +
+                        p.split(" ")[2] + " " +
+                        p.split(" ")[3] + " " +
+                        newAbbr + " " +
+                        p.split(" ")[5]);
+            }
+        }
+
+    }
+
+    /**
      * Checks if any of the league records were broken by teams.
      */
     public void checkLeagueRecords() {
@@ -1385,7 +1431,7 @@ public class League {
             return false;
         }
 
-        if (abbr.contains(",") || abbr.contains(">") || abbr.contains("%") || abbr.contains("\\")) {
+        if (abbr.contains(",") || abbr.contains(">") || abbr.contains("%") || abbr.contains("\\") || abbr.contains(" ")) {
             // Illegal character!
             return false;
         }

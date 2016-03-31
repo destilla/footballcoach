@@ -32,6 +32,14 @@ public class LeagueRecords {
         public int getYear() {
             return year;
         }
+
+        private void changeAbbr(String newAbbr) {
+            String[] split = holder.split(" ");
+            holder = newAbbr;
+            for (int i = 1; i < split.length; ++i) {
+                holder += " " + split[i];
+            }
+        }
     }
 
     private HashMap<String, Record> records;
@@ -87,7 +95,16 @@ public class LeagueRecords {
                 records.put(record, new Record(number, holder, year));
             }
         }
+    }
 
+    public void changeAbbrRecords(String oldAbbr, String newAbbr) {
+        Record r;
+        for (String s : recordsList) {
+            r = records.get(s);
+            if (r.getHolder().split(" ")[0].equals(oldAbbr)) {
+                r.changeAbbr(newAbbr);
+            }
+        }
     }
 
     public String getRecordsStr() {
@@ -113,7 +130,7 @@ public class LeagueRecords {
     public String brokenRecordsStr(int year, String abbr) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Record> r : records.entrySet()) {
-            if (r.getValue().getHolder().substring(0, 3).equals(abbr) &&
+            if (r.getValue().getHolder().split(" ")[0].equals(abbr) &&
                     r.getValue().getYear() == year) {
                 sb.append(r.getValue().getHolder() + " broke the record for " +
                     r.getKey() + " in a season with " + r.getValue().getNumber() + "!\n");
