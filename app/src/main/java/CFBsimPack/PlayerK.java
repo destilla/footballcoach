@@ -157,7 +157,7 @@ public class PlayerK extends Player {
         } else {
             pStats.add("FG Made/Att: 0/0>FG Percentage: 0%");
         }
-        pStats.add("Potential: " + ratPot + ">Kick Strength: " + getLetterGrade(ratKickPow));
+        pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Kick Strength: " + getLetterGrade(ratKickPow));
         pStats.add("Kick Accuracy: " + getLetterGrade(ratKickAcc) + ">Clumsiness: " + getLetterGrade(ratKickFum));
         return pStats;
     }

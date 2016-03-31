@@ -114,7 +114,7 @@ public class PlayerS extends Player {
     @Override
     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("Potential: " + ratPot + ">Coverage: " + getLetterGrade(ratSCov));
+        pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Coverage: " + getLetterGrade(ratSCov));
         pStats.add("Speed: " + getLetterGrade(ratSSpd) + ">Tackling: " + getLetterGrade(ratSTkl));
         return pStats;
     }

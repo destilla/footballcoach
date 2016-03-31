@@ -31,6 +31,7 @@ public class League {
 
     public LeagueRecords leagueRecords;
     public TeamStreak longestWinStreak;
+    public TeamStreak longestActiveWinStreak;
 
     public ArrayList<String> newsBless;
     public ArrayList<String> newsCurse;
@@ -92,6 +93,7 @@ public class League {
 
         leagueRecords = new LeagueRecords();
         longestWinStreak = new TeamStreak(getYear(), getYear(), 0, "XXX");
+        longestActiveWinStreak = new TeamStreak(getYear(), getYear(), 0, "XXX");
 
         //read names from file
         nameList = new ArrayList<String>();
@@ -209,6 +211,7 @@ public class League {
 
         leagueRecords = new LeagueRecords();
         longestWinStreak = new TeamStreak(2016, 2016, 0, "XXX");
+        longestActiveWinStreak = new TeamStreak(2016, 2016, 0, "XXX");
 
         try {
             // Always wrap FileReader in BufferedReader.
@@ -294,6 +297,9 @@ public class League {
             for (String n : namesSplit) {
                 nameList.add(n.trim());
             }
+
+            //Get longest active win streak
+            updateLongestActiveWinStreak();
 
             //set up schedule
             for (int i = 0; i < conferences.size(); ++i ) {
@@ -400,6 +406,7 @@ public class League {
         }
 
         setTeamRanks();
+        updateLongestActiveWinStreak();
         currentWeek++;
     }
     
@@ -646,6 +653,17 @@ public class League {
     }
 
     /**
+     * Gets the longest active win streak.
+     */
+    public void updateLongestActiveWinStreak() {
+        for (Team t : teamList) {
+            if (t.winStreak.getStreakLength() > longestActiveWinStreak.getStreakLength()) {
+                longestActiveWinStreak = t.winStreak;
+            }
+        }
+    }
+
+    /**
      * Checks if any of the league records were broken by teams.
      */
     public void checkLeagueRecords() {
@@ -661,7 +679,9 @@ public class League {
     public String getLeagueRecordsStr() {
         String winStreakStr = "Longest Win Streak," + longestWinStreak.getStreakLength() + "," +
                 longestWinStreak.getTeam() + "," + longestWinStreak.getStartYear() + "-" + longestWinStreak.getEndYear() + "\n";
-        return winStreakStr + leagueRecords.getRecordsStr();
+        String activeWinStreakStr = "Active Win Streak," + longestActiveWinStreak.getStreakLength() + "," +
+                longestActiveWinStreak.getTeam() + "," + longestActiveWinStreak.getStartYear() + "-" + longestActiveWinStreak.getEndYear() + "\n";
+        return winStreakStr + activeWinStreakStr + leagueRecords.getRecordsStr();
     }
 
     /**

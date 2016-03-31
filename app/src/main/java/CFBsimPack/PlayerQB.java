@@ -160,7 +160,8 @@ public class PlayerQB extends Player {
         ArrayList<String> pStats = new ArrayList<>();
         pStats.add("TD/Int: " + statsTD + "/" + statsInt + ">Comp Percent: " + (100*statsPassComp/(statsPassAtt+1))+"%");
         pStats.add("Pass Yards: " + statsPassYards + " yds>Yards/Att: " + ((double)(10*statsPassYards/(statsPassAtt+1))/10) + " yds");
-        pStats.add("Yds/Game: " + (statsPassYards/games) + " yds/g>Pass Strength: " + getLetterGrade(ratPassPow));
+        pStats.add("Yds/Game: " + (statsPassYards/games) + " yds/g>Sacks: " + statsSacked);
+        pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Pass Strength: " + getLetterGrade(ratPassPow));
         pStats.add("Accuracy: " + getLetterGrade(ratPassAcc) + ">Evasion: " + getLetterGrade(ratPassEva));
         return pStats;
     }

@@ -872,7 +872,7 @@ public class MainActivity extends AppCompatActivity {
                             leagueHistoryList.setAdapter(leagueRecordsAdapter);
                         } else {
                             final LeagueHistoryListArrayAdapter leagueHistoryAdapter =
-                                    new LeagueHistoryListArrayAdapter(MainActivity.this, simLeague.getLeagueHistoryStr().split("%"));
+                                    new LeagueHistoryListArrayAdapter(MainActivity.this, simLeague.getLeagueHistoryStr().split("%"), userTeam.abbr);
                             leagueHistoryList.setAdapter(leagueHistoryAdapter);
                         }
                     }

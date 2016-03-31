@@ -165,7 +165,8 @@ public class PlayerWR extends Player {
         ArrayList<String> pStats = new ArrayList<>();
         pStats.add("TDs/Fumbles: " + statsTD + "/" + statsFumbles + ">Catch Percent: " + (100*statsReceptions/(statsTargets+1))+"%");
         pStats.add("Rec Yards: " + statsRecYards + " yds" + ">Yards/Tgt: " + ((double)(10*statsRecYards/(statsTargets+1))/10) + " yds");
-        pStats.add("Yds/Game: " + (statsRecYards/games) + " yds/g>Catching: " + getLetterGrade(ratRecCat));
+        pStats.add("Yds/Game: " + (statsRecYards/games) + " yds/g>Drops: " + statsDrops);
+        pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Catching: " + getLetterGrade(ratRecCat));
         pStats.add("Rec Speed: " + getLetterGrade(ratRecSpd) + ">Evasion: " + getLetterGrade(ratRecEva));
         return pStats;
     }
