@@ -79,7 +79,7 @@ public class League {
         conferences.add( new Conference("LAKES", this) );
         conferences.add( new Conference("NORTH", this) );
         conferences.add( new Conference("COWBY", this) );
-        conferences.add( new Conference("PACIF", this) );
+        conferences.add( new Conference("PAC10", this) );
         conferences.add( new Conference("MOUNT", this) );
         allAmericans = new ArrayList<Player>();
 
@@ -152,17 +152,17 @@ public class League {
         conferences.get(3).confTeams.add( new Team( "Tulsa", "TUL", "COWBY", this, 55, "OKS" ));
         conferences.get(3).confTeams.add( new Team( "Univ of Austin", "AUS", "COWBY", this, 50, "TXS" ));
 
-        //PACIF
-        conferences.get(4).confTeams.add( new Team( "California", "CAL", "PACIF", this, 90, "ULA" ));
-        conferences.get(4).confTeams.add( new Team( "Oregon", "ORE", "PACIF", this, 85, "WAS" ));
-        conferences.get(4).confTeams.add( new Team( "Los Angeles", "ULA", "PACIF", this, 80, "CAL" ));
-        conferences.get(4).confTeams.add( new Team( "Oakland St", "OAK", "PACIF", this, 75, "HOL" ));
-        conferences.get(4).confTeams.add( new Team( "Washington", "WAS", "PACIF", this, 75, "ORE" ));
-        conferences.get(4).confTeams.add( new Team( "Hawaii", "HAW", "PACIF", this, 70, "SAM" ));
-        conferences.get(4).confTeams.add( new Team( "Seattle", "SEA", "PACIF", this, 70, "SAN" ));
-        conferences.get(4).confTeams.add( new Team( "Hollywood St", "HOL", "PACIF", this, 70, "OAK" ));
-        conferences.get(4).confTeams.add( new Team( "San Diego St", "SAN", "PACIF", this, 60, "SEA" ));
-        conferences.get(4).confTeams.add( new Team( "American Samoa", "SAM", "PACIF", this, 25, "HAW" ));
+        //PAC10
+        conferences.get(4).confTeams.add( new Team( "Univ of Southern Calif", "USC ", "PAC10", this, 90, "UCLA" ));
+        conferences.get(4).confTeams.add( new Team( "Oregon", "ORE", "PAC10", this, 85, "ORST" ));
+        conferences.get(4).confTeams.add( new Team( "Univ of Calif Los Angeles", "UCLA", "PAC10", this, 75, "USC" ));
+        conferences.get(4).confTeams.add( new Team( "Oregon St", "ORST", "PAC10", this, 60, "ORE" ));
+        conferences.get(4).confTeams.add( new Team( "Washington", "UW ", "PAC10", this, 70, "WSU" ));
+        conferences.get(4).confTeams.add( new Team( "California", "CAL", "PAC10", this, 70, "STAN" ));
+        conferences.get(4).confTeams.add( new Team( "Washington St", "WSU", "PAC10", this, 55, "UW " ));
+        conferences.get(4).confTeams.add( new Team( "Stanford", "STAN", "PAC10", this, 80, "CAL" ));
+        conferences.get(4).confTeams.add( new Team( "Arizona", "ARI", "PAC10", this, 60, "ASU" ));
+        conferences.get(4).confTeams.add( new Team( "Arizona State", "ASU", "PAC10", this, 65, "ARI" ));
 
         //MOUNT
         conferences.get(5).confTeams.add( new Team( "Colorado", "COL", "MOUNT", this, 80, "DEN" ));
@@ -239,7 +239,7 @@ public class League {
             conferences.add( new Conference("LAKES", this) );
             conferences.add( new Conference("NORTH", this) );
             conferences.add( new Conference("COWBY", this) );
-            conferences.add( new Conference("PACIF", this) );
+            conferences.add( new Conference("PAC10", this) );
             conferences.add( new Conference("MOUNT", this) );
             allAmericans = new ArrayList<Player>();
             String[] splits;
@@ -445,7 +445,7 @@ public class League {
         if (conf.equals("LAKES")) return 1;
         if (conf.equals("NORTH")) return 2;
         if (conf.equals("COWBY")) return 3;
-        if (conf.equals("PACIF")) return 4;
+        if (conf.equals("PAC10")) return 4;
         if (conf.equals("MOUNT")) return 5;
         return 0;
     }
