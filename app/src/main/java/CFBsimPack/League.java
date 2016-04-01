@@ -41,7 +41,7 @@ public class League {
 
     //Current week, 1-14
     public int currentWeek;
-    
+
     //Bowl Games
     public boolean hasScheduledBowls;
     public Game semiG14;
@@ -57,12 +57,12 @@ public class League {
     ArrayList<Player> heismanCandidates;
     private String heismanWinnerStrFull;
 
-    ArrayList<Player> allAmericans;		
+    ArrayList<Player> allAmericans;
     private String allAmericanStr;
 
     public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl",
             "Patriot Bowl", "Salad Bowl", "Frost Bowl", "Tropical Bowl", "I'd Rather Bowl"};
-    
+
     /**
      * Creates League, sets up Conferences, reads team names and conferences from file.
      * Also schedules games for every team.
@@ -82,7 +82,7 @@ public class League {
         conferences.add( new Conference("PACIF", this) );
         conferences.add( new Conference("MOUNT", this) );
         allAmericans = new ArrayList<Player>();
-        
+
         // Initialize new stories lists
         newsStories = new ArrayList< ArrayList<String> >();
         for (int i = 0; i < 16; ++i) {
@@ -183,7 +183,7 @@ public class League {
                 teamList.add( conferences.get(i).confTeams.get(j) );
             }
         }
-        
+
         //set up schedule
         for (int i = 0; i < conferences.size(); ++i ) {
             conferences.get(i).setUpSchedule();
@@ -266,22 +266,30 @@ public class League {
                 userTeam.teamHistory.add(line);
             }
 
-            newsBless = new ArrayList<String>();
+            // Set up blessed and cursed teams for Week 0 news stories
+            StringBuilder sbBless = new StringBuilder();
             while((line = bufferedReader.readLine()) != null && !line.equals("END_BLESS_TEAM")) {
-                if (!line.equals("NULL")) newsBless.add(line);
+                sbBless.append(line);
+            }
+            if (!sbBless.toString().equals("NULL")) {
+                saveBless = findTeamAbbr(sbBless.toString());
+            } else {saveBless = null;
             }
 
-            newsCurse = new ArrayList<String>();
+            StringBuilder sbCurse = new StringBuilder();
             while((line = bufferedReader.readLine()) != null && !line.equals("END_CURSE_TEAM")) {
-                if (!line.equals("NULL")) newsCurse.add(line);
+                sbCurse.append(line);
             }
+            if (!sbCurse.toString().equals("NULL")) {
+                saveCurse = findTeamAbbr(sbCurse.toString());
+            } else {saveCurse = null;}
 
             String[] record;
             while((line = bufferedReader.readLine()) != null && !line.equals("END_LEAGUE_RECORDS")) {
                 record = line.split(",");
+                System.out.println("Checking record:" + line);
                 leagueRecords.checkRecord(record[0], Integer.parseInt(record[1]), record[2], Integer.parseInt(record[3]));
             }
-
             while((line = bufferedReader.readLine()) != null && !line.equals("END_LEAGUE_WIN_STREAK")) {
                 record = line.split(",");
                 longestWinStreak = new TeamStreak(
@@ -290,6 +298,7 @@ public class League {
 
             // Always close files.
             bufferedReader.close();
+
 
             //read names from file
             nameList = new ArrayList<String>();
@@ -311,7 +320,7 @@ public class League {
             for (int i = 0; i < conferences.size(); ++i ) {
                 conferences.get(i).insertOOCSchedule();
             }
-            
+
             // Initialize new stories lists
             newsStories = new ArrayList< ArrayList<String> >();
             for (int i = 0; i < 16; ++i) {
@@ -319,12 +328,102 @@ public class League {
             }
             newsStories.get(0).add("New Season!>Ready for the new season, coach? Whether the National Championship is " +
                     "on your mind, or just a winning season, good luck!");
-            if (newsCurse.size()> 0 && newsCurse.get(0) != null) {
-                newsStories.get(0).add(newsCurse.get(0) + " Rocked by Infractions Scandal!>After an investigation during the offseason, "+newsCurse.get(0)+" has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + getRandName() + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
+
+            // Set up offseason news to be randomly added to Week 0, set up names to be used if random names are needed, and make first and last names available for later in the story
+
+            if (saveBless != null){
+                String storyFullName = getRandName();
+                String storyFirstName = storyFullName.replaceAll(" .*", "");
+                String storyLastName = storyFullName.replaceAll(".* ", "");
+                String storyPlayer;
+
+                switch((int)(Math.random() * 3)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                    case 0:
+                        //Hired a shiny new coach who used to play for the school (feed those Vol fans wishing for Peyton something to dream on)
+                        newsStories.get(0).add("Blue Chip hire for Bad Break University>" + saveBless.name + " announced the hire of alumnus and former professional coach " +getRandName()+", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
+                        break;
+                    case 1:
+                        //Rich Sports Apparel CEO alum giving flashy uniforms to the school
+                        newsStories.get(0).add("Fashions Speak Louder Than Words>Renowned sports apparel mogul and " + saveBless.name + " alumnus " +storyFullName+" has declared war on boring uniforms. " + storyLastName +" has pledged his company's services to \"ensure that the university's football team never wears the same uniform twice.\" Recruits are already abuzz on social media declaring their newly found interest in playing for the school.");
+                        break;
+                    case 2:
+                        //Get the first defensive player that isn't a Freshman (or use a random name and say it was a coach if no players available) and use their name to describe being on the 'CFB News' top play for 50 days -- Or that a video of coach went viral. Coach story is just a backup plan for the player story (in case somehow the whole starting D is freshmen)
+                        // Only using the first 4 of the front 7, we'll just assume it's a 3-4 defense and those are their linebackers
+
+                        String playerLastName;
+                        if (saveBless.getS(0).year >= 2) storyPlayer = saveBless.getS(0).name;
+                        else if (saveBless.getCB(0).year >= 2) storyPlayer = saveBless.getCB(0).name;
+                        else if (saveBless.getF7(0).year >= 2) storyPlayer = saveBless.getF7(0).name;
+                        else if (saveBless.getCB(1).year >= 2) storyPlayer = saveBless.getCB(1).name;
+                        else if (saveBless.getF7(1).year >= 2) storyPlayer = saveBless.getF7(1).name;
+                        else if (saveBless.getCB(2).year >= 2) storyPlayer = saveBless.getCB(2).name;
+                        else if (saveBless.getF7(2).year >= 2) storyPlayer = saveBless.getF7(2).name;
+                        else if (saveBless.getF7(3).year >= 2) storyPlayer = saveBless.getF7(3).name;
+                        else storyPlayer = storyFullName;
+
+                        playerLastName = storyPlayer.replaceAll(".* ", "");
+
+                        //Coach Story -- Inspired by that time Kliff did the stanky leg in a circle of Tech players
+                        if (storyPlayer == storyFullName) newsStories.get(0).add("Moves Like a Dancer from the Body of a Coach>When a cell phone recording of Coach " + storyFullName + " out dancing his players at the end of a Spring practice was uploaded to the internet, " +storyLastName + " thought nothing of it. When it hit one million views over night, Coach took notice. In response to wild popularity his moves have recieved, " + storyLastName + " has made it a new tradition at " + saveBless.name + " to have a dance off with all prospective recruits, much to the delight of fans and students, who have turned out in large numbers to watch the competitions." );
+                            //Player Story
+                        else newsStories.get(0).add("The Hit That Keeps On Giving>For the 50th consecutive day, " + saveBless.name + " star " + storyPlayer + "'s explosive hit against " + saveBless.rivalTeam + " sits atop the CFB News Top Plays list. " + playerLastName + " credits Coach " + getRandName() + " with providing him the inspiration to stay in the weight room late and think clearly during plays. During its reign, \"The Hit\" has dethroned and outlasted the " + teamList.get((int)(Math.random()*60)).name + " Baseball Team's \"Puppies in the Park\" viral video, and " + teamList.get((int)(Math.random()*60)).name + "'s Make-A-Wish TD on the Top Plays list." );
+                        break;
+
+                    default:
+                        //newsStories.get(0).add(saveBless.name + " news story bless test case out of range");
+                        break;
+                }
+
             }
-            if (newsBless.size()> 0 && newsBless.get(0) != null){
-                newsStories.get(0).add("Blue Chip hire for Bad Break University>" + newsBless.get(0) + " announced the hire of alumnus and former professional coach " +getRandName()+", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
+
+            if (saveCurse != null) {
+                String storyFullName = getRandName();
+                String storyFirstName = storyFullName.replaceAll(" .*", "");
+                String storyLastName = storyFullName.replaceAll(".* ", "");
+                String storyPlayer;
+
+                switch((int)(Math.random() * 3)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                    case 0:
+                        //Team broke the rules, placed on probation and it's harder to recruit (-prestige)
+                        newsStories.get(0).add(saveCurse.name + " Rocked by Infractions Scandal!>After an investigation during the offseason, "+saveCurse.name +" has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + storyFullName + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
+                        break;
+                    case 1:
+                        //Sleepover w/ star recruit
+                        newsStories.get(0).add(saveCurse.name + " Coach Redefines \"Strange Bed Fellows\">" + saveCurse.name + " Head Coach " + storyFullName + " has landed in hot water after he was discovered at the home of a Class of " + (getYear() + 2) + " recruit, having a sleepover. Family of the recruit, who's name has been withheld, state that Coach " + storyLastName + " and the recruit \"watched GetPix and chilled.\" Despite a lack of charges against " +storyLastName+", the university has placed an indefinite suspension to the coach's recruiting travel privileges, pending an internal investigation.");
+                        break;
+                    case 2:
+                        //Get the first offensive position player that isn't a Freshman and is good enough to be decent starter (or use a random name and say it was a coach if no players available) and use their name to describe them pulling a reverse catfish...literally -- Or that Coach lost his temper at a pre-season booster event and scared off some donors. Coach story is just a backup plan for the player story (in case somehow the whole starting O is unavailable)
+                        // Only using the first 4 of the front 7, we'll just assume it's a 3-4 defense and those are their linebackers
+
+                        String playerGFSchool;
+                        if (saveCurse.getQB(0).year >= 2 && saveCurse.getQB(0).ratOvr > 85) storyPlayer = saveCurse.getQB(0).name;
+                        else if (saveCurse.getRB(0).year >= 2 && saveCurse.getRB(0).ratOvr > 79) storyPlayer = saveCurse.getRB(0).name;
+                        else if (saveCurse.getWR(0).year >= 2  && saveCurse.getWR(0).ratOvr > 79) storyPlayer = saveCurse.getWR(0).name;
+                        else if (saveCurse.getRB(1).year >= 2  && saveCurse.getRB(1).ratOvr > 79) storyPlayer = saveCurse.getRB(1).name;
+                        else if (saveCurse.getWR(1).year >= 2  && saveCurse.getWR(1).ratOvr > 79) storyPlayer = saveCurse.getWR(1).name;
+                        else if (saveCurse.getWR(2).year >= 2 && saveCurse.getWR(2).ratOvr > 79) storyPlayer = saveCurse.getWR(2).name;
+                        else storyPlayer = storyFullName;
+
+                        //If the cursed team is Indiana, the gf's school was American Samoa and vice versa, otherwise gf school is random (and potentially the same as cursed school)
+                        if (saveCurse.abbr.equals("SAM")) playerGFSchool = "Indiana";
+                        else if (saveCurse.abbr.equals("IND")) playerGFSchool = "American Samoa";
+                        else playerGFSchool = teamList.get((int)(Math.random()*60)).name;
+                        String storyPlayerLast = storyPlayer.replaceAll(".* ", "");
+
+
+                        //Coach Story -- Inspired a little bit by Sark, a little bit by "I'M A MAN, I'M 40", and also a little bit by how much Chip hated the political game
+                        if (storyPlayer == storyFullName) newsStories.get(0).add("Coach Tries, Fails, to Shield Team from Booster Politics>" + saveCurse.name + " Head Coach " + storyFullName + " is making headlines this week for launching into an expletive filled tirade directed at athletics boosters at a private \"Boosters Only\" event. " + storyLastName + " was set off when a particular booster asked for star quarterback " + saveCurse.getQB(0).name + "'s phone number and began chastising the audience for \"caring too much about a bunch of kids playing football.\" Athletic Director " + getRandName() + " released a statement stating \"The Athletics Department appreciates the support of all fans of all " + saveCurse.name + " sports, and we will be working with " + storyFirstName + " to help him understand that.\"");
+                            //Player Story
+                        else newsStories.get(0).add(saveCurse.name + " Star Demonstrates The Rare \"Reverse Catfish\">After winning the nation's heart by finishing out the " + (getYear() - 1) + " season despite losing his girlfriend to a freak fishing accident, " +saveCurse.name+" star "+storyPlayer+" now faces intense scrutiny from national media for allegedly making the whole thing up. " +storyPlayerLast + " originally claimed his girlfriend was a student at " +playerGFSchool+", until internet message board users discovered a private blog run by the player that revealed the truth; the girlfriend was fake, and her name was actually the name of his pet catfish. The university's athletics department officially declined to comment, citing an ongoing internal investigation.");
+                        break;
+
+                    default:
+                        //newsStories.get(0).add(saveCurse.name + " news story curse test case out of range");
+                        break;
+                }
+
             }
+
         }
         catch(FileNotFoundException ex) {
             System.out.println(
@@ -350,7 +449,7 @@ public class League {
         if (conf.equals("MOUNT")) return 5;
         return 0;
     }
-    
+
     /**
      * Plays week. If normal week, handled by conferences. If bowl week, handled here.
      */
@@ -359,15 +458,15 @@ public class League {
             for (int i = 0; i < conferences.size(); ++i) {
                 conferences.get(i).playWeek();
             }
-        } 
-        
+        }
+
         if ( currentWeek == 12 ) {
             //bowl week
             for (int i = 0; i < teamList.size(); ++i) {
                 teamList.get(i).updatePollScore();
             }
             Collections.sort( teamList, new TeamCompPoll() );
-            
+
             schedBowlGames();
         } else if ( currentWeek == 13 ) {
             heismanHistory.add(getHeisman().get(0).position + " " + getHeisman().get(0).getInitialName() + " [" + getHeisman().get(0).getYrStr() + "], "
@@ -409,7 +508,7 @@ public class League {
         updateLongestActiveWinStreak();
         currentWeek++;
     }
-    
+
     /**
      * Schedules bowl games based on team rankings.
      */
@@ -428,7 +527,7 @@ public class League {
         semiG23 = new Game( teamList.get(1), teamList.get(2), "Semis, 2v3" );
         teamList.get(1).gameSchedule.add(semiG23);
         teamList.get(2).gameSchedule.add(semiG23);
-        
+
         //other bowl games
         //bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl",
         //             "Patriot Bowl", "Salad Bowl", "Frost Bowl", "Tropical Bowl", "Music Bowl"};
@@ -473,9 +572,9 @@ public class League {
         teamList.get(23).gameSchedule.add(bowlGames[9]);
 
         hasScheduledBowls = true;
-          
+
     }
-    
+
     /**
      * Actually plays each bowl game.
      */
@@ -484,7 +583,7 @@ public class League {
         for (Game g : bowlGames) {
             playBowl(g);
         }
-        
+
         semiG14.playGame();
         semiG23.playGame();
         Team semi14winner;
@@ -543,12 +642,12 @@ public class League {
 
             );
         }
-        
+
         //schedule NCG
         ncg = new Game( semi14winner, semi23winner, "NCG" );
         semi14winner.gameSchedule.add( ncg );
         semi23winner.gameSchedule.add(ncg);
-        
+
     }
 
     /**
@@ -564,8 +663,8 @@ public class League {
             g.awayTeam.totalBowlLosses++;
             newsStories.get(14).add(
                     g.homeTeam.name + " wins the " + g.gameName +"!>" +
-                    g.homeTeam.strRep() + " defeats " + g.awayTeam.strRep() +
-                    " in the " + g.gameName + ", winning " + g.homeScore + " to " + g.awayScore + "."
+                            g.homeTeam.strRep() + " defeats " + g.awayTeam.strRep() +
+                            " in the " + g.gameName + ", winning " + g.homeScore + " to " + g.awayScore + "."
             );
         } else {
             g.homeTeam.semiFinalWL = "BL";
@@ -579,7 +678,7 @@ public class League {
             );
         }
     }
-    
+
     /**
      * At the end of the year, record the top 10 teams for the League's History.
      */
@@ -594,7 +693,7 @@ public class League {
         }
         leagueHistory.add(yearTop10);
     }
-    
+
     /**
      * Advances season for each team and sets up schedules for the new year.
      */
@@ -699,11 +798,11 @@ public class League {
             if (p.split(" ")[4].equals(oldAbbr)) {
                 heismanHistory.set(i,
                         p.split(" ")[0] + " " +
-                        p.split(" ")[1] + " " +
-                        p.split(" ")[2] + " " +
-                        p.split(" ")[3] + " " +
-                        newAbbr + " " +
-                        p.split(" ")[5]);
+                                p.split(" ")[1] + " " +
+                                p.split(" ")[2] + " " +
+                                p.split(" ")[3] + " " +
+                                newAbbr + " " +
+                                p.split(" ")[5]);
             }
         }
 
@@ -717,16 +816,15 @@ public class League {
             t.checkLeagueRecords();
         }
     }
-
     /**
-     * Gets all the league records, including the longest win streak
-     * @return string of all the records, csv
+     * Gets all the league records, including the longest win streak		
+     * @return string of all the records, csv		
      */
     public String getLeagueRecordsStr() {
         String winStreakStr = "Longest Win Streak," + longestWinStreak.getStreakLength() + "," +
                 longestWinStreak.getTeam() + "," + longestWinStreak.getStartYear() + "-" + longestWinStreak.getEndYear() + "\n";
         String activeWinStreakStr = "Active Win Streak," + longestActiveWinStreak.getStreakLength() + "," +
-                longestActiveWinStreak.getTeam() + "," + longestActiveWinStreak.getStartYear() + "-" + longestActiveWinStreak.getEndYear() + "\n";
+        longestActiveWinStreak.getTeam() + "," + longestActiveWinStreak.getStartYear() + "-" + longestActiveWinStreak.getEndYear() + "\n";
         return winStreakStr + activeWinStreakStr + leagueRecords.getRecordsStr();
     }
 
@@ -737,7 +835,7 @@ public class League {
     public int getYear() {
         return 2016 + leagueHistory.size();
     }
-    
+
     /**
      * Updates team history for each team.
      */
@@ -755,7 +853,7 @@ public class League {
             t.updateTalentRatings();
         }
     }
-    
+
     /**
      * Gets a random player name.
      * @return random name
@@ -767,7 +865,7 @@ public class League {
             return nameList.get(fn) + " " + nameList.get(ln);
         } else return "Mark Eeslee";
     }
-    
+
     /**
      * Updates poll scores for each team and updates their ranking.
      */
@@ -776,42 +874,42 @@ public class League {
         for (int i = 0; i < teamList.size(); ++i) {
             teamList.get(i).updatePollScore();
         }
-        
+
         Collections.sort( teamList, new TeamCompPoll() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamPollScore = t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompSoW() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamStrengthOfWins = t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompPPG() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamPoints = t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompOPPG() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamOppPoints = t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompYPG() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamYards = t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompOYPG() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamOppYards = t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompPYPG() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamPassYards = t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompRYPG() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamRushYards = t+1;
@@ -831,24 +929,24 @@ public class League {
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamTODiff= t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompOffTalent() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamOffTalent = t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompDefTalent() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamDefTalent = t+1;
         }
-        
+
         Collections.sort( teamList, new TeamCompPrestige() );
         for (int t = 0; t < teamList.size(); ++t) {
             teamList.get(t).rankTeamPrestige = t+1;
         }
-        
+
     }
-    
+
     /**
      * Calculates who wins the Heisman.
      * @return Heisman Winner
@@ -866,7 +964,7 @@ public class League {
                 heisman = teamList.get(i).teamQBs.get(0);
                 heismanScore = tempScore;
             }
-            
+
             //rb
             for (int rb = 0; rb < 2; ++rb) {
                 heismanCandidates.add( teamList.get(i).teamRBs.get(rb) );
@@ -876,7 +974,7 @@ public class League {
                     heismanScore = tempScore;
                 }
             }
-            
+
             //wr
             for (int wr = 0; wr < 3; ++wr) {
                 heismanCandidates.add( teamList.get(i).teamWRs.get(wr) );
@@ -888,7 +986,7 @@ public class League {
             }
         }
         Collections.sort( heismanCandidates, new PlayerHeismanComp() );
-        
+
         return heismanCandidates;
     }
 
@@ -1486,7 +1584,7 @@ public class League {
 
         // Save information about the save file, user team info
         sb.append((2016+leagueHistory.size())+": " + userTeam.abbr + " (" + (userTeam.totalWins-userTeam.wins) + "-" + (userTeam.totalLosses-userTeam.losses) + ") " +
-                    userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs%\n");
+                userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs%\n");
 
         // Save league history of who was #1 each year
         for (int i = 0; i < leagueHistory.size(); ++i) {
@@ -1523,14 +1621,14 @@ public class League {
 
         // Save who was blessed and cursed this year for news stories the following year
         if (saveBless != null) {
-            sb.append(saveBless.name + "\n");
+            sb.append(saveBless.abbr + "\n");
             sb.append("END_BLESS_TEAM\n");
         } else {
             sb.append("NULL\n");
             sb.append("END_BLESS_TEAM\n");
         }
         if (saveCurse != null) {
-            sb.append(saveCurse.name + "\n");
+            sb.append(saveCurse.abbr + "\n");
             sb.append("END_CURSE_TEAM\n");
         } else {
             sb.append("NULL\n");
