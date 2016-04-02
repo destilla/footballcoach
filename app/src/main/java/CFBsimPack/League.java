@@ -75,9 +75,9 @@ public class League {
         heismanHistory = new ArrayList<String>();
         currentWeek = 0;
         conferences = new ArrayList<Conference>();
-        conferences.add( new Conference("SOUTH", this) );
-        conferences.add( new Conference("LAKES", this) );
-        conferences.add( new Conference("NORTH", this) );
+        conferences.add( new Conference(" SEC ", this) );
+        conferences.add( new Conference("BIG10", this) );
+        conferences.add( new Conference(" ACC ", this) );
         conferences.add( new Conference("COWBY", this) );
         conferences.add( new Conference("PAC10", this) );
         conferences.add( new Conference("MOUNT", this) );
@@ -104,41 +104,41 @@ public class League {
 
 
         //Set up conferences
-        //SOUTH
-        conferences.get(0).confTeams.add( new Team( "Alabama", "ALA", "SOUTH", this, 95, "GEO" ));
-        conferences.get(0).confTeams.add( new Team( "Georgia", "GEO", "SOUTH", this, 90, "ALA" ));
-        conferences.get(0).confTeams.add( new Team( "Florida", "FLA", "SOUTH", this, 85, "TEN" ));
-        conferences.get(0).confTeams.add( new Team( "Tennessee", "TEN", "SOUTH", this, 80, "FLA" ));
-        conferences.get(0).confTeams.add( new Team( "Atlanta", "ATL", "SOUTH", this, 75, "KYW" ));
-        conferences.get(0).confTeams.add( new Team( "New Orleans", "NOR", "SOUTH", this, 75, "LOU" ));
-        conferences.get(0).confTeams.add( new Team( "Arkansas", "ARK", "SOUTH", this, 70, "KTY" ));
-        conferences.get(0).confTeams.add( new Team( "Louisiana", "LOU", "SOUTH", this, 65, "NOR" ));
-        conferences.get(0).confTeams.add( new Team( "Key West", "KYW", "SOUTH", this, 65, "ATL" ));
-        conferences.get(0).confTeams.add( new Team( "Kentucky", "KTY", "SOUTH", this, 50, "ARK" ));
+        // SEC
+        conferences.get(0).confTeams.add( new Team( "Alabama", "ALA", " SEC ", this, 95, "AUB" ));
+        conferences.get(0).confTeams.add( new Team( "Georgia", "GEO", " SEC ", this, 80, "FLA" ));
+        conferences.get(0).confTeams.add( new Team( "Florida", "FLA", " SEC ", this, 75, "GEO" ));
+        conferences.get(0).confTeams.add( new Team( "Tennessee", "TENN", " SEC ", this, 65, "VAN" ));
+        conferences.get(0).confTeams.add( new Team( "Auburn", "AUB", " SEC ", this, 70, "ALA" ));
+        conferences.get(0).confTeams.add( new Team( "Louisiana St", "LSU", " SEC ", this, 85, "ARK" ));
+        conferences.get(0).confTeams.add( new Team( "Arkansas", "ARK", " SEC ", this, 65, "LSU" ));
+        conferences.get(0).confTeams.add( new Team( "South Carolina", "SCAR", " SEC ", this, 60, "KTY" ));
+        conferences.get(0).confTeams.add( new Team( "Vanderbilt", "VAN", " SEC ", this, 50, "TENN" ));
+        conferences.get(0).confTeams.add( new Team( "Kentucky", "KTY", " SEC ", this, 50, "SCAR" ));
 
-        //LAKES
-        conferences.get(1).confTeams.add( new Team( "Ohio State", "OHI", "LAKES", this, 90, "MIC" ));
-        conferences.get(1).confTeams.add( new Team( "Michigan", "MIC", "LAKES", this, 90, "OHI" ));
-        conferences.get(1).confTeams.add( new Team( "Michigan St", "MSU", "LAKES", this, 80, "MIN" ));
-        conferences.get(1).confTeams.add( new Team( "Wisconsin", "WIS", "LAKES", this, 70, "IND" ));
-        conferences.get(1).confTeams.add( new Team( "Minnesota", "MIN", "LAKES", this, 70, "MSU" ));
-        conferences.get(1).confTeams.add( new Team( "Univ of Chicago", "CHI", "LAKES", this, 70, "DET" ));
-        conferences.get(1).confTeams.add( new Team( "Detroit St", "DET", "LAKES", this, 65, "CHI" ));
-        conferences.get(1).confTeams.add( new Team( "Indiana", "IND", "LAKES", this, 65, "WIS" ));
-        conferences.get(1).confTeams.add( new Team( "Cleveland St", "CLE", "LAKES", this, 55, "MIL" ));
-        conferences.get(1).confTeams.add( new Team( "Milwaukee", "MIL", "LAKES", this, 45, "CLE" ));
+        //BIG10
+        conferences.get(1).confTeams.add( new Team( "Ohio State", "OHST", "BIG10", this, 90, "MIC" ));
+        conferences.get(1).confTeams.add( new Team( "Michigan", "MCH", "BIG10", this, 80, "OHI" ));
+        conferences.get(1).confTeams.add( new Team( "Michigan St", "MSU", "BIG10", this, 85, "MIN" ));
+        conferences.get(1).confTeams.add( new Team( "Wisconsin", "WIS", "BIG10", this, 70, "IND" ));
+        conferences.get(1).confTeams.add( new Team( "Minnesota", "MINN", "BIG10", this, 70, "MSU" ));
+        conferences.get(1).confTeams.add( new Team( "Northwestern", "NWU", "BIG10", this, 60, "DET" ));
+        conferences.get(1).confTeams.add( new Team( "Iowa", "IOWA", "BIG10", this, 75, "CHI" ));
+        conferences.get(1).confTeams.add( new Team( "Indiana", "IND", "BIG10", this, 55, "WIS" ));
+        conferences.get(1).confTeams.add( new Team( "Penn State", "PSU", "BIG10", this, 75, "MIL" ));
+        conferences.get(1).confTeams.add( new Team( "Illinois", "ILL", "BIG10", this, 55, "CLE" ));
 
-        //NORTH
-        conferences.get(2).confTeams.add( new Team( "New York St", "NYS", "NORTH", this, 90, "NYC" ));
-        conferences.get(2).confTeams.add( new Team( "New Jersey", "NWJ", "NORTH", this, 85, "PEN" ));
-        conferences.get(2).confTeams.add( new Team( "New York City", "NYC", "NORTH", this, 75, "NYS" ));
-        conferences.get(2).confTeams.add( new Team( "Pennsylvania", "PEN", "NORTH", this, 75, "NWJ" ));
-        conferences.get(2).confTeams.add( new Team( "Maryland", "MAR", "NORTH", this, 70, "WDC" ));
-        conferences.get(2).confTeams.add( new Team( "Washington DC", "WDC", "NORTH", this, 70, "MAR" ));
-        conferences.get(2).confTeams.add( new Team( "Boston St", "BOS", "NORTH", this, 65, "VER" ));
-        conferences.get(2).confTeams.add( new Team( "Pittsburgh", "PIT", "NORTH", this, 60, "MAI" ));
-        conferences.get(2).confTeams.add( new Team( "Maine", "MAI", "NORTH", this, 50, "PIT" ));
-        conferences.get(2).confTeams.add( new Team( "Vermont", "VER", "NORTH", this, 45, "BOS" ));
+        // ACC
+        conferences.get(2).confTeams.add( new Team( "Florida St", "FSU", " ACC ", this, 90, "MIA" ));
+        conferences.get(2).confTeams.add( new Team( "Clemson", "CLEM", " ACC ", this, 85, "GT " ));
+        conferences.get(2).confTeams.add( new Team( "Georgia Tech", "GT ", " ACC ", this, 75, "CLEM" ));
+        conferences.get(2).confTeams.add( new Team( "Boston College", "BC ", " ACC ", this, 60, "CUSE" ));
+        conferences.get(2).confTeams.add( new Team( "Miami", "MIA", " ACC ", this, 70, "FSU" ));
+        conferences.get(2).confTeams.add( new Team( "Univ of North Carolina", "UNC", " ACC ", this, 70, "LOU" ));
+        conferences.get(2).confTeams.add( new Team( "Syracuse", "CUSE", " ACC ", this, 60, "BC " ));
+        conferences.get(2).confTeams.add( new Team( "Louisville", "LOU", " ACC ", this, 75, "UNC" ));
+        conferences.get(2).confTeams.add( new Team( "Virgina", "UVA", " ACC ", this, 45, "VT " ));
+        conferences.get(2).confTeams.add( new Team( "Virgina Tech", "VT ", " ACC ", this, 55, "UVA" ));
 
         //COWBY
         conferences.get(3).confTeams.add( new Team( "Oklahoma", "OKL", "COWBY", this, 90, "TEX" ));
@@ -235,9 +235,9 @@ public class League {
             //Next make all the teams
             conferences = new ArrayList<Conference>();
             teamList = new ArrayList<Team>();
-            conferences.add( new Conference("SOUTH", this) );
-            conferences.add( new Conference("LAKES", this) );
-            conferences.add( new Conference("NORTH", this) );
+            conferences.add( new Conference(" SEC ", this) );
+            conferences.add( new Conference("BIG10", this) );
+            conferences.add( new Conference(" ACC ", this) );
             conferences.add( new Conference("COWBY", this) );
             conferences.add( new Conference("PAC10", this) );
             conferences.add( new Conference("MOUNT", this) );
@@ -441,9 +441,9 @@ public class League {
      * @return int of number 0-5
      */
     public int getConfNumber(String conf) {
-        if (conf.equals("SOUTH")) return 0;
-        if (conf.equals("LAKES")) return 1;
-        if (conf.equals("NORTH")) return 2;
+        if (conf.equals(" SEC ")) return 0;
+        if (conf.equals("BIG10")) return 1;
+        if (conf.equals(" ACC ")) return 2;
         if (conf.equals("COWBY")) return 3;
         if (conf.equals("PAC10")) return 4;
         if (conf.equals("MOUNT")) return 5;
