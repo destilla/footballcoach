@@ -35,6 +35,7 @@ public class PlayerS extends Player {
         name = nm;
         year = yr;
         gamesPlayed = 0;
+        isInjured = false;
         ratOvr = (cov*2 + spd + tkl)/4;
         ratPot = pot;
         ratFootIQ = iq;
@@ -61,6 +62,7 @@ public class PlayerS extends Player {
         name = nm;
         year = yr;
         gamesPlayed = 0;
+        isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
         ratSCov = (int) (60 + year*5 + stars*5 - 25*Math.random());

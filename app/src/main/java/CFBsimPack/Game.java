@@ -548,6 +548,9 @@ public class Game implements Serializable {
             }
             awayK = awayTeam.getK(0);
 
+            homeTeam.checkForInjury();
+            awayTeam.checkForInjury();
+
         }
     }
 

@@ -43,6 +43,7 @@ public class PlayerWR extends Player {
         name = nm;
         year = yr;
         gamesPlayed = 0;
+        isInjured = false;
         ratOvr = (cat*2 + spd + eva)/4;
         ratPot = pot;
         ratFootIQ = iq;
@@ -78,6 +79,7 @@ public class PlayerWR extends Player {
         year = yr;
         team = t;
         gamesPlayed = 0;
+        isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
         ratRecCat = (int) (60 + year*5 + stars*5 - 25*Math.random());
