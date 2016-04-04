@@ -295,23 +295,27 @@ public class Team {
      */
     public void advanceSeason() {
         // subtract for rivalry first
-        if (wonRivalryGame && (teamPrestige - league.findTeamAbbr(rivalTeam).teamPrestige < 20)) {
-            teamPrestige += 2;
-        } else if (!wonRivalryGame && (league.findTeamAbbr(rivalTeam).teamPrestige - teamPrestige < 20 || name.equals("American Samoa"))) {
-            teamPrestige -= 2;
-        }
-
-        int expectedPollFinish = 100 - teamPrestige;
-        int diffExpected = expectedPollFinish - rankTeamPollScore;
         int oldPrestige = teamPrestige;
+        if (this != league.saveBless && this != league.saveCurse) {
+            // Don't add/subtract prestige if they are a blessed/cursed team from last season
+            if (wonRivalryGame && (teamPrestige - league.findTeamAbbr(rivalTeam).teamPrestige < 20)) {
+                teamPrestige += 2;
+            } else if (!wonRivalryGame && (league.findTeamAbbr(rivalTeam).teamPrestige - teamPrestige < 20 || name.equals("American Samoa"))) {
+                teamPrestige -= 2;
+            }
 
-        if ( (teamPrestige > 45 && !name.equals("American Samoa")) || diffExpected > 0 ) {
-            teamPrestige = (int)Math.pow(teamPrestige, 1 + (float)diffExpected/1500);// + diffExpected/2500);
-        }
+            int expectedPollFinish = 100 - teamPrestige;
+            int diffExpected = expectedPollFinish - rankTeamPollScore;
+            oldPrestige = teamPrestige;
 
-        if ( rankTeamPollScore == 1 ) {
-            // NCW
-            teamPrestige += 3;
+            if ((teamPrestige > 45 && !name.equals("American Samoa")) || diffExpected > 0) {
+                teamPrestige = (int) Math.pow(teamPrestige, 1 + (float) diffExpected / 1500);// + diffExpected/2500);
+            }
+
+            if (rankTeamPollScore == 1) {
+                // NCW
+                teamPrestige += 3;
+            }
         }
 
         if (teamPrestige > 95) teamPrestige = 95;
@@ -730,121 +734,97 @@ public class Team {
         for( int i = 0; i < qbNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
+            if ( 100*Math.random() < 5*chance ) stars = stars - 1;
             if (Math.random() < starsBonusChance) stars = stars + 1;
             else if (Math.random() < starsBonusDoubleChance) stars = stars + 2;
             if (stars > 5) stars = 5;
 
             //make QBs
-            if ( 100*Math.random() < 5*chance ) {
-                teamQBs.add( new PlayerQB(league.getRandName(), 1, stars-1, this) );
-            } else {
-                teamQBs.add( new PlayerQB(league.getRandName(), 1, stars, this) );
-            }
+            teamQBs.add(new PlayerQB(league.getRandName(), 1, stars, this));
         }
         
         for( int i = 0; i < kNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
+            if ( 100*Math.random() < 5*chance ) stars = stars - 1;
             if (Math.random() < starsBonusChance) stars = stars + 1;
             else if (Math.random() < starsBonusDoubleChance) stars = stars + 2;
             if (stars > 5) stars = 5;
 
             //make Ks
-            if ( 100*Math.random() < 5*chance ) {
-                teamKs.add( new PlayerK(league.getRandName(), 1, stars-1) );
-            } else {
-                teamKs.add( new PlayerK(league.getRandName(), 1, stars) );
-            }
+            teamKs.add( new PlayerK(league.getRandName(), 1, stars) );
         }
         
         for( int i = 0; i < rbNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
+            if ( 100*Math.random() < 5*chance ) stars = stars - 1;
             if (Math.random() < starsBonusChance) stars = stars + 1;
             else if (Math.random() < starsBonusDoubleChance) stars = stars + 2;
             if (stars > 5) stars = 5;
 
             //make RBs
-            if ( 100*Math.random() < 5*chance ) {
-                teamRBs.add( new PlayerRB(league.getRandName(), 1, stars-1, this) );
-            } else {
-                teamRBs.add( new PlayerRB(league.getRandName(), 1, stars, this) );
-            }
+            teamRBs.add( new PlayerRB(league.getRandName(), 1, stars, this) );
         }
         
         for( int i = 0; i < wrNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
+            if ( 100*Math.random() < 5*chance ) stars = stars - 1;
             if (Math.random() < starsBonusChance) stars = stars + 1;
             else if (Math.random() < starsBonusDoubleChance) stars = stars + 2;
             if (stars > 5) stars = 5;
 
             //make WRs
-            if ( 100*Math.random() < 5*chance ) {
-                teamWRs.add( new PlayerWR(league.getRandName(), 1, stars-1, this) );
-            } else {
-                teamWRs.add( new PlayerWR(league.getRandName(), 1, stars, this) );
-            }
+            teamWRs.add( new PlayerWR(league.getRandName(), 1, stars, this) );
         }
         
         for( int i = 0; i < olNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
+            if ( 100*Math.random() < 5*chance ) stars = stars - 1;
             if (Math.random() < starsBonusChance) stars = stars + 1;
             else if (Math.random() < starsBonusDoubleChance) stars = stars + 2;
             if (stars > 5) stars = 5;
 
             //make OLs
-            if ( 100*Math.random() < 5*chance ) {
-                teamOLs.add( new PlayerOL(league.getRandName(), 1, stars-1) );
-            } else {
-                teamOLs.add( new PlayerOL(league.getRandName(), 1, stars) );
-            }
+            teamOLs.add( new PlayerOL(league.getRandName(), 1, stars) );
         }
         
         for( int i = 0; i < cbNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
+            if ( 100*Math.random() < 5*chance ) stars = stars - 1;
             if (Math.random() < starsBonusChance) stars = stars + 1;
             else if (Math.random() < starsBonusDoubleChance) stars = stars + 2;
             if (stars > 5) stars = 5;
 
             //make CBs
-            if ( 100*Math.random() < 5*chance ) {
-                teamCBs.add( new PlayerCB(league.getRandName(), 1, stars-1) );
-            } else {
-                teamCBs.add( new PlayerCB(league.getRandName(), 1, stars) );
-            }
+            teamCBs.add( new PlayerCB(league.getRandName(), 1, stars) );
         }
         
         for( int i = 0; i < f7Needs; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
+            if ( 100*Math.random() < 5*chance ) stars = stars - 1;
             if (Math.random() < starsBonusChance) stars = stars + 1;
             else if (Math.random() < starsBonusDoubleChance) stars = stars + 2;
             if (stars > 5) stars = 5;
 
             //make F7s
-            if ( 100*Math.random() < 5*chance ) {
-                teamF7s.add( new PlayerF7(league.getRandName(), 1, stars-1) );
-            } else {
-                teamF7s.add( new PlayerF7(league.getRandName(), 1, stars) );
-            }
+            teamF7s.add( new PlayerF7(league.getRandName(), 1, stars) );
         }
         
         for( int i = 0; i < sNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
+            if ( 100*Math.random() < 5*chance ) stars = stars - 1;
             if (Math.random() < starsBonusChance) stars = stars + 1;
             else if (Math.random() < starsBonusDoubleChance) stars = stars + 2;
             if (stars > 5) stars = 5;
 
             //make Ss
-            if ( 100*Math.random() < 5*chance ) {
-                teamSs.add( new PlayerS(league.getRandName(), 1, stars-1) );
-            } else {
-                teamSs.add( new PlayerS(league.getRandName(), 1, stars) );
-            }
+            teamSs.add( new PlayerS(league.getRandName(), 1, stars) );
         }
         
         //done making players, sort them
