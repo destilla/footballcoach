@@ -21,6 +21,8 @@ public class Player {
     public int cost;
     public int gamesPlayed;
     public boolean isRedshirt;
+    public boolean isInjured;
+    public Injury injury;
     protected final String[] letterGrades = {"F", "F+", "D", "D+", "C", "C+", "B", "B+", "A", "A+"};
     
     public Vector ratingsVector;
@@ -55,6 +57,9 @@ public class Player {
     }
 
     public String getPosNameYrOvrPot_Str() {
+        if (injury != null) {
+            return position + " " + name + " [" + getYrStr() + "]>" + injury.toString();
+        }
         return position + " " + name + " [" + getYrStr() + "]> Ovr: " + ratOvr + ", Pot: " + ratPot;
     }
 

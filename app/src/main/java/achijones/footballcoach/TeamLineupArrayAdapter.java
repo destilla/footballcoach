@@ -59,6 +59,10 @@ public class TeamLineupArrayAdapter extends ArrayAdapter<Player> {
             // Is redshirt
             isPlayerStarting.setEnabled(false);
             playerInfo.setTextColor(Color.RED);
+        } else if (players.get(position).isInjured) {
+            // Is injured
+            isPlayerStarting.setEnabled(false);
+            playerInfo.setTextColor(Color.RED);
         } else {
             isPlayerStarting.setChecked(false);
         }
