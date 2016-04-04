@@ -78,7 +78,7 @@ public class League {
         conferences.add( new Conference(" SEC ", this) );
         conferences.add( new Conference("BIG10", this) );
         conferences.add( new Conference(" ACC ", this) );
-        conferences.add( new Conference("COWBY", this) );
+        conferences.add( new Conference("BIG12", this) );
         conferences.add( new Conference("PAC10", this) );
         conferences.add( new Conference("MOUNT", this) );
         allAmericans = new ArrayList<Player>();
@@ -140,17 +140,17 @@ public class League {
         conferences.get(2).confTeams.add( new Team( "Virgina", "UVA", " ACC ", this, 45, "VT " ));
         conferences.get(2).confTeams.add( new Team( "Virgina Tech", "VT ", " ACC ", this, 55, "UVA" ));
 
-        //COWBY
-        conferences.get(3).confTeams.add( new Team( "Oklahoma", "OKL", "COWBY", this, 90, "TEX" ));
-        conferences.get(3).confTeams.add( new Team( "Texas", "TEX", "COWBY", this, 90, "OKL" ));
-        conferences.get(3).confTeams.add( new Team( "Houston", "HOU", "COWBY", this, 80, "DAL" ));
-        conferences.get(3).confTeams.add( new Team( "Dallas", "DAL", "COWBY", this, 80, "HOU" ));
-        conferences.get(3).confTeams.add( new Team( "Alamo St", "AMO", "COWBY", this, 70, "PAS" ));
-        conferences.get(3).confTeams.add( new Team( "Oklahoma St", "OKS", "COWBY", this, 70, "TUL" ));
-        conferences.get(3).confTeams.add( new Team( "El Paso St", "PAS", "COWBY", this, 60, "AMO" ));
-        conferences.get(3).confTeams.add( new Team( "Texas St", "TXS", "COWBY", this, 60, "AUS" ));
-        conferences.get(3).confTeams.add( new Team( "Tulsa", "TUL", "COWBY", this, 55, "OKS" ));
-        conferences.get(3).confTeams.add( new Team( "Univ of Austin", "AUS", "COWBY", this, 50, "TXS" ));
+        //BIG12
+        conferences.get(3).confTeams.add( new Team( "Oklahoma", "OU ", "BIG12", this, 90, "OKST" ));
+        conferences.get(3).confTeams.add( new Team( "Texas", "UT ", "BIG12", this, 75, "TTU" ));
+        conferences.get(3).confTeams.add( new Team( "Texas Tech", "TTU", "BIG12", this, 65, "UT " ));
+        conferences.get(3).confTeams.add( new Team( "Texas Christian Univ", "TCU", "BIG12", this, 85, "BAY" ));
+        conferences.get(3).confTeams.add( new Team( "West Virgina", "WVU", "BIG12", this, 70, "ISU" ));
+        conferences.get(3).confTeams.add( new Team( "Oklahoma St", "OKST", "BIG12", this, 70, "OU " ));
+        conferences.get(3).confTeams.add( new Team( "Kansas", "KAN", "BIG12", this, 40, "KSU" ));
+        conferences.get(3).confTeams.add( new Team( "Kansas State", "KSU", "BIG12", this, 60, "KAN" ));
+        conferences.get(3).confTeams.add( new Team( "Baylor", "BAY", "BIG12", this, 85, "TCU" ));
+        conferences.get(3).confTeams.add( new Team( "Iowa State", "ISU", "BIG12", this, 50, "WVU" ));
 
         //PAC10
         conferences.get(4).confTeams.add( new Team( "Univ of Southern Calif", "USC ", "PAC10", this, 90, "UCLA" ));
@@ -165,16 +165,16 @@ public class League {
         conferences.get(4).confTeams.add( new Team( "Arizona State", "ASU", "PAC10", this, 65, "ARI" ));
 
         //MOUNT
-        conferences.get(5).confTeams.add( new Team( "Colorado", "COL", "MOUNT", this, 80, "DEN" ));
-        conferences.get(5).confTeams.add( new Team( "Yellowstone St", "YEL", "MOUNT", this, 75, "ALB" ));
-        conferences.get(5).confTeams.add( new Team( "Utah", "UTA", "MOUNT", this, 75, "SAL" ));
-        conferences.get(5).confTeams.add( new Team( "Univ of Denver", "DEN", "MOUNT", this, 75, "COL" ));
-        conferences.get(5).confTeams.add( new Team( "Albuquerque", "ALB", "MOUNT", this, 70, "YEL" ));
-        conferences.get(5).confTeams.add( new Team( "Salt Lake St", "SAL", "MOUNT", this, 65, "UTA" ));
-        conferences.get(5).confTeams.add( new Team( "Wyoming", "WYO", "MOUNT", this, 60, "MON" ));
-        conferences.get(5).confTeams.add( new Team( "Montana", "MON", "MOUNT", this, 55, "WYO" ));
-        conferences.get(5).confTeams.add( new Team( "Las Vegas", "LSV", "MOUNT", this, 50, "PHO" ));
-        conferences.get(5).confTeams.add( new Team( "Phoenix", "PHO", "MOUNT", this, 45, "LSV" ));
+        conferences.get(5).confTeams.add( new Team( "Colorado St", "CSU", "MOUNT", this, 70, "UAF" ));
+        conferences.get(5).confTeams.add( new Team( "Boise St", "BSU", "MOUNT", this, 70, "MEX" ));
+        conferences.get(5).confTeams.add( new Team( "Utah", "UTAH", "MOUNT", this, 80, "USU" ));
+        conferences.get(5).confTeams.add( new Team( "Hawaii", "HAW", "MOUNT", this, 50, "SDSU" ));
+        conferences.get(5).confTeams.add( new Team( "Cal State Fresno", "FRES", "MOUNT", this, 60, "SJSU" ));
+        conferences.get(5).confTeams.add( new Team( "Utah St", "USU", "MOUNT", this, 55, "UTAH" ));
+        conferences.get(5).confTeams.add( new Team( "San Jose St", "SJSU", "MOUNT", this, 55, "FRES" ));
+        conferences.get(5).confTeams.add( new Team( "San Diego St", "SDSU", "MOUNT", this, 55, "HAW" ));
+        conferences.get(5).confTeams.add( new Team( "Univ of Nevada Las Vegas", "UNLV", "MOUNT", this, 45, "NEV" ));
+        conferences.get(5).confTeams.add( new Team( "Nevada", "UNLV", "MOUNT", this, 45, "LSV" ));
 
         //set teamList
         teamList = new ArrayList<Team>();
@@ -238,7 +238,7 @@ public class League {
             conferences.add( new Conference(" SEC ", this) );
             conferences.add( new Conference("BIG10", this) );
             conferences.add( new Conference(" ACC ", this) );
-            conferences.add( new Conference("COWBY", this) );
+            conferences.add( new Conference("BIG12", this) );
             conferences.add( new Conference("PAC10", this) );
             conferences.add( new Conference("MOUNT", this) );
             allAmericans = new ArrayList<Player>();
@@ -444,7 +444,7 @@ public class League {
         if (conf.equals(" SEC ")) return 0;
         if (conf.equals("BIG10")) return 1;
         if (conf.equals(" ACC ")) return 2;
-        if (conf.equals("COWBY")) return 3;
+        if (conf.equals("BIG12")) return 3;
         if (conf.equals("PAC10")) return 4;
         if (conf.equals("MOUNT")) return 5;
         return 0;
