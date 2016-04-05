@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.lang.StringBuilder;
 
 
 /**
@@ -12,27 +13,27 @@ import java.util.Comparator;
  * @author Achi
  */
 public class Conference {
-    
+
     public String confName;
     public int confPrestige;
-    
+
     public ArrayList<Team> confTeams;
     public boolean evenYear;
-    
+
     public League league;
-    
+
     private Game ccg;
-    
+
     public int week;
     public int robinWeek;
 
     public String allConfStr;
     public ArrayList<Player> allConfPlayers;
-    
+
     /**
      * Sets up Conference with empty list of teams.
      * @param name
-     * @param league 
+     * @param league
      */
     public Conference( String name, League league ) {
         confName = name;
@@ -43,7 +44,7 @@ public class Conference {
         robinWeek = 0;
         allConfPlayers = new ArrayList<Player>();
     }
-    
+
     /**
      * Sets up schedule for in-conference games using round robin scheduling.
      */
@@ -67,10 +68,14 @@ public class Conference {
             evenHomeGames[8] = new int[]{9, 3, 7, 2, 6};
             evenHomeGames[9] = new int[]{0, 2, 4, 6};
 
+
+
             for (int x = 0; x < evenHomeGames.length; x++) {
+                StringBuilder sb = new StringBuilder();
                 for (int y = 0; y < evenHomeGames[x].length; y++) {
-                    confTeams.get(x).evenYearHomeOpp.append(confTeams.get(evenHomeGames[x][y]).abbr + ",");
+                   sb.append(confTeams.get(evenHomeGames[x][y]).abbr + ",");
                 }
+                confTeams.get(x).evenYearHomeOpp = sb.toString();
             }
         }
         for (int r = 0; r < 9; ++r) {
@@ -88,12 +93,12 @@ public class Conference {
 
                 // Check whether it's an even year and if team B appears in team A's even year home game list, or if it's not an even year and team A appears in team B's list
 
-                if ( (evenYear && Arrays.asList(a.evenYearHomeOpp).contains(b.abbr)) || (evenYear && !Arrays.asList(b.evenYearHomeOpp).contains(a.abbr)) || (!evenYear && !Arrays.asList(a.evenYearHomeOpp).contains((b.abbr))) || (!evenYear && Arrays.asList(b.evenYearHomeOpp).contains((a.abbr))) ) {
+                if ( (evenYear && a.evenYearHomeOpp.contains(b.abbr)) || (evenYear && !b.evenYearHomeOpp.contains(a.abbr)) || (!evenYear && !a.evenYearHomeOpp.contains((b.abbr))) || (!evenYear && b.evenYearHomeOpp.contains((a.abbr))) ) {
                     gm = new Game( a, b, "In Conf" );
                 }
 
                 // Basically check all the reverse scenarios above, anything that would cause B to be the home team.
-                else if(evenYear && Arrays.asList(b.evenYearHomeOpp).contains(a.abbr) || (evenYear && !Arrays.asList(a.evenYearHomeOpp).contains(b.abbr)) || (!evenYear && Arrays.asList(a.evenYearHomeOpp).contains((b.abbr))) || (!evenYear && !Arrays.asList(b.evenYearHomeOpp).contains(a.abbr)) ){
+                else if((evenYear && b.evenYearHomeOpp.contains(a.abbr) || (evenYear && !a.evenYearHomeOpp.contains(b.abbr)) || (!evenYear && a.evenYearHomeOpp.contains((b.abbr))) || (!evenYear && !b.evenYearHomeOpp.contains(a.abbr)))) {
                     gm = new Game( b, a, "In Conf" );
                 }
                 else{ // I'm 99.9% sure all scenarios and possibilities are covered above, but lets not break the game if I'm wrong

@@ -124,8 +124,7 @@ public class Team {
         userControlled = false;
         showPopups = true;
         teamHistory = new ArrayList<String>();
-        String evenYearHomeOpp;
-        
+
         teamQBs = new ArrayList<PlayerQB>();
         teamRBs = new ArrayList<PlayerRB>();
         teamWRs = new ArrayList<PlayerWR>();
@@ -134,7 +133,7 @@ public class Team {
         teamF7s = new ArrayList<PlayerF7>();
         teamSs = new ArrayList<PlayerS>();
         teamCBs = new ArrayList<PlayerCB>();
-        
+
         gameSchedule = new ArrayList<Game>();
         gameOOCSchedule0 = null;
         gameOOCSchedule4 = null;
@@ -144,10 +143,10 @@ public class Team {
         confChampion = "";
         semiFinalWL = "";
         natChampWL = "";
-        
+
         teamPrestige = prestige;
-        recruitPlayers(2,4,6,2,10,2,6,14);       
-        
+        recruitPlayers(2,4,6,2,10,2,6,14);
+
         //set stats
         totalWins = 0;
         totalLosses = 0;
@@ -174,7 +173,7 @@ public class Team {
         teamTODiff = 0;
         teamOffTalent = getOffTalent();
         teamDefTalent = getDefTalent();
-        
+
         teamPollScore = teamPrestige + getOffTalent() + getDefTalent();
 
         teamStratOff = new TeamStrategy();
@@ -194,7 +193,6 @@ public class Team {
         userControlled = false;
         showPopups = true;
         teamHistory = new ArrayList<String>();
-        String evenYearHomeOpp;
 
         teamQBs = new ArrayList<PlayerQB>();
         teamRBs = new ArrayList<PlayerRB>();
