@@ -38,6 +38,7 @@ public class Team {
     public int totalNCLosses;
     public int totalBowls;
     public int totalBowlLosses;
+    public String evenYearHomeOpp;
 
     public TeamStreak winStreak;
     
@@ -123,7 +124,7 @@ public class Team {
         userControlled = false;
         showPopups = true;
         teamHistory = new ArrayList<String>();
-        
+
         teamQBs = new ArrayList<PlayerQB>();
         teamRBs = new ArrayList<PlayerRB>();
         teamWRs = new ArrayList<PlayerWR>();
@@ -132,7 +133,7 @@ public class Team {
         teamF7s = new ArrayList<PlayerF7>();
         teamSs = new ArrayList<PlayerS>();
         teamCBs = new ArrayList<PlayerCB>();
-        
+
         gameSchedule = new ArrayList<Game>();
         gameOOCSchedule0 = null;
         gameOOCSchedule4 = null;
@@ -142,10 +143,10 @@ public class Team {
         confChampion = "";
         semiFinalWL = "";
         natChampWL = "";
-        
+
         teamPrestige = prestige;
-        recruitPlayers(2,4,6,2,10,2,6,14);       
-        
+        recruitPlayers(2,4,6,2,10,2,6,14);
+
         //set stats
         totalWins = 0;
         totalLosses = 0;
@@ -172,7 +173,7 @@ public class Team {
         teamTODiff = 0;
         teamOffTalent = getOffTalent();
         teamDefTalent = getDefTalent();
-        
+
         teamPollScore = teamPrestige + getOffTalent() + getDefTalent();
 
         teamStratOff = new TeamStrategy();
@@ -231,7 +232,7 @@ public class Team {
         // Actually load the team from the string
         String[] lines = loadStr.split("%");
 
-        // Line 0 is team info
+        // Lines 0 is team info
         String[] teamInfo = lines[0].split(",");
         if (teamInfo.length >= 9) {
             conference = teamInfo[0];
@@ -268,9 +269,14 @@ public class Team {
             }
         }
 
+        // Lines 1 is Team Home/Away Rotation
+
+        evenYearHomeOpp = lines[1];
+
+
         // Rest of lines are player info
         String[] playerInfo;
-        for (int i = 1; i < lines.length; ++i) {
+        for (int i = 2; i < lines.length; ++i) {
             recruitPlayerCSV(lines[i], false);
         }
 
