@@ -38,6 +38,7 @@ public class Team {
     public int totalNCLosses;
     public int totalBowls;
     public int totalBowlLosses;
+    public ArrayList<String> evenYearHomeOpp;
 
     public TeamStreak winStreak;
     
