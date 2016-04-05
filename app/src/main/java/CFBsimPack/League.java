@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -32,9 +33,7 @@ public class League {
     public LeagueRecords leagueRecords;
     public TeamStreak longestWinStreak;
     public TeamStreak longestActiveWinStreak;
-
-    public ArrayList<String> newsBless;
-    public ArrayList<String> newsCurse;
+    
     public Team saveBless;
     public Team saveCurse;
 
@@ -1603,11 +1602,11 @@ public class League {
 
         // Save information about each team like W-L records, as well as all the players
         for (Team t : teamList) {
-            sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
-                    (t.totalWins-t.wins) + "," + (t.totalLosses-t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
+            StringBuilder append = sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
+                    (t.totalWins - t.wins) + "," + (t.totalLosses - t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
                     t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," +
                     t.teamStratOffNum + "," + t.teamStratDefNum + "," + (t.showPopups ? 1 : 0) + "," +
-                    t.winStreak.getStreakCSV() + "%\n");
+                    t.winStreak.getStreakCSV() + "%" + t.evenYearHomeOpp + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }
