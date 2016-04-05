@@ -38,7 +38,7 @@ public class Team {
     public int totalNCLosses;
     public int totalBowls;
     public int totalBowlLosses;
-    public ArrayList<String> evenYearHomeOpp;
+    public String evenYearHomeOpp;
 
     public TeamStreak winStreak;
     
@@ -124,7 +124,7 @@ public class Team {
         userControlled = false;
         showPopups = true;
         teamHistory = new ArrayList<String>();
-        evenYearHomeOpp = new ArrayList<String>();
+        String evenYearHomeOpp;
         
         teamQBs = new ArrayList<PlayerQB>();
         teamRBs = new ArrayList<PlayerRB>();
@@ -194,7 +194,7 @@ public class Team {
         userControlled = false;
         showPopups = true;
         teamHistory = new ArrayList<String>();
-        evenYearHomeOpp = new ArrayList<String>();
+        String evenYearHomeOpp;
 
         teamQBs = new ArrayList<PlayerQB>();
         teamRBs = new ArrayList<PlayerRB>();
@@ -234,7 +234,7 @@ public class Team {
         // Actually load the team from the string
         String[] lines = loadStr.split("%");
 
-        // Line 0 is team info
+        // Lines 0 is team info
         String[] teamInfo = lines[0].split(",");
         if (teamInfo.length >= 9) {
             conference = teamInfo[0];
@@ -271,9 +271,14 @@ public class Team {
             }
         }
 
+        // Lines 1 is Team Home/Away Rotation
+
+        evenYearHomeOpp = lines[1];
+
+
         // Rest of lines are player info
         String[] playerInfo;
-        for (int i = 1; i < lines.length; ++i) {
+        for (int i = 2; i < lines.length; ++i) {
             recruitPlayerCSV(lines[i], false);
         }
 
