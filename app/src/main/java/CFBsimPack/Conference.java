@@ -49,26 +49,28 @@ public class Conference {
     public void setUpSchedule() {
         //schedule in conf matchups
         robinWeek = 0;
-        evenYear = ((league.leagueHistory.size() + 1)%2==0);
-        int[][] evenHomeGames = new int[10][];
+        evenYear = (league.leagueHistory.size()%2==0);
 
-        evenHomeGames[0] = new int[]{7,4,8,3};
-        evenHomeGames[1] = new int[]{8,9,5,0,4};
-        evenHomeGames[2] = new int[]{5,0,6,1};
-        evenHomeGames[3] = new int[]{6,1,9,7,2};
-        evenHomeGames[4] = new int[]{3,7,2,8};
-        evenHomeGames[5] = new int[]{4,8,3,9,0};
-        evenHomeGames[6] = new int[]{4,0,1,5};
-        evenHomeGames[7] = new int[]{2,6,1,5,9};
-        evenHomeGames[8] = new int[]{9,3,7,2,6};
-        evenHomeGames[9] = new int[]{0,2,4,6};
 
-        for (int x = 0; x < evenHomeGames.length; x++) {
-            for (int y = 0; y < evenHomeGames[x].length; y++) {
-                confTeams.get(x).evenYearHomeOpp.add(confTeams.get(y).abbr);
+        if (league.leagueHistory.size() == 0) {
+            int[][] evenHomeGames = new int[10][];
+            evenHomeGames[0] = new int[]{7, 4, 8, 3};
+            evenHomeGames[1] = new int[]{8, 9, 5, 0, 4};
+            evenHomeGames[2] = new int[]{5, 0, 6, 1};
+            evenHomeGames[3] = new int[]{6, 1, 9, 7, 2};
+            evenHomeGames[4] = new int[]{3, 7, 2, 8};
+            evenHomeGames[5] = new int[]{4, 8, 3, 9, 0};
+            evenHomeGames[6] = new int[]{4, 0, 1, 5};
+            evenHomeGames[7] = new int[]{2, 6, 1, 5, 9};
+            evenHomeGames[8] = new int[]{9, 3, 7, 2, 6};
+            evenHomeGames[9] = new int[]{0, 2, 4, 6};
+
+            for (int x = 0; x < evenHomeGames.length; x++) {
+                for (int y = 0; y < evenHomeGames[x].length; y++) {
+                    confTeams.get(x).evenYearHomeOpp.add(confTeams.get(evenHomeGames[x][y]).abbr);
+                }
             }
         }
-
         for (int r = 0; r < 9; ++r) {
             for (int g = 0; g < 5; ++g) {
                 Team a = confTeams.get((robinWeek + g) % 9);
@@ -79,19 +81,41 @@ public class Conference {
                     b = confTeams.get((9 - g + robinWeek) % 9);
                 }
 
-                boolean evenAndHome = (evenYear && a.evenYearHomeOpp.contains(b.abbr));
+                boolean evenAndAHome = (evenYear && a.evenYearHomeOpp.contains(b.abbr));
                 Game gm;
-                if ( Math.random() > 0.5 ) {
+                if (evenAndAHome) {
                     gm = new Game( a, b, "In Conf" );
-                } else {
+                } else if(evenYear && b.evenYearHomeOpp.contains(a.abbr)){
                     gm = new Game( b, a, "In Conf" );
                 }
-
+                else if(evenYear && !a.evenYearHomeOpp.contains(b.abbr)){
+                    gm = new Game( b, a, "In Conf" );
+                }
+                else if(evenYear && !b.evenYearHomeOpp.contains(a.abbr)){
+                    gm = new Game( a, b,"In Conf" );
+                }
+                else if (!evenYear && !a.evenYearHomeOpp.contains((b.abbr))){
+                    gm = new Game(a, b, "In Conf");
+                }
+                else if (!evenYear && a.evenYearHomeOpp.contains((b.abbr))) {
+                    gm = new Game(b, a, "In Conf");
+                }
+                else if (!evenYear && b.evenYearHomeOpp.contains((a.abbr))) {
+                    gm = new Game(a, b, "In Conf");
+                }
+                else if (!evenYear && !b.evenYearHomeOpp.contains((a.abbr))){
+                    gm = new Game(b, a, "In Conf");
+                }
+                else gm = new Game (a,a, "I broke");
                 a.gameSchedule.add(gm);
                 b.gameSchedule.add(gm);
+
+                if (a.userControlled == true) System.out.println("User Controlled Home Schedule: " + a.evenYearHomeOpp);
             }
             robinWeek++;
         }
+
+
     }
     
     /**
