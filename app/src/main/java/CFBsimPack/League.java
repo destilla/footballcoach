@@ -1602,7 +1602,7 @@ public class League {
 
         // Save information about each team like W-L records, as well as all the players
         for (Team t : teamList) {
-            StringBuilder append = sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
+            sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
                     (t.totalWins - t.wins) + "," + (t.totalLosses - t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
                     t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," +
                     t.teamStratOffNum + "," + t.teamStratDefNum + "," + (t.showPopups ? 1 : 0) + "," +
