@@ -2,34 +2,38 @@ package CFBsimPack;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.lang.StringBuilder;
+
 
 /**
  * Class for conferences, which each have 10 teams.
  * @author Achi
  */
 public class Conference {
-    
+
     public String confName;
     public int confPrestige;
-    
+
     public ArrayList<Team> confTeams;
-    
+    public boolean evenYear;
+
     public League league;
-    
+
     private Game ccg;
-    
+
     public int week;
     public int robinWeek;
 
     public String allConfStr;
     public ArrayList<Player> allConfPlayers;
-    
+
     /**
      * Sets up Conference with empty list of teams.
      * @param name
-     * @param league 
+     * @param league
      */
     public Conference( String name, League league ) {
         confName = name;
@@ -40,13 +44,40 @@ public class Conference {
         robinWeek = 0;
         allConfPlayers = new ArrayList<Player>();
     }
-    
+
     /**
      * Sets up schedule for in-conference games using round robin scheduling.
      */
     public void setUpSchedule() {
         //schedule in conf matchups
         robinWeek = 0;
+        evenYear = (league.leagueHistory.size()%2==0);
+
+
+        // Set up int arrays for each team's home/away rotation. Theoretically every year you should change off between having 5 home games and 4 away games in conference
+        if (league.leagueHistory.size() == 0) {
+            int[][] evenHomeGames = new int[10][];
+            evenHomeGames[0] = new int[]{7, 4, 8, 3};
+            evenHomeGames[1] = new int[]{8, 9, 5, 0, 4};
+            evenHomeGames[2] = new int[]{5, 0, 6, 1};
+            evenHomeGames[3] = new int[]{6, 1, 9, 7, 2};
+            evenHomeGames[4] = new int[]{3, 7, 2, 8};
+            evenHomeGames[5] = new int[]{4, 8, 3, 9, 0};
+            evenHomeGames[6] = new int[]{4, 0, 1, 5};
+            evenHomeGames[7] = new int[]{2, 6, 1, 5, 9};
+            evenHomeGames[8] = new int[]{9, 3, 7, 2, 6};
+            evenHomeGames[9] = new int[]{0, 2, 4, 6};
+
+
+
+            for (int x = 0; x < evenHomeGames.length; x++) {
+                StringBuilder sb = new StringBuilder();
+                for (int y = 0; y < evenHomeGames[x].length; y++) {
+                   sb.append(confTeams.get(evenHomeGames[x][y]).abbr + ",");
+                }
+                confTeams.get(x).evenYearHomeOpp = sb.toString();
+            }
+        }
         for (int r = 0; r < 9; ++r) {
             for (int g = 0; g < 5; ++g) {
                 Team a = confTeams.get((robinWeek + g) % 9);
@@ -57,18 +88,31 @@ public class Conference {
                     b = confTeams.get((9 - g + robinWeek) % 9);
                 }
 
+
                 Game gm;
-                if ( Math.random() > 0.5 ) {
+
+                // Check whether it's an even year and if team B appears in team A's even year home game list, or if it's not an even year and team A appears in team B's list
+
+                if ( (evenYear && a.evenYearHomeOpp.contains(b.abbr)) || (evenYear && !b.evenYearHomeOpp.contains(a.abbr)) || (!evenYear && !a.evenYearHomeOpp.contains((b.abbr))) || (!evenYear && b.evenYearHomeOpp.contains((a.abbr))) ) {
                     gm = new Game( a, b, "In Conf" );
-                } else {
-                    gm = new Game( b, a, "In Conf" );
                 }
 
+                // Basically check all the reverse scenarios above, anything that would cause B to be the home team.
+                else if((evenYear && b.evenYearHomeOpp.contains(a.abbr) || (evenYear && !a.evenYearHomeOpp.contains(b.abbr)) || (!evenYear && a.evenYearHomeOpp.contains((b.abbr))) || (!evenYear && !b.evenYearHomeOpp.contains(a.abbr)))) {
+                    gm = new Game( b, a, "In Conf" );
+                }
+                else{ // I'm 99.9% sure all scenarios and possibilities are covered above, but lets not break the game if I'm wrong
+                    gm = new Game(b, a, "In Conf");
+                }
                 a.gameSchedule.add(gm);
                 b.gameSchedule.add(gm);
+
+                if (a.userControlled == true) System.out.println("User Controlled Home Schedule: " + a.evenYearHomeOpp);
             }
             robinWeek++;
         }
+
+
     }
     
     /**
