@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,10 +34,13 @@ public class League {
     public TeamStreak longestWinStreak;
     public TeamStreak longestActiveWinStreak;
 
-    public ArrayList<String> newsBless;
-    public ArrayList<String> newsCurse;
+
+    // News Story Variables
     public Team saveBless;
     public Team saveCurse;
+    public boolean blessDevelopingStory;
+    public int blessDevelopingWeek;
+    public int blessDevelopingCase;
 
 
     //Current week, 1-14
@@ -204,6 +208,7 @@ public class League {
     public League(File saveFile, String namesCSV) {
         heismanDecided = false;
         hasScheduledBowls = false;
+        blessDevelopingStory = false;
         bowlGames = new Game[10];
         // This will reference one line at a time
         String line = null;
@@ -337,7 +342,7 @@ public class League {
                 String storyLastName = storyFullName.replaceAll(".* ", "");
                 String storyPlayer;
 
-                switch((int)(Math.random() * 3)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 4)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Hired a shiny new coach who used to play for the school (feed those Vol fans wishing for Peyton something to dream on)
                         newsStories.get(0).add("Blue Chip hire for Bad Break University>" + saveBless.name + " announced the hire of alumnus and former professional coach " +getRandName()+", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
@@ -362,12 +367,19 @@ public class League {
                         else storyPlayer = storyFullName;
 
                         playerLastName = storyPlayer.replaceAll(".* ", "");
-
                         //Coach Story -- Inspired by that time Kliff did the stanky leg in a circle of Tech players
                         if (storyPlayer.equals(storyFullName)) newsStories.get(0).add("Moves Like a Dancer from the Body of a Coach>When a cell phone recording of Coach " + storyFullName + " out dancing his players at the end of a Spring practice was uploaded to the internet, " +storyLastName + " thought nothing of it. When it hit one million views over night, Coach took notice. In response to wild popularity his moves have recieved, " + storyLastName + " has made it a new tradition at " + saveBless.name + " to have a dance off with all prospective recruits, much to the delight of fans and students, who have turned out in large numbers to watch the competitions." );
                             //Player Story
                         else newsStories.get(0).add("The Hit That Keeps On Giving>For the 50th consecutive day, " + saveBless.name + " star " + storyPlayer + "'s explosive hit against " + saveBless.rivalTeam + " sits atop the CFB News Top Plays list. " + playerLastName + " credits Coach " + getRandName() + " with providing him the inspiration to stay in the weight room late and think clearly during plays. During its reign, \"The Hit\" has dethroned and outlasted the " + teamList.get((int)(Math.random()*60)).name + " Baseball Team's \"Puppies in the Park\" viral video, and " + teamList.get((int)(Math.random()*60)).name + "'s Make-A-Wish TD on the Top Plays list." );
                         break;
+
+                    case 3:
+                        // Free Prestige, is it in you? Set developing story for blessed team to true and add a story
+                        newsStories.get(0).add(saveBless.name + " Nutrition Dept. Electro-Lighting Up the Field>Nutrition and Sport Science graduate students at " + saveBless.name + " are helping their team gain the upper hand on the field with their own work in the lab. At a press conference held today outside the team's practice field, the university announced the first production run of it's own sports enhancement drink. The drink is expected to be available in stores mid-season with an initial offering of three flavors: \"Berry Blitz\", \"Hail Cherry\", and \"The Man-Go Route.\" Despite recent struggles by " + saveBless.name + " on the football field, the school is hoping to boost it's overall image with this move.");
+                        blessDevelopingStory = true;
+                        blessDevelopingWeek = ((int)(Math.random()*4)) + 5; // Print a new story "mid-season" (random week between 6 and 10)
+                        blessDevelopingCase = 1;
+                        System.out.println("Check news in week " + (blessDevelopingWeek + 1) + " for " + saveBless.name + "'s story development");
 
                     default:
                         //newsStories.get(0).add(saveBless.name + " news story bless test case out of range");
@@ -506,6 +518,33 @@ public class League {
 
         setTeamRanks();
         updateLongestActiveWinStreak();
+
+
+        // If there was a developing story and it's time for that story to print, print it based on which story was triggered
+        if (blessDevelopingStory && currentWeek == blessDevelopingWeek){
+
+            switch (blessDevelopingCase) {
+                case 1: //Sports Drink Development
+                    if (findTeamAbbr(saveBless.abbr).rankTeamPollScore > 49) {
+                        //Looks like the "secret stuff" didn't do much -- Maybe it was just water all along?
+                        newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Still Thirsty For Wins>Despite the much talked about launch of their new Sport Enhancement Drink, " + saveBless.name + " still find themselves struggling to make the most of the talent available to them and break free from the bottom of the polls. With their eyes set on improvement in the years to come, all " + saveBless.abbr + " fans can do now is weather the drought.");
+                    } //Electrolytes: saveBless.name currentYear MVP
+                    else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore < 41 && findTeamAbbr(saveBless.abbr).rankTeamPollScore > 20) {
+                        newsStories.get(blessDevelopingWeek + 1).add("Success a Refreshing Change for " + saveBless.name + ">On the heels of a successful first week of sales for their new Sports Enhancement Drink, " + saveBless.name + "'s has much to celebrate as they seem to have found the light at the end of the tunnel. In less than a season, the program's fortunes have turned, both financially and in the polls, begging the question: What are they putting in those sports drinks?");
+                    } //The team is suddenly in the top 20 and wondering if they had it in themselves all along. The school is rolling in $$$$
+                    else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore <= 20){
+                        newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Being Propelled to New Heights>In the middle of a football season that is smashing all expectations, " + saveBless.name + " is managing to smash a few sales records, as well. Crediting both realms of success to the school's Sports Nutrition program, Athletic Director " + getRandName() + " praised the work of the program's graduate researchers in developing a world class sport enhancement drink, while also announcing the product's expansion into two new flavors.");
+                    }
+                    break;
+
+                default:
+                    //Oh man I'm not good with computer how did we get here?
+                    break;
+            }
+        }
+
+
+
         currentWeek++;
     }
 
@@ -1604,10 +1643,10 @@ public class League {
         // Save information about each team like W-L records, as well as all the players
         for (Team t : teamList) {
             sb.append(t.conference + "," + t.name + "," + t.abbr + "," + t.teamPrestige + "," +
-                    (t.totalWins-t.wins) + "," + (t.totalLosses-t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
+                    (t.totalWins - t.wins) + "," + (t.totalLosses - t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
                     t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," +
                     t.teamStratOffNum + "," + t.teamStratDefNum + "," + (t.showPopups ? 1 : 0) + "," +
-                    t.winStreak.getStreakCSV() + "%\n");
+                    t.winStreak.getStreakCSV() + "%" + t.evenYearHomeOpp + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }
