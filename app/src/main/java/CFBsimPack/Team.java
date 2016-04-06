@@ -100,6 +100,12 @@ public class Team {
     public ArrayList<PlayerF7> teamF7s;
     public ArrayList<PlayerS> teamSs;
     public ArrayList<PlayerCB> teamCBs;
+    //By year
+    public ArrayList<Player> teamRSs;
+    public ArrayList<Player> teamFRs;
+    public ArrayList<Player> teamSOs;
+    public ArrayList<Player> teamJRs;
+    public ArrayList<Player> teamSRs;
 
     public ArrayList<Player> playersLeaving;
     
@@ -133,6 +139,12 @@ public class Team {
         teamF7s = new ArrayList<PlayerF7>();
         teamSs = new ArrayList<PlayerS>();
         teamCBs = new ArrayList<PlayerCB>();
+
+        teamRSs = new ArrayList<Player>();
+        teamFRs = new ArrayList<Player>();
+        teamSOs = new ArrayList<Player>();
+        teamJRs = new ArrayList<Player>();
+        teamSRs = new ArrayList<Player>();
 
         gameSchedule = new ArrayList<Game>();
         gameOOCSchedule0 = null;
@@ -203,6 +215,12 @@ public class Team {
         teamSs = new ArrayList<PlayerS>();
         teamCBs = new ArrayList<PlayerCB>();
 
+        teamRSs = new ArrayList<Player>();
+        teamFRs = new ArrayList<Player>();
+        teamSOs = new ArrayList<Player>();
+        teamJRs = new ArrayList<Player>();
+        teamSRs = new ArrayList<Player>();
+
         gameSchedule = new ArrayList<Game>();
         gameOOCSchedule0 = null;
         gameOOCSchedule4 = null;
@@ -270,7 +288,6 @@ public class Team {
         }
 
         // Lines 1 is Team Home/Away Rotation
-
         evenYearHomeOpp = lines[1];
 
 
@@ -967,7 +984,42 @@ public class Team {
                     Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt));
         }
     }
-    
+
+    /**
+     * For news stories or other info gathering, setup player groups by student standing
+     * @param line player to be grouped
+     * @param isRedshirt whether that player is a RS (currently unused)
+     */
+    private void getPlayerStandingCSV(String line, boolean isRedshirt) {
+        String[] playerInfo = line.split(",");
+        if (Integer.parseInt(playerInfo[2]) == 0) {
+            teamRSs.add( new Player());
+            teamRSs.get(teamRSs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
+            teamRSs.get(teamRSs.size()-1).position = playerInfo[0];
+        }
+        else if (Integer.parseInt(playerInfo[2]) == 1) {
+            teamFRs.add( new Player());
+            teamFRs.get(teamFRs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
+            teamFRs.get(teamFRs.size()-1).position = playerInfo[0];
+        }
+        else if (Integer.parseInt(playerInfo[2]) == 2) {
+            teamSOs.add( new Player());
+            teamSOs.get(teamSOs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
+            teamSOs.get(teamSOs.size()-1).position = playerInfo[0];
+        }
+        else if (Integer.parseInt(playerInfo[2]) == 3) {
+            teamJRs.add( new Player());
+            teamJRs.get(teamJRs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
+            teamJRs.get(teamJRs.size()-1).position = playerInfo[0];
+        }
+        else if (Integer.parseInt(playerInfo[2]) == 4) {
+            teamSRs.add( new Player());
+            teamSRs.get(teamSRs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
+            teamSRs.get(teamSRs.size()-1).position = playerInfo[0];
+        }
+    }
+
+
     /**
      * Resets all team stats to 0.
      */
@@ -1085,6 +1137,12 @@ public class Team {
         Collections.sort( teamCBs, new PlayerComparator() );
         Collections.sort( teamSs, new PlayerComparator() );
         Collections.sort(teamF7s, new PlayerComparator());
+
+        Collections.sort(teamRSs, new PlayerComparator());
+        Collections.sort(teamFRs, new PlayerComparator());
+        Collections.sort(teamSOs, new PlayerComparator());
+        Collections.sort(teamJRs, new PlayerComparator());
+        Collections.sort(teamSRs, new PlayerComparator());
     }
 
     /**

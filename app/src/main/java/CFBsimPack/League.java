@@ -394,15 +394,17 @@ public class League {
                 String storyLastName = storyFullName.replaceAll(".* ", "");
                 String storyPlayer;
 
-                switch((int)(Math.random() * 3)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 4)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Team broke the rules, placed on probation and it's harder to recruit (-prestige)
                         newsStories.get(0).add(saveCurse.name + " Rocked by Infractions Scandal!>After an investigation during the offseason, "+saveCurse.name +" has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + storyFullName + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
                         break;
+
                     case 1:
                         //Sleepover w/ star recruit
                         newsStories.get(0).add(saveCurse.name + " Coach Redefines \"Strange Bed Fellows\">" + saveCurse.name + " Head Coach " + storyFullName + " has landed in hot water after he was discovered at the home of a Class of " + (getYear() + 2) + " recruit, having a sleepover. Family of the recruit, who's name has been withheld, state that Coach " + storyLastName + " and the recruit \"watched GetPix and chilled.\" Despite a lack of charges against " +storyLastName+", the university has placed an indefinite suspension to the coach's recruiting travel privileges, pending an internal investigation.");
                         break;
+
                     case 2:
                         //Get the first offensive position player that isn't a Freshman and is good enough to be decent starter (or use a random name and say it was a coach if no players available) and use their name to describe them pulling a reverse catfish...literally -- Or that Coach lost his temper at a pre-season booster event and scared off some donors. Coach story is just a backup plan for the player story (in case somehow the whole starting O is unavailable)
                         // Only using the first 4 of the front 7, we'll just assume it's a 3-4 defense and those are their linebackers
@@ -428,6 +430,26 @@ public class League {
                             //Player Story
                         else newsStories.get(0).add(saveCurse.name + " Star Demonstrates The Rare \"Reverse Catfish\">After winning the nation's heart by finishing out the " + (getYear() - 1) + " season despite losing his girlfriend to a freak fishing accident, " +saveCurse.name+" star "+storyPlayer+" now faces intense scrutiny from national media for allegedly making the whole thing up. " +storyPlayerLast + " originally claimed his girlfriend was a student at " +playerGFSchool+", until internet message board users discovered a private blog run by the player that revealed the truth; the girlfriend was fake, and her name was actually the name of his pet catfish. The university's athletics department officially declined to comment, citing an ongoing internal investigation.");
                         break;
+
+                    case 3:
+                        //Hazing rituals by upper-classmen reported by under-classmen and scared off recruits
+
+                        //Figure out if the recruit scared off was a RS (if the cursed team is rivals with the user team) or a FR
+                        String starRSOrFR;
+
+                        //Does the cursed team's rivals have an RS players and is the best RS an overall better player than the best FR
+                        if (findTeamAbbr(saveCurse.rivalTeam).teamRSs.size()> 0 && (findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).ratOvr >= findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).ratOvr) ){
+                            // If so, the scared off player will be the RS
+                            starRSOrFR = ("highly sought after recruit and current " + findTeamAbbr(saveCurse.rivalTeam).name + " redshirt freshman " + findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).name);
+                        }
+                        else { // Grab the best Freshman on the rival's team
+                            starRSOrFR = (findTeamAbbr(saveCurse.rivalTeam).name + "'s star freshman recruit " + findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).name);
+                        }
+
+                        //Now that we know what recruit was scared off to the rival team
+                        newsStories.get(0).add("A New Kind of Summer Haze>" + saveCurse.name + " Senior " + saveCurse.teamSRs.get(0).position + " " + saveCurse.teamSRs.get(0).name + " stepped forward today, as the ringleader of a group of upperclassmen responsible for the extreme hazing of several of the program's underclassmen, including several non-player students. It was revealed earlier this year that " + starRSOrFR + " flipped his commitment from " + saveCurse.name + " after being contacted on social media by members of the team and informed of the hazing rituals he would face during Spring Practice.");
+                        break;
+
 
                     default:
                         //newsStories.get(0).add(saveCurse.name + " news story curse test case out of range");
