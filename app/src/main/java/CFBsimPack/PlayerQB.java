@@ -31,7 +31,7 @@ public class PlayerQB extends Player {
     public int statsPassYards;
     public int statsSacked;
     
-    public PlayerQB( String nm, Team t, int yr, int pot, int iq, int pow, int acc, int eva, boolean rs ) {
+    public PlayerQB( String nm, Team t, int yr, int pot, int iq, int pow, int acc, int eva, boolean rs, int dur ) {
         team = t;
         name = nm;
         year = yr;
@@ -40,6 +40,7 @@ public class PlayerQB extends Player {
         ratOvr = (pow*3 + acc*4 + eva)/8;
         ratPot = pot;
         ratFootIQ = iq;
+        ratDur = dur;
         ratPassPow = pow;
         ratPassAcc = acc;
         ratPassEva = eva;
@@ -75,6 +76,7 @@ public class PlayerQB extends Player {
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
+        ratDur = (int) (50 + 50*Math.random());
         ratPassPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratPassAcc = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratPassEva = (int) (60 + year*5 + stars*5 - 25*Math.random());

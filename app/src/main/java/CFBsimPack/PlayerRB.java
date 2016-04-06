@@ -31,7 +31,7 @@ public class PlayerRB extends Player {
     public int statsTD;
     public int statsFumbles;
     
-    public PlayerRB( String nm, Team t, int yr, int pot, int iq, int pow, int spd, int eva, boolean rs ) {
+    public PlayerRB( String nm, Team t, int yr, int pot, int iq, int pow, int spd, int eva, boolean rs, int dur ) {
         team = t;
         name = nm;
         year = yr;
@@ -40,6 +40,7 @@ public class PlayerRB extends Player {
         ratOvr = (pow + spd + eva)/3;
         ratPot = pot;
         ratFootIQ = iq;
+        ratDur = dur;
         ratRushPow = pow;
         ratRushSpd = spd;
         ratRushEva = eva;
@@ -73,6 +74,7 @@ public class PlayerRB extends Player {
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
+        ratDur = (int) (50 + 50*Math.random());
         ratRushPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratRushSpd = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratRushEva = (int) (60 + year*5 + stars*5 - 25*Math.random());
