@@ -68,6 +68,9 @@ public class Player {
     }
 
     public String getPosNameYrOvrPot_OneLine() {
+        if (injury != null) {
+            return position + " " + name + " [" + getYrStr() + "] " + injury.toString();
+        }
         return position + " " + getInitialName() + " [" + getYrStr() + "] " + ratOvr + " / " + getLetterGrade(ratPot) + " / " + getLetterGrade(ratDur);
     }
 

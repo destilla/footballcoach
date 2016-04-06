@@ -102,6 +102,7 @@ public class Team {
     public ArrayList<PlayerCB> teamCBs;
 
     public ArrayList<Player> playersLeaving;
+    public ArrayList<Player> playersInjured;
 
     public TeamStrategy teamStratOff;
     public TeamStrategy teamStratDef;
@@ -925,46 +926,49 @@ public class Team {
      */
     private void recruitPlayerCSV(String line, boolean isRedshirt) {
         String[] playerInfo = line.split(",");
+        int durability;
+        if (playerInfo.length >= 11) durability = Integer.parseInt(playerInfo[10]);
+        else durability = (int) (50 + 50*Math.random());
         if (playerInfo[0].equals("QB")) {
             teamQBs.add( new PlayerQB(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, Integer.parseInt(playerInfo[10])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, durability));
         } else if (playerInfo[0].equals("RB")) {
             teamRBs.add( new PlayerRB(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, Integer.parseInt(playerInfo[10])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, durability));
         } else if (playerInfo[0].equals("WR")) {
             teamWRs.add( new PlayerWR(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, Integer.parseInt(playerInfo[10])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, durability));
         } else if (playerInfo[0].equals("OL")) {
             teamOLs.add( new PlayerOL(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, Integer.parseInt(playerInfo[10])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, durability));
         } else if (playerInfo[0].equals("K")) {
             teamKs.add( new PlayerK(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, Integer.parseInt(playerInfo[10])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, durability));
         } else if (playerInfo[0].equals("S")) {
             teamSs.add( new PlayerS(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, Integer.parseInt(playerInfo[10])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, durability));
         } else if (playerInfo[0].equals("CB")) {
             teamCBs.add( new PlayerCB(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, Integer.parseInt(playerInfo[10])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, durability));
         } else if (playerInfo[0].equals("F7")) {
             teamF7s.add( new PlayerF7(playerInfo[1], this,
                     Integer.parseInt(playerInfo[2]), Integer.parseInt(playerInfo[3]),
                     Integer.parseInt(playerInfo[4]), Integer.parseInt(playerInfo[5]),
-                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, Integer.parseInt(playerInfo[10])));
+                    Integer.parseInt(playerInfo[6]), Integer.parseInt(playerInfo[7]), isRedshirt, durability));
         }
     }
 
@@ -1072,13 +1076,13 @@ public class Team {
      */
     public void sortPlayers() {
         //sort players based on overall ratings to assemble best starting lineup
-        Collections.sort( teamQBs, new PlayerComparator() );
-        Collections.sort( teamRBs, new PlayerComparator() );
-        Collections.sort( teamWRs, new PlayerComparator() );
-        Collections.sort( teamKs, new PlayerComparator() );
-        Collections.sort( teamOLs, new PlayerComparator() );
-        Collections.sort( teamCBs, new PlayerComparator() );
-        Collections.sort( teamSs, new PlayerComparator() );
+        Collections.sort(teamQBs, new PlayerComparator());
+        Collections.sort(teamRBs, new PlayerComparator());
+        Collections.sort(teamWRs, new PlayerComparator());
+        Collections.sort(teamKs, new PlayerComparator());
+        Collections.sort(teamOLs, new PlayerComparator());
+        Collections.sort(teamCBs, new PlayerComparator());
+        Collections.sort(teamSs, new PlayerComparator());
         Collections.sort(teamF7s, new PlayerComparator());
     }
 
@@ -1087,15 +1091,57 @@ public class Team {
      * Guaranteed not to injure more than the amount of starters for each position.
      */
     public void checkForInjury() {
-        if (!getQB(0).isInjured && !getQB(1).isInjured) {
-            getQB(0).injury = new Injury(getQB(0));
-        }
-
-        for (Player p : teamQBs) {
-            if (p.injury != null) p.injury.advanceGame();
-        }
-
+        playersInjured = new ArrayList<>();
+        checkInjuryPosition(teamQBs, 1);
+        checkInjuryPosition(teamRBs, 2);
+        checkInjuryPosition(teamWRs, 3);
+        checkInjuryPosition(teamOLs, 5);
+        checkInjuryPosition(teamKs, 1);
+        checkInjuryPosition(teamSs, 1);
+        checkInjuryPosition(teamCBs, 3);
+        checkInjuryPosition(teamF7s, 1);
         sortPlayers();
+    }
+
+    private void checkInjuryPosition(ArrayList<? extends Player> players, int numStarters) {
+        int numInjured = 0;
+        ArrayList<Player> uninjuredPlayers = new ArrayList<>();
+
+        for (Player p : players) {
+            if (p.injury != null) {
+                p.injury.advanceGame();
+                numInjured++;
+            } else {
+                uninjuredPlayers.add(p);
+            }
+        }
+
+        // Only injure if there are people left to injure
+        if (numInjured < numStarters) {
+            for (Player p : uninjuredPlayers) {
+                if (Math.random() < Math.pow(1 - (double)p.ratDur/100, 2) && numInjured < numStarters) {
+                    // injury!
+                    p.injury = new Injury(p);
+                    playersInjured.add(p);
+                    numInjured++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets a list of all the players that were injured that week.
+     * @return list of players in string
+     */
+    public String getInjuryReport() {
+        if (playersInjured.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (Player p : playersInjured) {
+                sb.append(p.getPosNameYrOvrPot_OneLine() + "\n");
+            }
+            return sb.toString();
+        }
+        else return "NONE";
     }
 
     /**
@@ -1530,6 +1576,34 @@ public class Team {
         playerStatsMap.put(ph, benchStr);
 
         return playerStatsMap;
+    }
+
+    public Player findBenchPlayer(String line) {
+        for (Player p : teamQBs) {
+            if (p.getPosNameYrOvrPot_Str().equals(line)) return p;
+        }
+        for (Player p : teamRBs) {
+            if (p.getPosNameYrOvrPot_Str().equals(line)) return p;
+        }
+        for (Player p : teamWRs) {
+            if (p.getPosNameYrOvrPot_Str().equals(line)) return p;
+        }
+        for (Player p : teamOLs) {
+            if (p.getPosNameYrOvrPot_Str().equals(line)) return p;
+        }
+        for (Player p : teamKs) {
+            if (p.getPosNameYrOvrPot_Str().equals(line)) return p;
+        }
+        for (Player p : teamSs) {
+            if (p.getPosNameYrOvrPot_Str().equals(line)) return p;
+        }
+        for (Player p : teamCBs) {
+            if (p.getPosNameYrOvrPot_Str().equals(line)) return p;
+        }
+        for (Player p : teamF7s) {
+            if (p.getPosNameYrOvrPot_Str().equals(line)) return p;
+        }
+        return teamQBs.get(0);
     }
 
     /**

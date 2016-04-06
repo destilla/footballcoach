@@ -233,6 +233,24 @@ public class MainActivity extends AppCompatActivity {
                         int numGamesPlayed = userTeam.gameWLSchedule.size();
                         simLeague.playWeek();
 
+                        // Get injury report if there are injuries
+                        String injuryReport = userTeam.getInjuryReport();
+                        if (!injuryReport.equals("NONE")) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setMessage(injuryReport)
+                                    .setTitle("Injury Report")
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            //do nothing?
+                                        }
+                                    });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+                            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                        }
+
                         if (simLeague.currentWeek == 15) {
                             // Show NCG summary and check league records
                             simLeague.checkLeagueRecords();
@@ -570,7 +588,7 @@ public class MainActivity extends AppCompatActivity {
         List<String> playerHeaders = currentTeam.getPlayerStatsExpandListStr();
         Map<String, List<String>> playerInfos = currentTeam.getPlayerStatsExpandListMap(playerHeaders);
         ExpandableListAdapterPlayerStats expListAdapterPlayerStats =
-                new ExpandableListAdapterPlayerStats(this, playerHeaders, playerInfos);
+                new ExpandableListAdapterPlayerStats(this, this, playerHeaders, playerInfos);
         expListPlayerStats.setAdapter(expListAdapterPlayerStats);
     }
 
@@ -595,21 +613,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void heismanCeremony() {
-        /*String heismanStr = simLeague.getHeismanCeremonyStr();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(heismanStr)
-                .setTitle("Player of the Year")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //do nothing?
-                    }
-                });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-        TextView msgTxt = (TextView) dialog.findViewById(android.R.id.message);
-        msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);*/
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Post Season Awards")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -1317,6 +1320,26 @@ public class MainActivity extends AppCompatActivity {
         }
         teamLineupAdapter.notifyDataSetChanged();
     }
+
+    /**
+     * Examines a player on the bench of the team, so users can see all their stats.
+     * @param player to examine
+     */
+    public void examinePlayer(String player) {
+        Player p = currentTeam.findBenchPlayer(player);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        ArrayList<String> pStats = p.getDetailStatsList(currentTeam.numGames());
+        StringBuilder sb = new StringBuilder();
+        for (String s : pStats) {
+            sb.append(s + "\n");
+        }
+        builder.setMessage(sb.toString())
+                .setTitle(p.getPosNameYrOvrPot_OneLine());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TextView msgTxt = (TextView) dialog.findViewById(android.R.id.message);
+        msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+   }
 
     /**
      * Start Recruiting Activity, sending over the user team's players and budget.

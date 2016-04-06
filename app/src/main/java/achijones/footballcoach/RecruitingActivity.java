@@ -1093,7 +1093,7 @@ public class RecruitingActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Save who is currently expanded
                     List<Integer> groupsExpanded = new ArrayList<>();
-                    recruitPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
+                    recruitPlayerDialog(playerCSV, groupPosition, groupsExpanded);
                 }
             });
 
@@ -1102,7 +1102,7 @@ public class RecruitingActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Save who is currently expanded
                     List<Integer> groupsExpanded = new ArrayList<>();
-                    redshirtPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
+                    redshirtPlayerDialog(playerCSV, groupPosition, groupsExpanded);
                 }
             });
 
