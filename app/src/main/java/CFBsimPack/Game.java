@@ -608,6 +608,7 @@ public class Game implements Serializable {
                             ">#"+homeTeam.rankTeamPollScore+" "+homeTeam.name+" was able to pull off the upset at home against #"+
                             awayTeam.rankTeamPollScore+" "+awayTeam.name+", winning "+homeScore+" to "+awayScore+".");
         }
+
     }
 
     /**
