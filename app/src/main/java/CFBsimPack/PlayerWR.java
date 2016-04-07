@@ -38,7 +38,7 @@ public class PlayerWR extends Player {
     public int statsDrops;
     public int statsFumbles;
     
-    public PlayerWR( String nm, Team t, int yr, int pot, int iq, int cat, int spd, int eva, boolean rs ) {
+    public PlayerWR( String nm, Team t, int yr, int pot, int iq, int cat, int spd, int eva, boolean rs, int dur ) {
         team = t;
         name = nm;
         year = yr;
@@ -47,6 +47,7 @@ public class PlayerWR extends Player {
         ratOvr = (cat*2 + spd + eva)/4;
         ratPot = pot;
         ratFootIQ = iq;
+        ratDur = dur;
         ratRecCat = cat;
         ratRecSpd = spd;
         ratRecEva = eva;
@@ -82,6 +83,7 @@ public class PlayerWR extends Player {
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
+        ratDur = (int) (50 + 50*Math.random());
         ratRecCat = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratRecSpd = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratRecEva = (int) (60 + year*5 + stars*5 - 25*Math.random());

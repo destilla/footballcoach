@@ -25,7 +25,7 @@ public class PlayerCB extends Player {
     
     //public Vector ratingsVector;
     
-    public PlayerCB( String nm, Team t, int yr, int pot, int iq, int cov, int spd, int tkl, boolean rs ) {
+    public PlayerCB( String nm, Team t, int yr, int pot, int iq, int cov, int spd, int tkl, boolean rs, int dur ) {
         team = t;
         name = nm;
         year = yr;
@@ -34,6 +34,7 @@ public class PlayerCB extends Player {
         ratOvr = (cov*2 + spd + tkl)/4;
         ratPot = pot;
         ratFootIQ = iq;
+        ratDur = dur;
         ratCBCov = cov;
         ratCBSpd = spd;
         ratCBTkl = tkl;
@@ -60,6 +61,7 @@ public class PlayerCB extends Player {
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
+        ratDur = (int) (50 + 50*Math.random());
         ratCBCov = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratCBSpd = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratCBTkl = (int) (60 + year*5 + stars*5 - 25*Math.random());

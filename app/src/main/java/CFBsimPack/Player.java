@@ -17,12 +17,16 @@ public class Player {
     public int ratOvr;
     public int ratPot;
     public int ratFootIQ;
+    public int ratDur;
     public int ratImprovement;
     public int cost;
     public int gamesPlayed;
+
     public boolean isRedshirt;
+
     public boolean isInjured;
     public Injury injury;
+
     protected final String[] letterGrades = {"F", "F+", "D", "D+", "C", "C+", "B", "B+", "A", "A+"};
     
     public Vector ratingsVector;
@@ -60,11 +64,14 @@ public class Player {
         if (injury != null) {
             return position + " " + name + " [" + getYrStr() + "]>" + injury.toString();
         }
-        return position + " " + name + " [" + getYrStr() + "]> Ovr: " + ratOvr + ", Pot: " + ratPot;
+        return position + " " + name + " [" + getYrStr() + "]>" + ratOvr + " / " + getLetterGrade(ratPot) + " / " + getLetterGrade(ratDur);
     }
 
     public String getPosNameYrOvrPot_OneLine() {
-        return position + " " + getInitialName() + " [" + getYrStr() + "] Ovr: " + ratOvr + ", Pot: " + ratPot;
+        if (injury != null) {
+            return position + " " + name + " [" + getYrStr() + "] " + injury.toString();
+        }
+        return position + " " + getInitialName() + " [" + getYrStr() + "] " + ratOvr + " / " + getLetterGrade(ratPot) + " / " + getLetterGrade(ratDur);
     }
 
     /**
