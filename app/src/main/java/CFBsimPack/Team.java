@@ -297,6 +297,12 @@ public class Team {
             recruitPlayerCSV(lines[i], false);
         }
 
+        // Group players by class standing (FRs, SOs, etc)
+        for (int i = 2; i < lines.length; ++i)
+        {
+           groupPlayerStandingCSV(lines[i], false);
+        }
+
         wonRivalryGame = false;
         teamStratOff = getTeamStrategiesOff()[teamStratOffNum];
         teamStratDef = getTeamStrategiesDef()[teamStratDefNum];
@@ -312,7 +318,7 @@ public class Team {
         teamDefTalent = getDefTalent();
         teamPollScore = teamPrestige + getOffTalent() + getDefTalent();
     }
-    
+
     /**
      * Advance season, hiring new coach if needed and calculating new prestige level.
      */
@@ -346,7 +352,7 @@ public class Team {
 
         diffPrestige = teamPrestige - oldPrestige;
         advanceSeasonPlayers();
-        
+
     }
 
     /**
@@ -446,7 +452,7 @@ public class Team {
             }
         }
     }
-    
+
     /**
      * Advance season for players. Removes seniors and develops underclassmen.
      */
@@ -637,7 +643,7 @@ public class Team {
             }
         }
     }
-    
+
     /**
      * Recruits the needed amount of players at each position.
      * Rating of each player based on team prestige.
@@ -649,14 +655,14 @@ public class Team {
      * @param olNeeds
      * @param sNeeds
      * @param cbNeeds
-     * @param f7Needs 
+     * @param f7Needs
      */
-    public void recruitPlayers( int qbNeeds, int rbNeeds, int wrNeeds, int kNeeds, 
+    public void recruitPlayers( int qbNeeds, int rbNeeds, int wrNeeds, int kNeeds,
                                 int olNeeds, int sNeeds, int cbNeeds, int f7Needs ) {
         //make team
         int stars = teamPrestige/20 + 1;
         int chance = 20 - (teamPrestige - 20*( teamPrestige/20 )); //between 0 and 20
-        
+
         for( int i = 0; i < qbNeeds; ++i ) {
             //make QBs
             if ( 100*Math.random() < 5*chance ) {
@@ -665,7 +671,7 @@ public class Team {
                 teamQBs.add( new PlayerQB(league.getRandName(), (int)(4*Math.random() + 1), stars, this) );
             }
         }
-        
+
         for( int i = 0; i < kNeeds; ++i ) {
             //make Ks
             if ( 100*Math.random() < 5*chance ) {
@@ -674,7 +680,7 @@ public class Team {
                 teamKs.add( new PlayerK(league.getRandName(), (int)(4*Math.random() + 1), stars) );
             }
         }
-        
+
         for( int i = 0; i < rbNeeds; ++i ) {
             //make RBs
             if ( 100*Math.random() < 5*chance ) {
@@ -683,7 +689,7 @@ public class Team {
                 teamRBs.add( new PlayerRB(league.getRandName(), (int)(4*Math.random() + 1), stars, this) );
             }
         }
-        
+
         for( int i = 0; i < wrNeeds; ++i ) {
             //make WRs
             if ( 100*Math.random() < 5*chance ) {
@@ -692,7 +698,7 @@ public class Team {
                 teamWRs.add( new PlayerWR(league.getRandName(), (int)(4*Math.random() + 1), stars, this) );
             }
         }
-        
+
         for( int i = 0; i < olNeeds; ++i ) {
             //make OLs
             if ( 100*Math.random() < 5*chance ) {
@@ -701,7 +707,7 @@ public class Team {
                 teamOLs.add( new PlayerOL(league.getRandName(), (int)(4*Math.random() + 1), stars) );
             }
         }
-        
+
         for( int i = 0; i < cbNeeds; ++i ) {
             //make CBs
             if ( 100*Math.random() < 5*chance ) {
@@ -710,7 +716,7 @@ public class Team {
                 teamCBs.add( new PlayerCB(league.getRandName(), (int)(4*Math.random() + 1), stars) );
             }
         }
-        
+
         for( int i = 0; i < f7Needs; ++i ) {
             //make F7s
             if ( 100*Math.random() < 5*chance ) {
@@ -719,7 +725,7 @@ public class Team {
                 teamF7s.add( new PlayerF7(league.getRandName(), (int)(4*Math.random() + 1), stars) );
             }
         }
-        
+
         for( int i = 0; i < sNeeds; ++i ) {
             //make Ss
             if ( 100*Math.random() < 5*chance ) {
@@ -728,11 +734,11 @@ public class Team {
                 teamSs.add( new PlayerS(league.getRandName(), (int)(4*Math.random() + 1), stars) );
             }
         }
-        
+
         //done making players, sort them
         sortPlayers();
     }
-    
+
     /**
      * Recruit freshman at each position.
      * This is used after each season.
@@ -743,9 +749,9 @@ public class Team {
      * @param olNeeds
      * @param sNeeds
      * @param cbNeeds
-     * @param f7Needs 
+     * @param f7Needs
      */
-    public void recruitPlayersFreshman( int qbNeeds, int rbNeeds, int wrNeeds, int kNeeds, 
+    public void recruitPlayersFreshman( int qbNeeds, int rbNeeds, int wrNeeds, int kNeeds,
                                 int olNeeds, int sNeeds, int cbNeeds, int f7Needs ) {
         //make team
         int stars = teamPrestige/20 + 1;
@@ -753,7 +759,7 @@ public class Team {
 
         double starsBonusChance = 0.15;
         double starsBonusDoubleChance = 0.05;
-        
+
         for( int i = 0; i < qbNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
@@ -765,7 +771,7 @@ public class Team {
             //make QBs
             teamQBs.add(new PlayerQB(league.getRandName(), 1, stars, this));
         }
-        
+
         for( int i = 0; i < kNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
@@ -777,7 +783,7 @@ public class Team {
             //make Ks
             teamKs.add( new PlayerK(league.getRandName(), 1, stars) );
         }
-        
+
         for( int i = 0; i < rbNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
@@ -789,7 +795,7 @@ public class Team {
             //make RBs
             teamRBs.add( new PlayerRB(league.getRandName(), 1, stars, this) );
         }
-        
+
         for( int i = 0; i < wrNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
@@ -801,7 +807,7 @@ public class Team {
             //make WRs
             teamWRs.add( new PlayerWR(league.getRandName(), 1, stars, this) );
         }
-        
+
         for( int i = 0; i < olNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
@@ -813,7 +819,7 @@ public class Team {
             //make OLs
             teamOLs.add( new PlayerOL(league.getRandName(), 1, stars) );
         }
-        
+
         for( int i = 0; i < cbNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
@@ -825,7 +831,7 @@ public class Team {
             //make CBs
             teamCBs.add( new PlayerCB(league.getRandName(), 1, stars) );
         }
-        
+
         for( int i = 0; i < f7Needs; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
@@ -837,7 +843,7 @@ public class Team {
             //make F7s
             teamF7s.add( new PlayerF7(league.getRandName(), 1, stars) );
         }
-        
+
         for( int i = 0; i < sNeeds; ++i ) {
             // Add some randomness so that players with higher stars can be recruited
             stars = teamPrestige/20 + 1;
@@ -849,11 +855,11 @@ public class Team {
             //make Ss
             teamSs.add( new PlayerS(league.getRandName(), 1, stars) );
         }
-        
+
         //done making players, sort them
         sortPlayers();
     }
-    
+
     /**
      * Recruits walk ons at each needed position.
      * This is used by user teams if there is a dearth at any position.
@@ -865,49 +871,49 @@ public class Team {
             //make QBs
             teamQBs.add( new PlayerQB(league.getRandName(), 1, 2, this) );
         }
-        
+
         needs = 4 - teamRBs.size();
         for( int i = 0; i < needs; ++i ) {
             //make RBs
             teamRBs.add( new PlayerRB(league.getRandName(), 1, 2, this) );
         }
-        
+
         needs = 6 - teamWRs.size();
         for( int i = 0; i < needs; ++i ) {
             //make WRs
             teamWRs.add( new PlayerWR(league.getRandName(), 1, 2, this) );
         }
-        
+
         needs = 10 - teamOLs.size();
         for( int i = 0; i < needs; ++i ) {
             //make OLs
             teamOLs.add( new PlayerOL(league.getRandName(), 1, 2) );
         }
-        
+
         needs = 2 - teamKs.size();
         for( int i = 0; i < needs; ++i ) {
             //make Ks
             teamKs.add( new PlayerK(league.getRandName(), 1, 2) );
         }
-        
+
         needs = 2 - teamSs.size();
         for( int i = 0; i < needs; ++i ) {
             //make Ss
             teamSs.add( new PlayerS(league.getRandName(), 1, 2) );
         }
-        
+
         needs = 6 - teamCBs.size();
         for( int i = 0; i < needs; ++i ) {
             //make Ss
             teamCBs.add( new PlayerCB(league.getRandName(), 1, 2) );
         }
-        
+
         needs = 14 - teamF7s.size();
         for( int i = 0; i < needs; ++i ) {
             //make Ss
             teamF7s.add( new PlayerF7(league.getRandName(), 1, 2) );
         }
-        
+
         //done making players, sort them
         sortPlayers();
     }
@@ -990,32 +996,37 @@ public class Team {
      * @param line player to be grouped
      * @param isRedshirt whether that player is a RS (currently unused)
      */
-    private void getPlayerStandingCSV(String line, boolean isRedshirt) {
+    private void groupPlayerStandingCSV(String line, boolean isRedshirt) {
         String[] playerInfo = line.split(",");
         if (Integer.parseInt(playerInfo[2]) == 0) {
             teamRSs.add( new Player());
             teamRSs.get(teamRSs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
             teamRSs.get(teamRSs.size()-1).position = playerInfo[0];
+            teamRSs.get(teamRSs.size()-1).name = playerInfo[1];
         }
         else if (Integer.parseInt(playerInfo[2]) == 1) {
             teamFRs.add( new Player());
             teamFRs.get(teamFRs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
             teamFRs.get(teamFRs.size()-1).position = playerInfo[0];
+            teamFRs.get(teamFRs.size()-1).name = playerInfo[1];
         }
         else if (Integer.parseInt(playerInfo[2]) == 2) {
             teamSOs.add( new Player());
             teamSOs.get(teamSOs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
             teamSOs.get(teamSOs.size()-1).position = playerInfo[0];
+            teamSOs.get(teamSOs.size()-1).name = playerInfo[1];
         }
         else if (Integer.parseInt(playerInfo[2]) == 3) {
             teamJRs.add( new Player());
             teamJRs.get(teamJRs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
             teamJRs.get(teamJRs.size()-1).position = playerInfo[0];
+            teamJRs.get(teamJRs.size()-1).name = playerInfo[1];
         }
         else if (Integer.parseInt(playerInfo[2]) == 4) {
             teamSRs.add( new Player());
             teamSRs.get(teamSRs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
             teamSRs.get(teamSRs.size()-1).position = playerInfo[0];
+            teamSRs.get(teamSRs.size()-1).name = playerInfo[1];
         }
     }
 
