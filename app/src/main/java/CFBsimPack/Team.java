@@ -21,7 +21,7 @@ public class Team {
     public String abbr;
     public String conference;
     public String rivalTeam;
-    public boolean wonRivalryGame;sort
+    public boolean wonRivalryGame;
     public ArrayList<String> teamHistory;
     public boolean userControlled;
     public boolean showPopups;
