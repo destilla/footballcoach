@@ -300,10 +300,7 @@ public class Team {
         }
 
         // Group players by class standing (FRs, SOs, etc)
-        for (int i = 2; i < lines.length; ++i)
-        {
-           groupPlayerStandingCSV(lines[i], false);
-        }
+           groupPlayerStandingCSV();
         
         
         wonRivalryGame = false;
@@ -997,42 +994,66 @@ public class Team {
         }
     }
 
-   /**
+    /**
      * For news stories or other info gathering, setup player groups by student standing
-     * @param line player to be grouped
-     * @param isRedshirt whether that player is a RS (currently unused)
+     * Run through each type of player, add them to the appropriate year
      */
-    private void groupPlayerStandingCSV(String line, boolean isRedshirt) {
-        String[] playerInfo = line.split(",");
-        if (Integer.parseInt(playerInfo[2]) == 0) {
-            teamRSs.add( new Player());
-            teamRSs.get(teamRSs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
-            teamRSs.get(teamRSs.size()-1).position = playerInfo[0];
-            teamRSs.get(teamRSs.size()-1).name = playerInfo[1];
+    private void groupPlayerStandingCSV() {
+        for (PlayerQB p : teamQBs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
         }
-        else if (Integer.parseInt(playerInfo[2]) == 1) {
-            teamFRs.add( new Player());
-            teamFRs.get(teamFRs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
-            teamFRs.get(teamFRs.size()-1).position = playerInfo[0];
-            teamFRs.get(teamFRs.size()-1).name = playerInfo[1];
+        for (PlayerRB p : teamRBs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
         }
-        else if (Integer.parseInt(playerInfo[2]) == 2) {
-            teamSOs.add( new Player());
-            teamSOs.get(teamSOs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
-            teamSOs.get(teamSOs.size()-1).position = playerInfo[0];
-            teamSOs.get(teamSOs.size()-1).name = playerInfo[1];
+        for (PlayerWR p : teamWRs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
         }
-        else if (Integer.parseInt(playerInfo[2]) == 3) {
-            teamJRs.add( new Player());
-            teamJRs.get(teamJRs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
-            teamJRs.get(teamJRs.size()-1).position = playerInfo[0];
-            teamJRs.get(teamJRs.size()-1).name = playerInfo[1];
+        for (PlayerK p : teamKs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
         }
-        else if (Integer.parseInt(playerInfo[2]) == 4) {
-            teamSRs.add( new Player());
-            teamSRs.get(teamSRs.size()-1).ratOvr = Integer.parseInt(playerInfo[8]);
-            teamSRs.get(teamSRs.size()-1).position = playerInfo[0];
-            teamSRs.get(teamSRs.size()-1).name = playerInfo[1];
+        for (PlayerOL p : teamOLs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerS p : teamSs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerCB p : teamCBs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerF7 p : teamF7s){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
         }
     }
 
