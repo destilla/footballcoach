@@ -543,20 +543,23 @@ public class League {
 
 
         // If there was a developing story and it's time for that story to print, print it based on which story was triggered
-        if (blessDevelopingStory && currentWeek == blessDevelopingWeek){
+        if (blessDevelopingStory){
 
-            switch (blessDevelopingCase) {
-                case 1: //Sports Drink Development
-                    if (findTeamAbbr(saveBless.abbr).rankTeamPollScore > 49) {
-                        //Looks like the "secret stuff" didn't do much -- Maybe it was just water all along?
-                        newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Still Thirsty For Wins>Despite the much talked about launch of their new Sport Enhancement Drink, " + saveBless.name + " still find themselves struggling to make the most of the talent available to them and break free from the bottom of the polls. With their eyes set on improvement in the years to come, all " + saveBless.abbr + " fans can do now is weather the drought.");
-                    } //Electrolytes: saveBless.name currentYear MVP
-                    else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore < 41 && findTeamAbbr(saveBless.abbr).rankTeamPollScore > 20) {
-                        newsStories.get(blessDevelopingWeek + 1).add("Success a Refreshing Change for " + saveBless.name + ">On the heels of a successful first week of sales for their new Sports Enhancement Drink, " + saveBless.name + "'s has much to celebrate as they seem to have found the light at the end of the tunnel. In less than a season, the program's fortunes have turned, both financially and in the polls, begging the question: What are they putting in those sports drinks?");
-                    } //The team is suddenly in the top 20 and wondering if they had it in themselves all along. The school is rolling in $$$$
-                    else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore <= 20){
-                        newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Being Propelled to New Heights>In the middle of a football season that is smashing all expectations, " + saveBless.name + " is managing to smash a few sales records, as well. Crediting both realms of success to the school's Sports Nutrition program, Athletic Director " + getRandName() + " praised the work of the program's graduate researchers in developing a world class sport enhancement drink, while also announcing the product's expansion into two new flavors.");
-                    }
+            switch (blessDevelopingCase) { // Which story was triggered?
+
+                    case 1: //Sports Drink Development
+                        if (blessDevelopingWeek == currentWeek) { // Is it time to print this yet?
+                        if (findTeamAbbr(saveBless.abbr).rankTeamPollScore > 49) {
+                            //Looks like the "secret stuff" didn't do much -- Maybe it was just water all along?
+                            newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Still Thirsty For Wins>Despite the much talked about launch of their new Sport Enhancement Drink, " + saveBless.name + " still find themselves struggling to make the most of the talent available to them and break free from the bottom of the polls. With their eyes set on improvement in the years to come, all " + saveBless.abbr + " fans can do now is weather the drought.");
+                        } //Electrolytes: saveBless.name currentYear MVP
+                        else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore < 41 && findTeamAbbr(saveBless.abbr).rankTeamPollScore > 20) {
+                            newsStories.get(blessDevelopingWeek + 1).add("Success a Refreshing Change for " + saveBless.name + ">On the heels of a successful first week of sales for their new Sports Enhancement Drink, " + saveBless.name + "'s has much to celebrate as they seem to have found the light at the end of the tunnel. In less than a season, the program's fortunes have turned, both financially and in the polls, begging the question: What are they putting in those sports drinks?");
+                        } //The team is suddenly in the top 20 and wondering if they had it in themselves all along. The school is rolling in $$$$
+                        else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore <= 20) {
+                            newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Being Propelled to New Heights>In the middle of a football season that is smashing all expectations, " + saveBless.name + " is managing to smash a few sales records, as well. Crediting both realms of success to the school's Sports Nutrition program, Athletic Director " + getRandName() + " praised the work of the program's graduate researchers in developing a world class sport enhancement drink, while also announcing the product's expansion into two new flavors.");
+                        }
+                }
                     break;
 
                 default:
@@ -565,7 +568,27 @@ public class League {
             }
         }
 
+        if (curseDevelopingStory){
+            switch (curseDevelopingCase){ //Which story was triggered?
+                    case 1: //Lack of punishment for hazing underclassmen
+                        if (curseDevelopingWeek == currentWeek) { //Print this story when the time comes, but from the player's perspective, print it in the week prior to the current week (add it to week 1 when the player sees week 2 -- Once games are played, the week is advanced)
+                            //No one missed playing time, no word from Coach
+                        newsStories.get(curseDevelopingWeek+1).add(saveCurse.name + " Hazing Scandal Update>After last week's report on the " + saveCurse.name + " hazing scandal, the college football world waited to see what punishments would be handed out to " + saveCurse.teamSRs.get(0).name + " and other implicated but unnamed players. With Week 1 officially in the books we have an answer: Nothing. Based on the final fall practice depth chart, no players missed playing time or starting status (" + saveCurse.teamSRs.get(0).name.replace("*. ","") + " played every down he was available for). Coach " + storyLastName + " has remained silent on the issue.");
+                }
+                        if (curseDevelopingWeek+1 == currentWeek) { //Populate this story into Week 2 --before-- the games are played.
 
+                        if (Math.random() < .5) { //"The boy's suffered enough"
+                            newsStories.get(curseDevelopingWeek+2).add("No Punishment for Group in Hazing Scandal>Last week, it was reported that " + saveCurse.name + " Head Coach " + storyFullName + " had not commented on the hazing scandal that resulted in lost recruits for the program. Today, " + storyLastName + " revealed that this was no mistake, and that there will be no punishment for those involved. In a brief statement released today by the program, " + storyLastName + " is quoted as saying that he considers this matter closed and that he believes the public scrutiny " + saveCurse.teamSRs.get(0).name + " faced after admitting to being the ringleader of the hazing group was \"punishment enough.\"");
+                        }
+                        else { //Time to make amends
+                            newsStories.get(curseDevelopingWeek+2).add("Punishment Announced for " + saveCurse.name + " Upperclassmen>In a statement released through its Athletics Department today, " +saveCurse.name+" Head Coach " + storyFullName + " announced that he had spoken with each member of the team privately and determined who the upperclassmen responsible for the over-the-top hazing occurring within the program were. Not wishing to draw further scrutiny to individual players, " +storyLastName+" stated that the group of players would be responsible for identifying the best way to give back to the local community and carrying out whatever volunteer work was necessary to see the project through to completion.");
+                        }
+                }
+
+            }
+
+
+        }
 
         currentWeek++;
     }
