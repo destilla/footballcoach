@@ -41,6 +41,12 @@ public class League {
     public boolean blessDevelopingStory;
     public int blessDevelopingWeek;
     public int blessDevelopingCase;
+    public boolean curseDevelopingStory;
+    public int curseDevelopingWeek;
+    public int curseDevelopingCase;
+    public String storyFullName;
+    public String storyFirstName;
+    public String storyLastName;
 
 
     //Current week, 1-14
