@@ -100,6 +100,12 @@ public class Team {
     public ArrayList<PlayerF7> teamF7s;
     public ArrayList<PlayerS> teamSs;
     public ArrayList<PlayerCB> teamCBs;
+    //By year
+    public ArrayList<Player> teamRSs;
+    public ArrayList<Player> teamFRs;
+    public ArrayList<Player> teamSOs;
+    public ArrayList<Player> teamJRs;
+    public ArrayList<Player> teamSRs;
 
     public ArrayList<Player> playersLeaving;
     public ArrayList<Player> playersInjured;
