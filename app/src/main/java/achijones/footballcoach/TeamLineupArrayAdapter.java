@@ -41,16 +41,14 @@ public class TeamLineupArrayAdapter extends ArrayAdapter<Player> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.team_lineup_list_item, parent, false);
 
-        /*boolean showPlayer = true;
-        for (int i = 0; i < position; ++i) {
-            if (players.get(i) == players.get(position)) showPlayer = false;
-        }
-
-        if (showPlayer) {*/
-
         TextView playerInfo = (TextView) rowView.findViewById(R.id.textViewLineupPlayerInfo);
 
-        playerInfo.setText(players.get(position).getInfoForLineup());
+        if (players.get(position).injury == null) {
+            playerInfo.setText(players.get(position).getInfoForLineup());
+        } else {
+            playerInfo.setText(players.get(position).getInfoLineupInjury());
+        }
+
 
         CheckBox isPlayerStarting = (CheckBox) rowView.findViewById(R.id.checkboxPlayerStartingLineup);
         if (playersSelected.contains(players.get(position))) {

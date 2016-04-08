@@ -31,7 +31,7 @@ public class PlayerQB extends Player {
     public int statsPassYards;
     public int statsSacked;
     
-    public PlayerQB( String nm, Team t, int yr, int pot, int iq, int pow, int acc, int eva, boolean rs ) {
+    public PlayerQB( String nm, Team t, int yr, int pot, int iq, int pow, int acc, int eva, boolean rs, int dur ) {
         team = t;
         name = nm;
         year = yr;
@@ -40,6 +40,7 @@ public class PlayerQB extends Player {
         ratOvr = (pow*3 + acc*4 + eva)/8;
         ratPot = pot;
         ratFootIQ = iq;
+        ratDur = dur;
         ratPassPow = pow;
         ratPassAcc = acc;
         ratPassEva = eva;
@@ -75,6 +76,7 @@ public class PlayerQB extends Player {
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
+        ratDur = (int) (50 + 50*Math.random());
         ratPassPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratPassAcc = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratPassEva = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -162,7 +164,8 @@ public class PlayerQB extends Player {
         ArrayList<String> pStats = new ArrayList<>();
         pStats.add("TD/Int: " + statsTD + "/" + statsInt + ">Comp Percent: " + (100*statsPassComp/(statsPassAtt+1))+"%");
         pStats.add("Pass Yards: " + statsPassYards + " yds>Yards/Att: " + ((double)(10*statsPassYards/(statsPassAtt+1))/10) + " yds");
-        pStats.add("Yds/Game: " + (statsPassYards/games) + " yds/g>Sacks: " + statsSacked);
+        pStats.add("Yds/Game: " + (statsPassYards/getGamesPlayed()) + " yds/g>Sacks: " + statsSacked);
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Pass Strength: " + getLetterGrade(ratPassPow));
         pStats.add("Accuracy: " + getLetterGrade(ratPassAcc) + ">Evasion: " + getLetterGrade(ratPassEva));
         return pStats;
@@ -170,8 +173,8 @@ public class PlayerQB extends Player {
 
     @Override
     public String getInfoForLineup() {
-        if (injury != null) return  getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " " + injury.toString();
-        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " " + injury.toString();
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " (" +
                 getLetterGrade(ratPassPow) + ", " + getLetterGrade(ratPassAcc) + ", " + getLetterGrade(ratPassEva) + ")";
     }
     

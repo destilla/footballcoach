@@ -36,7 +36,7 @@ public class PlayerK extends Player {
     public int statsFGAtt;
     public int statsFGMade;
     
-    public PlayerK( String nm, Team t, int yr, int pot, int iq, int pow, int acc, int fum, boolean rs ) {
+    public PlayerK( String nm, Team t, int yr, int pot, int iq, int pow, int acc, int fum, boolean rs, int dur ) {
         team = t;
         name = nm;
         year = yr;
@@ -45,6 +45,7 @@ public class PlayerK extends Player {
         ratOvr = (pow + acc + 75)/3;
         ratPot = pot;
         ratFootIQ = iq;
+        ratDur = dur;
         ratKickPow = pow;
         ratKickAcc = acc;
         ratKickFum = fum;
@@ -69,13 +70,15 @@ public class PlayerK extends Player {
         statsFGMade = 0;
     }
     
-    public PlayerK( String nm, int yr, int stars ) {
+    public PlayerK( String nm, int yr, int stars, Team t ) {
         name = nm;
         year = yr;
+        team = t;
         gamesPlayed = 0;
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
+        ratDur = (int) (50 + 50*Math.random());
         ratKickPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratKickAcc = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratKickFum = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -159,6 +162,7 @@ public class PlayerK extends Player {
         } else {
             pStats.add("FG Made/Att: 0/0>FG Percentage: 0%");
         }
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Kick Strength: " + getLetterGrade(ratKickPow));
         pStats.add("Kick Accuracy: " + getLetterGrade(ratKickAcc) + ">Clumsiness: " + getLetterGrade(ratKickFum));
         return pStats;
@@ -166,7 +170,8 @@ public class PlayerK extends Player {
 
     @Override
     public String getInfoForLineup() {
-        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " " + injury.toString();
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " (" +
                 getLetterGrade(ratKickPow) + ", " + getLetterGrade(ratKickAcc) + ", " + getLetterGrade(ratKickFum) + ")";
     }
 }

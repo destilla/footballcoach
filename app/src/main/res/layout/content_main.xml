@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/teamScheduleButton" />
         </LinearLayout>
-        <TextView
+        <!-- <TextView
             android:text="Team Stats / Player Stats / Team Sched"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textAlignment="gravity"
@@ -86,7 +86,7 @@
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textTabDescription" />
+            android:id="@+id/textTabDescription" /> -->
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"

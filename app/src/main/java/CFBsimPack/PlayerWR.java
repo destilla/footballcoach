@@ -38,7 +38,7 @@ public class PlayerWR extends Player {
     public int statsDrops;
     public int statsFumbles;
     
-    public PlayerWR( String nm, Team t, int yr, int pot, int iq, int cat, int spd, int eva, boolean rs ) {
+    public PlayerWR( String nm, Team t, int yr, int pot, int iq, int cat, int spd, int eva, boolean rs, int dur ) {
         team = t;
         name = nm;
         year = yr;
@@ -47,6 +47,7 @@ public class PlayerWR extends Player {
         ratOvr = (cat*2 + spd + eva)/4;
         ratPot = pot;
         ratFootIQ = iq;
+        ratDur = dur;
         ratRecCat = cat;
         ratRecSpd = spd;
         ratRecEva = eva;
@@ -82,6 +83,7 @@ public class PlayerWR extends Player {
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
+        ratDur = (int) (50 + 50*Math.random());
         ratRecCat = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratRecSpd = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratRecEva = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -167,7 +169,8 @@ public class PlayerWR extends Player {
         ArrayList<String> pStats = new ArrayList<>();
         pStats.add("TDs/Fumbles: " + statsTD + "/" + statsFumbles + ">Catch Percent: " + (100*statsReceptions/(statsTargets+1))+"%");
         pStats.add("Rec Yards: " + statsRecYards + " yds" + ">Yards/Tgt: " + ((double)(10*statsRecYards/(statsTargets+1))/10) + " yds");
-        pStats.add("Yds/Game: " + (statsRecYards/games) + " yds/g>Drops: " + statsDrops);
+        pStats.add("Yds/Game: " + (statsRecYards/getGamesPlayed()) + " yds/g>Drops: " + statsDrops);
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Catching: " + getLetterGrade(ratRecCat));
         pStats.add("Rec Speed: " + getLetterGrade(ratRecSpd) + ">Evasion: " + getLetterGrade(ratRecEva));
         return pStats;
@@ -175,7 +178,8 @@ public class PlayerWR extends Player {
 
     @Override
     public String getInfoForLineup() {
-        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " " + injury.toString();
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " (" +
                 getLetterGrade(ratRecCat) + ", " + getLetterGrade(ratRecSpd) + ", " + getLetterGrade(ratRecEva) + ")";
     }
 }

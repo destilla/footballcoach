@@ -5,8 +5,11 @@ package achijones.footballcoach;
  */
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +29,13 @@ public class ExpandableListAdapterPlayerStats extends BaseExpandableListAdapter 
     private Activity context;
     private Map<String, List<String>> playersInfo;
     private List<String> players;
+    private MainActivity mainAct;
 
-    public ExpandableListAdapterPlayerStats(Activity context, List<String> players, Map<String, List<String>> playersInfo) {
+    public ExpandableListAdapterPlayerStats(Activity context, MainActivity mainAct, List<String> players, Map<String, List<String>> playersInfo) {
         this.context = context;
         this.players = players;
         this.playersInfo = playersInfo;
+        this.mainAct = mainAct;
     }
 
     public String getChild(int groupPosition, int childPosition) {
@@ -57,6 +62,17 @@ public class ExpandableListAdapterPlayerStats extends BaseExpandableListAdapter 
         itemL.setText(detailSplit[0]);
         TextView itemR = (TextView) convertView.findViewById(R.id.textPlayerStatsRightChild);
         itemR.setText(detailSplit[1]);
+
+        if (players.get(groupPosition).equals("BENCH > BENCH")) {
+            // Last group, meaning its the bench
+            itemL.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    mainAct.examinePlayer(playerDetail);
+                }
+            });
+        } else {
+            itemL.setOnClickListener(null);
+        }
 
         return convertView;
     }

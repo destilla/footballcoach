@@ -33,9 +33,14 @@ public class League {
     public LeagueRecords leagueRecords;
     public TeamStreak longestWinStreak;
     public TeamStreak longestActiveWinStreak;
-    
+
+
+    // News Story Variables
     public Team saveBless;
     public Team saveCurse;
+    public boolean blessDevelopingStory;
+    public int blessDevelopingWeek;
+    public int blessDevelopingCase;
 
 
     //Current week, 1-14
@@ -62,11 +67,14 @@ public class League {
     public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl",
             "Patriot Bowl", "Salad Bowl", "Frost Bowl", "Tropical Bowl", "I'd Rather Bowl"};
 
+    private boolean isHardMode;
+
     /**
      * Creates League, sets up Conferences, reads team names and conferences from file.
      * Also schedules games for every team.
      */
-    public League(String namesCSV) {
+    public League(String namesCSV, boolean difficulty) {
+        isHardMode = difficulty;
         heismanDecided = false;
         hasScheduledBowls = false;
         bowlGames = new Game[10];
@@ -203,6 +211,7 @@ public class League {
     public League(File saveFile, String namesCSV) {
         heismanDecided = false;
         hasScheduledBowls = false;
+        blessDevelopingStory = false;
         bowlGames = new Game[10];
         // This will reference one line at a time
         String line = null;
@@ -217,7 +226,10 @@ public class League {
             BufferedReader bufferedReader = new BufferedReader( new FileReader(saveFile) );
 
             //First ignore the save file info
-            bufferedReader.readLine();
+            line = bufferedReader.readLine();
+            // [EASY]%    [HARD]%
+            if (line.substring(line.length() - 7, line.length()).equals("[HARD]%")) isHardMode = true;
+            else isHardMode = false;
 
             //Next get league history
             leagueHistory = new ArrayList<String[]>();
@@ -336,7 +348,7 @@ public class League {
                 String storyLastName = storyFullName.replaceAll(".* ", "");
                 String storyPlayer;
 
-                switch((int)(Math.random() * 3)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 4)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Hired a shiny new coach who used to play for the school (feed those Vol fans wishing for Peyton something to dream on)
                         newsStories.get(0).add("Blue Chip hire for Bad Break University>" + saveBless.name + " announced the hire of alumnus and former professional coach " +getRandName()+", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
@@ -361,12 +373,19 @@ public class League {
                         else storyPlayer = storyFullName;
 
                         playerLastName = storyPlayer.replaceAll(".* ", "");
-
                         //Coach Story -- Inspired by that time Kliff did the stanky leg in a circle of Tech players
                         if (storyPlayer.equals(storyFullName)) newsStories.get(0).add("Moves Like a Dancer from the Body of a Coach>When a cell phone recording of Coach " + storyFullName + " out dancing his players at the end of a Spring practice was uploaded to the internet, " +storyLastName + " thought nothing of it. When it hit one million views over night, Coach took notice. In response to wild popularity his moves have recieved, " + storyLastName + " has made it a new tradition at " + saveBless.name + " to have a dance off with all prospective recruits, much to the delight of fans and students, who have turned out in large numbers to watch the competitions." );
                             //Player Story
                         else newsStories.get(0).add("The Hit That Keeps On Giving>For the 50th consecutive day, " + saveBless.name + " star " + storyPlayer + "'s explosive hit against " + saveBless.rivalTeam + " sits atop the CFB News Top Plays list. " + playerLastName + " credits Coach " + getRandName() + " with providing him the inspiration to stay in the weight room late and think clearly during plays. During its reign, \"The Hit\" has dethroned and outlasted the " + teamList.get((int)(Math.random()*60)).name + " Baseball Team's \"Puppies in the Park\" viral video, and " + teamList.get((int)(Math.random()*60)).name + "'s Make-A-Wish TD on the Top Plays list." );
                         break;
+
+                    case 3:
+                        // Free Prestige, is it in you? Set developing story for blessed team to true and add a story
+                        newsStories.get(0).add(saveBless.name + " Nutrition Dept. Electro-Lighting Up the Field>Nutrition and Sport Science graduate students at " + saveBless.name + " are helping their team gain the upper hand on the field with their own work in the lab. At a press conference held today outside the team's practice field, the university announced the first production run of it's own sports enhancement drink. The drink is expected to be available in stores mid-season with an initial offering of three flavors: \"Berry Blitz\", \"Hail Cherry\", and \"The Man-Go Route.\" Despite recent struggles by " + saveBless.name + " on the football field, the school is hoping to boost it's overall image with this move.");
+                        blessDevelopingStory = true;
+                        blessDevelopingWeek = ((int)(Math.random()*4)) + 5; // Print a new story "mid-season" (random week between 6 and 10)
+                        blessDevelopingCase = 1;
+                        System.out.println("Check news in week " + (blessDevelopingWeek + 1) + " for " + saveBless.name + "'s story development");
 
                     default:
                         //newsStories.get(0).add(saveBless.name + " news story bless test case out of range");
@@ -435,6 +454,15 @@ public class League {
     }
 
     /**
+     * Gets whether it is hard mode.
+     * Returns true is hard, false if normal.
+     * @return difficulty
+     */
+    public boolean isHardMode() {
+        return isHardMode;
+    }
+
+    /**
      * Get conference nmber from string
      * @param conf conference name
      * @return int of number 0-5
@@ -468,8 +496,9 @@ public class League {
 
             schedBowlGames();
         } else if ( currentWeek == 13 ) {
-            heismanHistory.add(getHeisman().get(0).position + " " + getHeisman().get(0).getInitialName() + " [" + getHeisman().get(0).getYrStr() + "], "
-                    + getHeisman().get(0).team.abbr + " (" + getHeisman().get(0).team.wins + "-" + getHeisman().get(0).team.losses + ")");
+            ArrayList<Player> heismans = getHeisman();
+            heismanHistory.add(heismans.get(0).position + " " + heismans.get(0).getInitialName() + " [" + heismans.get(0).getYrStr() + "], "
+                    + heismans.get(0).team.abbr + " (" + heismans.get(0).team.wins + "-" + heismans.get(0).team.losses + ")");
             playBowlGames();
         } else if ( currentWeek == 14 ) {
             ncg.playGame();
@@ -505,6 +534,33 @@ public class League {
 
         setTeamRanks();
         updateLongestActiveWinStreak();
+
+
+        // If there was a developing story and it's time for that story to print, print it based on which story was triggered
+        if (blessDevelopingStory && currentWeek == blessDevelopingWeek){
+
+            switch (blessDevelopingCase) {
+                case 1: //Sports Drink Development
+                    if (findTeamAbbr(saveBless.abbr).rankTeamPollScore > 49) {
+                        //Looks like the "secret stuff" didn't do much -- Maybe it was just water all along?
+                        newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Still Thirsty For Wins>Despite the much talked about launch of their new Sport Enhancement Drink, " + saveBless.name + " still find themselves struggling to make the most of the talent available to them and break free from the bottom of the polls. With their eyes set on improvement in the years to come, all " + saveBless.abbr + " fans can do now is weather the drought.");
+                    } //Electrolytes: saveBless.name currentYear MVP
+                    else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore < 41 && findTeamAbbr(saveBless.abbr).rankTeamPollScore > 20) {
+                        newsStories.get(blessDevelopingWeek + 1).add("Success a Refreshing Change for " + saveBless.name + ">On the heels of a successful first week of sales for their new Sports Enhancement Drink, " + saveBless.name + "'s has much to celebrate as they seem to have found the light at the end of the tunnel. In less than a season, the program's fortunes have turned, both financially and in the polls, begging the question: What are they putting in those sports drinks?");
+                    } //The team is suddenly in the top 20 and wondering if they had it in themselves all along. The school is rolling in $$$$
+                    else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore <= 20){
+                        newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Being Propelled to New Heights>In the middle of a football season that is smashing all expectations, " + saveBless.name + " is managing to smash a few sales records, as well. Crediting both realms of success to the school's Sports Nutrition program, Athletic Director " + getRandName() + " praised the work of the program's graduate researchers in developing a world class sport enhancement drink, while also announcing the product's expansion into two new flavors.");
+                    }
+                    break;
+
+                default:
+                    //Oh man I'm not good with computer how did we get here?
+                    break;
+            }
+        }
+
+
+
         currentWeek++;
     }
 
@@ -726,6 +782,7 @@ public class League {
             conferences.get(c).robinWeek = 0;
             conferences.get(c).week = 0;
         }
+
         //set up schedule (not needed anymore?)
         for (int i = 0; i < conferences.size(); ++i ) {
             conferences.get(i).setUpSchedule();
@@ -833,6 +890,15 @@ public class League {
      */
     public int getYear() {
         return 2016 + leagueHistory.size();
+    }
+
+    /**
+     * Gets rid of all injuries
+     */
+    public void curePlayers() {
+        for (Team t : teamList) {
+            t.curePlayers();
+        }
     }
 
     /**
@@ -957,15 +1023,17 @@ public class League {
         ArrayList<Player> heismanCandidates = new ArrayList<Player>();
         for ( int i = 0; i < teamList.size(); ++i ) {
             //qb
-            heismanCandidates.add( teamList.get(i).teamQBs.get(0) );
-            tempScore = teamList.get(i).teamQBs.get(0).getHeismanScore() + teamList.get(i).wins*100;
-            if ( tempScore > heismanScore ) {
-                heisman = teamList.get(i).teamQBs.get(0);
-                heismanScore = tempScore;
+            for (int qb = 0; qb < teamList.get(i).teamQBs.size(); ++qb) {
+                heismanCandidates.add(teamList.get(i).teamQBs.get(qb));
+                tempScore = teamList.get(i).teamQBs.get(qb).getHeismanScore() + teamList.get(i).wins * 100;
+                if (tempScore > heismanScore) {
+                    heisman = teamList.get(i).teamQBs.get(qb);
+                    heismanScore = tempScore;
+                }
             }
 
             //rb
-            for (int rb = 0; rb < 2; ++rb) {
+            for (int rb = 0; rb < teamList.get(i).teamRBs.size(); ++rb) {
                 heismanCandidates.add( teamList.get(i).teamRBs.get(rb) );
                 tempScore = teamList.get(i).teamRBs.get(rb).getHeismanScore() + teamList.get(i).wins*100;
                 if ( tempScore > heismanScore ) {
@@ -975,7 +1043,7 @@ public class League {
             }
 
             //wr
-            for (int wr = 0; wr < 3; ++wr) {
+            for (int wr = 0; wr < teamList.get(i).teamWRs.size(); ++wr) {
                 heismanCandidates.add( teamList.get(i).teamWRs.get(wr) );
                 tempScore = teamList.get(i).teamWRs.get(wr).getHeismanScore() + teamList.get(i).wins*100;
                 if ( tempScore > heismanScore ) {
@@ -1097,6 +1165,11 @@ public class League {
             return heismanWinnerStrFull;
         }
     }
+
+    /**
+     * Gets All Americans, best of all conference teams
+     * @return string list of all americans
+     */
     public String getAllAmericanStr() {
         if (allAmericans.isEmpty()) {
             ArrayList<PlayerQB> qbs = new ArrayList<>();
@@ -1142,13 +1215,18 @@ public class League {
                 allAmerican.append(" WR " + pwr.name + " [" + pwr.getYrStr() + "]\n \t\t" +
                         pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds\n");
             }
-            allAmerican.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.ratPot + "\n\n");
+            allAmerican.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.getLetterGrade(p.ratPot) + "\n\n");
         }
 
         // Go through all the all conf players to get the all americans
         return allAmerican.toString();
     }
 
+    /**
+     * Get a string list of all conference team of choice
+     * @param confNum which conference
+     * @return string of the conference team
+     */
     public String getAllConfStr(int confNum) {
         ArrayList<Player> allConfPlayers = conferences.get(confNum).getAllConfPlayers();
         StringBuilder sb = new StringBuilder();
@@ -1168,11 +1246,50 @@ public class League {
                 sb.append(" WR " + pwr.name + " [" + pwr.getYrStr() + "]\n \t\t" +
                         pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds\n");
             }
-            sb.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.ratPot + "\n\n");
+            sb.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.getLetterGrade(p.ratPot) + "\n\n");
         }
 
         return sb.toString();
     }
+
+    /**
+     * Set the players leaving for each team.
+     */
+    public void getPlayersLeaving() {
+        for (Team t : teamList) {
+            t.getPlayersLeaving();
+        }
+    }
+
+    /**
+     * Get a mock draft of all players who are leaving, sorted by overall.
+     * @return array of string reps of the players
+     */
+    public String[] getMockDraftPlayersList() {
+        ArrayList<Player> allPlayersLeaving = new ArrayList<>();
+        for (Team t : teamList) {
+            for (Player p : t.playersLeaving) {
+                if (p.ratOvr > 85 && !p.position.equals("K")) allPlayersLeaving.add(p);
+            }
+        }
+
+        Collections.sort(allPlayersLeaving, new PlayerComparator());
+
+        // Get 64 players (first 2 rounds)
+        ArrayList<Player> top64Players = new ArrayList<>(64);
+        for (int i = 0; i < 64; ++i) {
+            top64Players.add(allPlayersLeaving.get(i));
+        }
+
+        String[] nflPlayers = new String[ top64Players.size() ];
+        for (int i = 0; i < nflPlayers.length; ++i) {
+            nflPlayers[i] = top64Players.get(i).getMockDraftStr();
+        }
+
+        return nflPlayers;
+    }
+
+
     /**
      * Get list of all the teams and their rankings based on selection
      * @param selection stat to sort by, 0-13
@@ -1582,8 +1699,13 @@ public class League {
         StringBuilder sb = new StringBuilder();
 
         // Save information about the save file, user team info
-        sb.append((2016+leagueHistory.size())+": " + userTeam.abbr + " (" + (userTeam.totalWins-userTeam.wins) + "-" + (userTeam.totalLosses-userTeam.losses) + ") " +
-                userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs%\n");
+        if (isHardMode) {
+            sb.append((2016 + leagueHistory.size()) + ": " + userTeam.abbr + " (" + (userTeam.totalWins - userTeam.wins) + "-" + (userTeam.totalLosses - userTeam.losses) + ") " +
+                    userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs>[HARD]%\n");
+        } else {
+            sb.append((2016 + leagueHistory.size()) + ": " + userTeam.abbr + " (" + (userTeam.totalWins - userTeam.wins) + "-" + (userTeam.totalLosses - userTeam.losses) + ") " +
+                    userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs>[EASY]%\n");
+        }
 
         // Save league history of who was #1 each year
         for (int i = 0; i < leagueHistory.size(); ++i) {
@@ -1595,7 +1717,8 @@ public class League {
         sb.append("END_LEAGUE_HIST\n");
 
         // Save POTY history of who won each year
-        for (int i = 0; i < heismanHistory.size(); ++i) {
+        // Go through leagueHist size in case they save after the Heisman Ceremony
+        for (int i = 0; i < leagueHistory.size(); ++i) {
             sb.append(heismanHistory.get(i) + "\n");
         }
         sb.append("END_HEISMAN_HIST\n");

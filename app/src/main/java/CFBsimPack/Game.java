@@ -824,7 +824,7 @@ public class Game implements Serializable {
                 } else {
                     //check for fumble
                     double fumChance = (defense.getS(0).ratSTkl + selCB.ratCBTkl)/2;
-                    if ( 100*Math.random() < fumChance/40 ) {
+                    if ( 100*Math.random() < fumChance/50 ) {
                         //Fumble!
                         gotFumble = true;
                     }
@@ -972,7 +972,7 @@ public class Game implements Serializable {
             gameTime -= 25 + 15*Math.random();
             //check for fumble
             double fumChance = (defense.getS(0).ratSTkl + defense.getCompositeF7Rush() - getHFadv())/2 + offense.teamStratOff.getRAB();
-            if ( 100*Math.random() < fumChance/40 ) {
+            if ( 100*Math.random() < fumChance/50 ) {
                 //Fumble!
                 if ( gamePoss ) {
                     homeTOs++;

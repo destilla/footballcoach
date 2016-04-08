@@ -25,7 +25,7 @@ public class PlayerOL extends Player {
     
     //public Vector ratingsVector;
     
-    public PlayerOL( String nm, Team t, int yr, int pot, int iq, int pow, int bkr, int bkp, boolean rs ) {
+    public PlayerOL( String nm, Team t, int yr, int pot, int iq, int pow, int bkr, int bkp, boolean rs, int dur ) {
         team = t;
         name = nm;
         year = yr;
@@ -34,6 +34,7 @@ public class PlayerOL extends Player {
         ratOvr = (pow*3 + bkr + bkp)/5;
         ratPot = pot;
         ratFootIQ = iq;
+        ratDur = dur;
         ratOLPow = pow;
         ratOLBkR = bkr;
         ratOLBkP = bkp;
@@ -53,13 +54,15 @@ public class PlayerOL extends Player {
         ratingsVector.addElement(ratOLBkP);
     }
     
-    public PlayerOL( String nm, int yr, int stars ) {
+    public PlayerOL( String nm, int yr, int stars, Team t ) {
         name = nm;
         year = yr;
+        team = t;
         gamesPlayed = 0;
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
         ratFootIQ = (int) (50 + 50*Math.random());
+        ratDur = (int) (50 + 50*Math.random());
         ratOLPow = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratOLBkR = (int) (60 + year*5 + stars*5 - 25*Math.random());
         ratOLBkP = (int) (60 + year*5 + stars*5 - 25*Math.random());
@@ -111,6 +114,7 @@ public class PlayerOL extends Player {
     @Override
     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Strength: " + getLetterGrade(ratOLPow));
         pStats.add("Run Block: " + getLetterGrade(ratOLBkR) + ">Pass Block: " + getLetterGrade(ratOLBkP));
         return pStats;
@@ -118,7 +122,8 @@ public class PlayerOL extends Player {
 
     @Override
     public String getInfoForLineup() {
-        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " " + injury.toString();
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " (" +
                 getLetterGrade(ratOLPow) + ", " + getLetterGrade(ratOLBkR) + ", " + getLetterGrade(ratOLBkP) + ")";
     }
 }

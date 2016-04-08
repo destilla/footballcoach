@@ -292,106 +292,6 @@ public class RecruitingActivity extends AppCompatActivity {
             }
         });
 
-        String p;
-        for (i = 0; i < availQBs.size(); ++i) {
-            p = availQBs.get(i);
-            availQBs.set(i, p.substring(0, p.length() - 1) + "1");
-        }
-        for (i = 0; i < availRBs.size(); ++i) {
-            p = availRBs.get(i);
-            availRBs.set(i, p.substring(0, p.length() - 1) + "1");
-        }
-        for (i = 0; i < availWRs.size(); ++i) {
-            p = availWRs.get(i);
-            availWRs.set(i, p.substring(0, p.length() - 1) + "1");
-        }
-        for (i = 0; i < availOLs.size(); ++i) {
-            p = availOLs.get(i);
-            availOLs.set(i, p.substring(0, p.length() - 1) + "1");
-        }
-        for (i = 0; i < availKs.size(); ++i) {
-            p = availKs.get(i);
-            availKs.set(i, p.substring(0, p.length() - 1) + "1");
-        }
-        for (i = 0; i < availSs.size(); ++i) {
-            p = availSs.get(i);
-            availSs.set(i, p.substring(0, p.length() - 1) + "1");
-        }
-        for (i = 0; i < availCBs.size(); ++i) {
-            p = availCBs.get(i);
-            availCBs.set(i, p.substring(0, p.length() - 1) + "1");
-        }
-        for (i = 0; i < availF7s.size(); ++i) {
-            p = availF7s.get(i);
-            availF7s.set(i, p.substring(0, p.length() - 1) + "1");
-        }
-        for (i = 0; i < availAll.size(); ++i) {
-            p = availAll.get(i);
-            availAll.set(i, p.substring(0, p.length() - 1) + "1");
-        }
-
-        /**
-         * Ask player if they want scouting. Gives temporary option to players (scouting enabled as default now)
-         */
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Do you want to enable scouting?\n\nIf you select 'No' then all attributes will be revealed without scouting." +
-                "\n\nIf you select 'Yes' then you will have to scout players using money to see detailed attributes." +
-                "\n\n(This is a temporary option while the devs decide what to do about scouting.)")
-                .setPositiveButton("Yes, Enable", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing, enabled by default
-                    }
-                })
-                .setNegativeButton("No, Disable", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Set scouted to 1 for all the players, adjust budget a bit
-                        recruitingBudget -= Integer.parseInt(teamInfo[3])*3;
-                        budgetText.setText("Budget: $" + recruitingBudget);
-                        String p;
-                        for (int i = 0; i < availQBs.size(); ++i) {
-                            p = availQBs.get(i);
-                            availQBs.set(i, p.substring(0, p.length() - 1) + "1");
-                        }
-                        for (int i = 0; i < availRBs.size(); ++i) {
-                            p = availRBs.get(i);
-                            availRBs.set(i, p.substring(0, p.length() - 1) + "1");
-                        }
-                        for (int i = 0; i < availWRs.size(); ++i) {
-                            p = availWRs.get(i);
-                            availWRs.set(i, p.substring(0, p.length() - 1) + "1");
-                        }
-                        for (int i = 0; i < availOLs.size(); ++i) {
-                            p = availOLs.get(i);
-                            availOLs.set(i, p.substring(0, p.length() - 1) + "1");
-                        }
-                        for (int i = 0; i < availKs.size(); ++i) {
-                            p = availKs.get(i);
-                            availKs.set(i, p.substring(0, p.length() - 1) + "1");
-                        }
-                        for (int i = 0; i < availSs.size(); ++i) {
-                            p = availSs.get(i);
-                            availSs.set(i, p.substring(0, p.length() - 1) + "1");
-                        }
-                        for (int i = 0; i < availCBs.size(); ++i) {
-                            p = availCBs.get(i);
-                            availCBs.set(i, p.substring(0, p.length() - 1) + "1");
-                        }
-                        for (int i = 0; i < availF7s.size(); ++i) {
-                            p = availF7s.get(i);
-                            availF7s.set(i, p.substring(0, p.length() - 1) + "1");
-                        }
-                        for (int i = 0; i < availAll.size(); ++i) {
-                            p = availAll.get(i);
-                            availAll.set(i, p.substring(0, p.length() - 1) + "1");
-                        }
-                    }
-                });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-        TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);*/
     }
 
     @Override
@@ -553,7 +453,7 @@ public class RecruitingActivity extends AppCompatActivity {
         String[] pi = p.split(",");
         String improveStr = "";
         if (!playersRecruited.contains(p) && !playersRedshirted.contains(p)) improveStr = "(+" + pi[9] + ")";
-        return getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot " + improveStr;
+        return getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + getLetterGrade(pi[3]) + " Pot " + improveStr;
     }
 
     /**
@@ -569,7 +469,7 @@ public class RecruitingActivity extends AppCompatActivity {
      */
     private String getReadablePlayerInfoPos(String p) {
         String[] pi = p.split(",");
-        return pi[0] + " " + getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot";
+        return pi[0] + " " + getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + getLetterGrade(pi[3]) + " Pot";
     }
 
     /**
@@ -1177,33 +1077,9 @@ public class RecruitingActivity extends AppCompatActivity {
             final TextView details = (TextView) convertView.findViewById(R.id.textRecruitDetails);
             final TextView potential = (TextView) convertView.findViewById(R.id.textRecruitPotential);
 
-            if (playerCSV.split(",")[10].equals("0")) {
-                // Not scouted
-                details.setText("??????\t\t\t\t??????\n??????\t\t\t\t??????");
-                potential.setText( "Potential: ??" );
-            } else {
-                // Scouted, disable scout button
-                details.setText(playerDetail);
-                potential.setText( "Potential: " + getLetterGrade(playerCSV.split(",")[3]) );
-            }
-
-            /* Set up button for scouting player
-            final Button scoutPlayerButton = (Button) convertView.findViewById(R.id.buttonScoutPlayer);
-            scoutPlayerButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    //Scout player
-                    if (scoutPlayer(playerCSV)) {
-                        // Only update if the scout was successful (had enough money)
-                        details.setText(playerDetail); // Set text to actual attributes
-                        potential.setText( "Potential: " + getLetterGrade(playerCSV.split(",")[3]) );
-                        scoutPlayerButton.setEnabled(false);
-                    }
-
-                }
-            });
-
-            // Bye bye scouting :(
-            scoutPlayerButton.setVisibility(View.GONE);*/
+            details.setText(playerDetail);
+            potential.setText( "Potential: " + getLetterGrade(playerCSV.split(",")[3]) + "\n" +
+                                "Durability: " + getLetterGrade(playerCSV.split(",")[10]) );
 
             // Set up Recruit and Redshirt buttons to display the right price
             Button recruitPlayerButton = (Button) convertView.findViewById(R.id.buttonRecruitPlayer);
@@ -1217,7 +1093,7 @@ public class RecruitingActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Save who is currently expanded
                     List<Integer> groupsExpanded = new ArrayList<>();
-                    recruitPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
+                    recruitPlayerDialog(playerCSV, groupPosition, groupsExpanded);
                 }
             });
 
@@ -1226,7 +1102,7 @@ public class RecruitingActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Save who is currently expanded
                     List<Integer> groupsExpanded = new ArrayList<>();
-                    redshirtPlayerDialog(playerCSV.substring(0, playerCSV.length() - 1) + "1", groupPosition, groupsExpanded);
+                    redshirtPlayerDialog(playerCSV, groupPosition, groupsExpanded);
                 }
             });
 
