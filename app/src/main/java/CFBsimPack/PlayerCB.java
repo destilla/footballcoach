@@ -124,8 +124,8 @@ public class PlayerCB extends Player {
 
     @Override
     public String getInfoForLineup() {
-        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " " + injury.toString();
-        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " " + injury.toString();
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " (" +
                 getLetterGrade(ratCBCov) + ", " + getLetterGrade(ratCBSpd) + ", " + getLetterGrade(ratCBTkl) + ")";
     }
 

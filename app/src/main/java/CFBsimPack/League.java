@@ -1269,7 +1269,7 @@ public class League {
         ArrayList<Player> allPlayersLeaving = new ArrayList<>();
         for (Team t : teamList) {
             for (Player p : t.playersLeaving) {
-                if (p.ratOvr > 75) allPlayersLeaving.add(p);
+                if (p.ratOvr > 85 && !p.position.equals("K")) allPlayersLeaving.add(p);
             }
         }
 
@@ -1717,7 +1717,8 @@ public class League {
         sb.append("END_LEAGUE_HIST\n");
 
         // Save POTY history of who won each year
-        for (int i = 0; i < heismanHistory.size(); ++i) {
+        // Go through leagueHist size in case they save after the Heisman Ceremony
+        for (int i = 0; i < leagueHistory.size(); ++i) {
             sb.append(heismanHistory.get(i) + "\n");
         }
         sb.append("END_HEISMAN_HIST\n");

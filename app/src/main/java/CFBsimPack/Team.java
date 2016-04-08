@@ -391,8 +391,14 @@ public class Team {
     public void getPlayersLeaving() {
         if (playersLeaving.isEmpty()) {
             int i = 0;
+
+            // Juniors more likely to leave in Hard mode and if you won NCG
             double hardBonus = 0;
             if (userControlled && league.isHardMode()) hardBonus = 0.2;
+            if (natChampWL.equals("NCW")) {
+                hardBonus += 0.2;
+            }
+
             while (i < teamQBs.size()) {
                 if (teamQBs.get(i).year == 4 || (teamQBs.get(i).year == 3 && teamQBs.get(i).ratOvr > NFL_OVR && Math.random() < NFL_CHANCE + hardBonus)) {
                     playersLeaving.add(teamQBs.get(i));
@@ -1137,7 +1143,6 @@ public class Team {
             checkInjuryPosition(teamSs, 1);
             checkInjuryPosition(teamCBs, 3);
             checkInjuryPosition(teamF7s, 1);
-            sortPlayers();
         }
     }
 
@@ -1164,6 +1169,8 @@ public class Team {
                 }
             }
         }
+
+        if (numInjured > 0) Collections.sort(players, new PlayerComparator());
     }
 
     /**
