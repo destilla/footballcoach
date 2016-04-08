@@ -453,7 +453,7 @@ public class RecruitingActivity extends AppCompatActivity {
         String[] pi = p.split(",");
         String improveStr = "";
         if (!playersRecruited.contains(p) && !playersRedshirted.contains(p)) improveStr = "(+" + pi[9] + ")";
-        return getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot " + improveStr;
+        return getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + getLetterGrade(pi[3]) + " Pot " + improveStr;
     }
 
     /**
@@ -469,7 +469,7 @@ public class RecruitingActivity extends AppCompatActivity {
      */
     private String getReadablePlayerInfoPos(String p) {
         String[] pi = p.split(",");
-        return pi[0] + " " + getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + pi[3] + " Pot";
+        return pi[0] + " " + getInitialName(pi[1]) + " " + getYrStr(pi[2]) + " " + pi[8] + " Ovr, " + getLetterGrade(pi[3]) + " Pot";
     }
 
     /**

@@ -62,16 +62,28 @@ public class Player {
 
     public String getPosNameYrOvrPot_Str() {
         if (injury != null) {
-            return position + " " + name + " [" + getYrStr() + "]>" + injury.toString();
+            return position + " " + getInitialName() + " [" + getYrStr() + "] Ovr: " + ratOvr + ">" + injury.toString();
         }
-        return position + " " + name + " [" + getYrStr() + "]>" + ratOvr + " / " + getLetterGrade(ratPot) + " / " + getLetterGrade(ratDur);
+        return position + " " + name + " [" + getYrStr() + "]>" + "Ovr: " + ratOvr + ", Pot: " + getLetterGrade(ratPot);
     }
 
     public String getPosNameYrOvrPot_OneLine() {
         if (injury != null) {
-            return position + " " + name + " [" + getYrStr() + "] " + injury.toString();
+            return position + " " + getInitialName() + " [" + getYrStr() + "] Ovr: " + ratOvr + " " + injury.toString();
         }
-        return position + " " + getInitialName() + " [" + getYrStr() + "] " + ratOvr + " / " + getLetterGrade(ratPot) + " / " + getLetterGrade(ratDur);
+        return position + " " + getInitialName() + " [" + getYrStr() + "] " + "Ovr: " + ratOvr + ", Pot: " + getLetterGrade(ratPot);
+    }
+
+    public String getPosNameYrOvr_Str() {
+        return position + " " + name + " [" + getYrStr() + "] Ovr: " + ratOvr;
+    }
+
+    public String getPosNameYrOvrPot_NoInjury() {
+        return position + " " + getInitialName() + " [" + getYrStr() + "] Ovr: " + ratOvr + ", Pot: " + getLetterGrade(ratPot);
+    }
+
+    public String getMockDraftStr() {
+        return position + " " + getInitialName() + " [" + getYrStr() + "]>" + team.strRep();
     }
 
     /**
@@ -120,6 +132,18 @@ public class Player {
 
     public String getInfoForLineup() {
         return null;
+    }
+
+    public String getInfoLineupInjury() {
+        if (injury != null) {
+            return getInitialName() + " [" + getYrStr() + "] " + injury.toString();
+        }
+        return getInitialName() + " [" + getYrStr() + "] " + "Ovr: " + ratOvr + ", Pot: " + getLetterGrade(ratPot);
+    }
+
+    public int getGamesPlayed() {
+        if (gamesPlayed == 0) return 1;
+        else return gamesPlayed;
     }
     
 }

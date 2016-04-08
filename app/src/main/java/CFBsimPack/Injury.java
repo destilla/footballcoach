@@ -14,7 +14,7 @@ public class Injury {
     private String description; // What the injury is
     private Player player; // Player that has this injury
 
-    private static final String[] injuries = {"Knee", "Head", "Shoulder", "Hamstring", "Ankle", "Foot", "Arm", "Back"};
+    private static final String[] injuries = {"Knee", "Head", "Shoulder", "Wrist", "Ankle", "Foot", "Arm", "Back", "Brain"};
     private static final Random rando = new Random();
 
     public Injury(int dur, String descrip, Player p) {
@@ -26,8 +26,9 @@ public class Injury {
 
     public Injury(Player p) {
         // Generate an injury
-        duration = Math.abs((int)(rando.nextGaussian()*5 + 1));
+        duration = Math.abs((int)(rando.nextGaussian()*4 + 1));
         if (duration == 0) duration = 1;
+        if (Math.random() < 0.01) duration = 15;
         description = injuries[ (int)(Math.random() * injuries.length) ];
         player = p;
         player.isInjured = true;
@@ -51,6 +52,6 @@ public class Injury {
     }
 
     public String toString() {
-        return description + " (" + duration + " gms)";
+        return description + " (" + duration + " wk)";
     }
 }

@@ -54,9 +54,10 @@ public class PlayerCB extends Player {
         ratingsVector.addElement(ratCBTkl);
     }
     
-    public PlayerCB( String nm, int yr, int stars ) {
+    public PlayerCB( String nm, int yr, int stars, Team t ) {
         name = nm;
         year = yr;
+        team = t;
         gamesPlayed = 0;
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
@@ -115,6 +116,7 @@ public class PlayerCB extends Player {
     @Override
     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Coverage: " + getLetterGrade(ratCBCov));
         pStats.add("Speed: " + getLetterGrade(ratCBSpd) + ">Tackling: " + getLetterGrade(ratCBTkl));
         return pStats;
@@ -122,6 +124,7 @@ public class PlayerCB extends Player {
 
     @Override
     public String getInfoForLineup() {
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " " + injury.toString();
         return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
                 getLetterGrade(ratCBCov) + ", " + getLetterGrade(ratCBSpd) + ", " + getLetterGrade(ratCBTkl) + ")";
     }

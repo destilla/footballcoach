@@ -54,9 +54,10 @@ public class PlayerOL extends Player {
         ratingsVector.addElement(ratOLBkP);
     }
     
-    public PlayerOL( String nm, int yr, int stars ) {
+    public PlayerOL( String nm, int yr, int stars, Team t ) {
         name = nm;
         year = yr;
+        team = t;
         gamesPlayed = 0;
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
@@ -113,6 +114,7 @@ public class PlayerOL extends Player {
     @Override
     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Strength: " + getLetterGrade(ratOLPow));
         pStats.add("Run Block: " + getLetterGrade(ratOLBkR) + ">Pass Block: " + getLetterGrade(ratOLBkP));
         return pStats;
@@ -120,6 +122,7 @@ public class PlayerOL extends Player {
 
     @Override
     public String getInfoForLineup() {
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " " + injury.toString();
         return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
                 getLetterGrade(ratOLPow) + ", " + getLetterGrade(ratOLBkR) + ", " + getLetterGrade(ratOLBkP) + ")";
     }

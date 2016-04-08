@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import achijones.footballcoach.R;
@@ -20,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Home extends AppCompatActivity {
 
@@ -37,9 +40,35 @@ public class Home extends AppCompatActivity {
         newGameButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
-                Intent myIntent = new Intent(Home.this, MainActivity.class);
-                myIntent.putExtra("SAVE_FILE", "NEW_LEAGUE");
-                Home.this.startActivity(myIntent);
+                AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
+                builder.setMessage("What difficulty would you like?\n\n"+
+                                    "Easy Mode has no injuries, normal rivalry mechanics, and a 50% chance your good players will leave early for the NFL.\n\n"+
+                                    "Hard Mode has injuries enabled, harder rivalry games, and a 70% chance your good players will leave early for the NFL.\n\n"+
+                                    "This cannot be changed later.")
+                        .setTitle("Choose Difficulty:")
+                        .setPositiveButton("EASY", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //do nothing?
+                                Intent myIntent = new Intent(Home.this, MainActivity.class);
+                                myIntent.putExtra("SAVE_FILE", "NEW_LEAGUE_EASY");
+                                Home.this.startActivity(myIntent);
+                            }
+                        })
+                        .setNegativeButton("HARD", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //do nothing?
+                                Intent myIntent = new Intent(Home.this, MainActivity.class);
+                                myIntent.putExtra("SAVE_FILE", "NEW_LEAGUE_HARD");
+                                Home.this.startActivity(myIntent);
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                TextView msgTxt = (TextView) dialog.findViewById(android.R.id.message);
+                msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+
             }
         });
 
@@ -86,19 +115,21 @@ public class Home extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choose File to Load:");
         final String[] fileInfos = getSaveFileInfos();
-        builder.setItems(fileInfos, new DialogInterface.OnClickListener() {
+        SaveFilesListArrayAdapter saveFilesAdapter = new SaveFilesListArrayAdapter(this, fileInfos);
+        builder.setAdapter(saveFilesAdapter, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 // Do something with the selection
                 if (!fileInfos[item].equals("EMPTY")) {
                     Intent myIntent = new Intent(Home.this, MainActivity.class);
-                    myIntent.putExtra("SAVE_FILE", "saveFile"+item+".cfb");
+                    myIntent.putExtra("SAVE_FILE", "saveFile" + item + ".cfb");
                     Home.this.startActivity(myIntent);
                 } else {
                     Toast.makeText(Home.this, "Cannot load empty file!",
                             Toast.LENGTH_SHORT).show();
                 }
             }
-        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Do nothing

@@ -70,9 +70,10 @@ public class PlayerK extends Player {
         statsFGMade = 0;
     }
     
-    public PlayerK( String nm, int yr, int stars ) {
+    public PlayerK( String nm, int yr, int stars, Team t ) {
         name = nm;
         year = yr;
+        team = t;
         gamesPlayed = 0;
         isInjured = false;
         ratPot = (int) (50 + 50*Math.random());
@@ -161,6 +162,7 @@ public class PlayerK extends Player {
         } else {
             pStats.add("FG Made/Att: 0/0>FG Percentage: 0%");
         }
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Kick Strength: " + getLetterGrade(ratKickPow));
         pStats.add("Kick Accuracy: " + getLetterGrade(ratKickAcc) + ">Clumsiness: " + getLetterGrade(ratKickFum));
         return pStats;
@@ -168,6 +170,7 @@ public class PlayerK extends Player {
 
     @Override
     public String getInfoForLineup() {
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " " + injury.toString();
         return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
                 getLetterGrade(ratKickPow) + ", " + getLetterGrade(ratKickAcc) + ", " + getLetterGrade(ratKickFum) + ")";
     }

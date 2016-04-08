@@ -67,11 +67,14 @@ public class League {
     public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl",
             "Patriot Bowl", "Salad Bowl", "Frost Bowl", "Tropical Bowl", "I'd Rather Bowl"};
 
+    private boolean isHardMode;
+
     /**
      * Creates League, sets up Conferences, reads team names and conferences from file.
      * Also schedules games for every team.
      */
-    public League(String namesCSV) {
+    public League(String namesCSV, boolean difficulty) {
+        isHardMode = difficulty;
         heismanDecided = false;
         hasScheduledBowls = false;
         bowlGames = new Game[10];
@@ -223,7 +226,10 @@ public class League {
             BufferedReader bufferedReader = new BufferedReader( new FileReader(saveFile) );
 
             //First ignore the save file info
-            bufferedReader.readLine();
+            line = bufferedReader.readLine();
+            // [EASY]%    [HARD]%
+            if (line.substring(line.length() - 7, line.length()).equals("[HARD]%")) isHardMode = true;
+            else isHardMode = false;
 
             //Next get league history
             leagueHistory = new ArrayList<String[]>();
@@ -448,6 +454,15 @@ public class League {
     }
 
     /**
+     * Gets whether it is hard mode.
+     * Returns true is hard, false if normal.
+     * @return difficulty
+     */
+    public boolean isHardMode() {
+        return isHardMode;
+    }
+
+    /**
      * Get conference nmber from string
      * @param conf conference name
      * @return int of number 0-5
@@ -481,8 +496,9 @@ public class League {
 
             schedBowlGames();
         } else if ( currentWeek == 13 ) {
-            heismanHistory.add(getHeisman().get(0).position + " " + getHeisman().get(0).getInitialName() + " [" + getHeisman().get(0).getYrStr() + "], "
-                    + getHeisman().get(0).team.abbr + " (" + getHeisman().get(0).team.wins + "-" + getHeisman().get(0).team.losses + ")");
+            ArrayList<Player> heismans = getHeisman();
+            heismanHistory.add(heismans.get(0).position + " " + heismans.get(0).getInitialName() + " [" + heismans.get(0).getYrStr() + "], "
+                    + heismans.get(0).team.abbr + " (" + heismans.get(0).team.wins + "-" + heismans.get(0).team.losses + ")");
             playBowlGames();
         } else if ( currentWeek == 14 ) {
             ncg.playGame();
@@ -766,6 +782,7 @@ public class League {
             conferences.get(c).robinWeek = 0;
             conferences.get(c).week = 0;
         }
+
         //set up schedule (not needed anymore?)
         for (int i = 0; i < conferences.size(); ++i ) {
             conferences.get(i).setUpSchedule();
@@ -873,6 +890,15 @@ public class League {
      */
     public int getYear() {
         return 2016 + leagueHistory.size();
+    }
+
+    /**
+     * Gets rid of all injuries
+     */
+    public void curePlayers() {
+        for (Team t : teamList) {
+            t.curePlayers();
+        }
     }
 
     /**
@@ -997,15 +1023,17 @@ public class League {
         ArrayList<Player> heismanCandidates = new ArrayList<Player>();
         for ( int i = 0; i < teamList.size(); ++i ) {
             //qb
-            heismanCandidates.add( teamList.get(i).teamQBs.get(0) );
-            tempScore = teamList.get(i).teamQBs.get(0).getHeismanScore() + teamList.get(i).wins*100;
-            if ( tempScore > heismanScore ) {
-                heisman = teamList.get(i).teamQBs.get(0);
-                heismanScore = tempScore;
+            for (int qb = 0; qb < teamList.get(i).teamQBs.size(); ++qb) {
+                heismanCandidates.add(teamList.get(i).teamQBs.get(qb));
+                tempScore = teamList.get(i).teamQBs.get(qb).getHeismanScore() + teamList.get(i).wins * 100;
+                if (tempScore > heismanScore) {
+                    heisman = teamList.get(i).teamQBs.get(qb);
+                    heismanScore = tempScore;
+                }
             }
 
             //rb
-            for (int rb = 0; rb < 2; ++rb) {
+            for (int rb = 0; rb < teamList.get(i).teamRBs.size(); ++rb) {
                 heismanCandidates.add( teamList.get(i).teamRBs.get(rb) );
                 tempScore = teamList.get(i).teamRBs.get(rb).getHeismanScore() + teamList.get(i).wins*100;
                 if ( tempScore > heismanScore ) {
@@ -1015,7 +1043,7 @@ public class League {
             }
 
             //wr
-            for (int wr = 0; wr < 3; ++wr) {
+            for (int wr = 0; wr < teamList.get(i).teamWRs.size(); ++wr) {
                 heismanCandidates.add( teamList.get(i).teamWRs.get(wr) );
                 tempScore = teamList.get(i).teamWRs.get(wr).getHeismanScore() + teamList.get(i).wins*100;
                 if ( tempScore > heismanScore ) {
@@ -1137,6 +1165,11 @@ public class League {
             return heismanWinnerStrFull;
         }
     }
+
+    /**
+     * Gets All Americans, best of all conference teams
+     * @return string list of all americans
+     */
     public String getAllAmericanStr() {
         if (allAmericans.isEmpty()) {
             ArrayList<PlayerQB> qbs = new ArrayList<>();
@@ -1182,13 +1215,18 @@ public class League {
                 allAmerican.append(" WR " + pwr.name + " [" + pwr.getYrStr() + "]\n \t\t" +
                         pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds\n");
             }
-            allAmerican.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.ratPot + "\n\n");
+            allAmerican.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.getLetterGrade(p.ratPot) + "\n\n");
         }
 
         // Go through all the all conf players to get the all americans
         return allAmerican.toString();
     }
 
+    /**
+     * Get a string list of all conference team of choice
+     * @param confNum which conference
+     * @return string of the conference team
+     */
     public String getAllConfStr(int confNum) {
         ArrayList<Player> allConfPlayers = conferences.get(confNum).getAllConfPlayers();
         StringBuilder sb = new StringBuilder();
@@ -1208,11 +1246,50 @@ public class League {
                 sb.append(" WR " + pwr.name + " [" + pwr.getYrStr() + "]\n \t\t" +
                         pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds\n");
             }
-            sb.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.ratPot + "\n\n");
+            sb.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.getLetterGrade(p.ratPot) + "\n\n");
         }
 
         return sb.toString();
     }
+
+    /**
+     * Set the players leaving for each team.
+     */
+    public void getPlayersLeaving() {
+        for (Team t : teamList) {
+            t.getPlayersLeaving();
+        }
+    }
+
+    /**
+     * Get a mock draft of all players who are leaving, sorted by overall.
+     * @return array of string reps of the players
+     */
+    public String[] getMockDraftPlayersList() {
+        ArrayList<Player> allPlayersLeaving = new ArrayList<>();
+        for (Team t : teamList) {
+            for (Player p : t.playersLeaving) {
+                if (p.ratOvr > 75) allPlayersLeaving.add(p);
+            }
+        }
+
+        Collections.sort(allPlayersLeaving, new PlayerComparator());
+
+        // Get 64 players (first 2 rounds)
+        ArrayList<Player> top64Players = new ArrayList<>(64);
+        for (int i = 0; i < 64; ++i) {
+            top64Players.add(allPlayersLeaving.get(i));
+        }
+
+        String[] nflPlayers = new String[ top64Players.size() ];
+        for (int i = 0; i < nflPlayers.length; ++i) {
+            nflPlayers[i] = top64Players.get(i).getMockDraftStr();
+        }
+
+        return nflPlayers;
+    }
+
+
     /**
      * Get list of all the teams and their rankings based on selection
      * @param selection stat to sort by, 0-13
@@ -1622,8 +1699,13 @@ public class League {
         StringBuilder sb = new StringBuilder();
 
         // Save information about the save file, user team info
-        sb.append((2016+leagueHistory.size())+": " + userTeam.abbr + " (" + (userTeam.totalWins-userTeam.wins) + "-" + (userTeam.totalLosses-userTeam.losses) + ") " +
-                userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs%\n");
+        if (isHardMode) {
+            sb.append((2016 + leagueHistory.size()) + ": " + userTeam.abbr + " (" + (userTeam.totalWins - userTeam.wins) + "-" + (userTeam.totalLosses - userTeam.losses) + ") " +
+                    userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs>[HARD]%\n");
+        } else {
+            sb.append((2016 + leagueHistory.size()) + ": " + userTeam.abbr + " (" + (userTeam.totalWins - userTeam.wins) + "-" + (userTeam.totalLosses - userTeam.losses) + ") " +
+                    userTeam.totalCCs + " CCs, " + userTeam.totalNCs + " NCs>[EASY]%\n");
+        }
 
         // Save league history of who was #1 each year
         for (int i = 0; i < leagueHistory.size(); ++i) {
