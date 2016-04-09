@@ -57,10 +57,9 @@ public class MainActivity extends AppCompatActivity {
 
     //recruiting
     int recruitingStage;
-
     int wantUpdateConf;
-
     boolean showToasts;
+    boolean showInjuryReport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +81,11 @@ public class MainActivity extends AppCompatActivity {
         boolean loadedLeague = false;
         if(extras != null) {
             String saveFileStr = extras.getString("SAVE_FILE");
-            if (saveFileStr.equals("NEW_LEAGUE")) {
-                simLeague = new League(getString(R.string.league_player_names));
+            if (saveFileStr.equals("NEW_LEAGUE_EASY")) {
+                simLeague = new League(getString(R.string.league_player_names), false);
+                season = 2016;
+            } else if (saveFileStr.equals("NEW_LEAGUE_HARD")) {
+                simLeague = new League(getString(R.string.league_player_names), true);
                 season = 2016;
             } else if (saveFileStr.equals("DONE_RECRUITING")) {
                 File saveFile = new File(getFilesDir(), "saveLeagueRecruiting.cfb");
@@ -93,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
                     userTeamStr = userTeam.name;
                     userTeam.recruitPlayersFromStr(extras.getString("RECRUITS"));
                     simLeague.updateTeamTalentRatings();
-                    season = 2016 + userTeam.teamHistory.size();
+                    season = simLeague.getYear();
                     currentTeam = userTeam;
                     loadedLeague = true;
                 } else {
-                    simLeague = new League(getString(R.string.league_player_names));
+                    simLeague = new League(getString(R.string.league_player_names), false);
                     season = 2016;
                 }
             } else {
@@ -107,23 +109,23 @@ public class MainActivity extends AppCompatActivity {
                     userTeam = simLeague.userTeam;
                     userTeamStr = userTeam.name;
                     simLeague.updateTeamTalentRatings();
-                    season = 2016 + userTeam.teamHistory.size();
+                    season = simLeague.getYear();
                     currentTeam = userTeam;
                     loadedLeague = true;
                 } else {
-                    simLeague = new League(getString(R.string.league_player_names));
+                    simLeague = new League(getString(R.string.league_player_names), false);
                     season = 2016;
                 }
             }
         } else {
-            simLeague = new League(getString(R.string.league_player_names));
+            simLeague = new League(getString(R.string.league_player_names), false);
             season = 2016;
         }
 
         recruitingStage = -1;
-        wantUpdateConf = 2; // 0 and 1, dont update, 2 update
+        wantUpdateConf = 2; // 0 and 1, don't update, 2 update
         showToasts = true;
-
+        showInjuryReport = true;
 
         if (!loadedLeague) {
             // Set it to alabama until they pick
@@ -233,23 +235,10 @@ public class MainActivity extends AppCompatActivity {
                         int numGamesPlayed = userTeam.gameWLSchedule.size();
                         simLeague.playWeek();
 
-                        // Get injury report if there are injuries
-                        String injuryReport = userTeam.getInjuryReport();
-                        if (!injuryReport.equals("NONE")) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setMessage(injuryReport)
-                                    .setTitle("Injury Report")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            //do nothing?
-                                        }
-                                    });
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-                            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-                            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                        }
+                        // Get injury report if there are injuries and just played a game
+                        if (simLeague.currentWeek != 15 && showInjuryReport && simLeague.isHardMode()
+                                && userTeam.gameWLSchedule.size() > numGamesPlayed)
+                            showInjuryReportDialog();
 
                         if (simLeague.currentWeek == 15) {
                             // Show NCG summary and check league records
@@ -307,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
                             simGameButton.setText("Play National Championship");
                         } else {
                             simGameButton.setText("Begin Recruiting");
+                            simLeague.curePlayers(); // get rid of all injuries
                         }
 
                         updateCurrTeam();
@@ -320,8 +310,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        final Button teamStatsButton = (Button) findViewById(R.id.teamStatsButton);
+        final Button playerStatsButton = (Button) findViewById(R.id.playerStatsButton);
+        final Button teamScheduleButton = (Button) findViewById(R.id.teamScheduleButton);
+
         //Set up "Team Stats" Button
-        Button teamStatsButton = (Button) findViewById(R.id.teamStatsButton);
         teamStatsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -331,7 +325,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Set up "Player Stats" Button
-        Button playerStatsButton = (Button) findViewById(R.id.playerStatsButton);
         playerStatsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -341,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Set up "Schedule" Button
-        Button teamScheduleButton = (Button) findViewById(R.id.teamScheduleButton);
+
         teamScheduleButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -420,20 +413,6 @@ public class MainActivity extends AppCompatActivity {
              * Clicked League History in drop down menu
              */
             showLeagueHistoryDialog();
-            /*String historyStr = simLeague.getLeagueHistoryStr();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(historyStr)
-                    .setTitle("League History")
-                    .setPositiveButton("OK",new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //do nothing?
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);*/
         } else if (id == R.id.action_team_history) {
             /**
              * Clicked Team History in drop down menu
@@ -572,8 +551,8 @@ public class MainActivity extends AppCompatActivity {
     private void updateTeamStats(){
         mainList.setVisibility(View.VISIBLE);
         expListPlayerStats.setVisibility(View.GONE);
-        TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
-        textTabDescription.setText(currentTeam.name + " Team Stats:");
+        //TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
+        //textTabDescription.setText(currentTeam.name + " Team Stats:");
 
         String[] teamStatsStr = currentTeam.getTeamStatsStrCSV().split("%\n");
         mainList.setAdapter(new TeamStatsListArrayAdapter(this, teamStatsStr));
@@ -582,8 +561,8 @@ public class MainActivity extends AppCompatActivity {
     private void updatePlayerStats(){
         mainList.setVisibility(View.GONE);
         expListPlayerStats.setVisibility(View.VISIBLE);
-        TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
-        textTabDescription.setText(currentTeam.name + " Team Roster:");
+        //TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
+        //textTabDescription.setText(currentTeam.name + " Team Roster:");
 
         List<String> playerHeaders = currentTeam.getPlayerStatsExpandListStr();
         Map<String, List<String>> playerInfos = currentTeam.getPlayerStatsExpandListMap(playerHeaders);
@@ -595,8 +574,8 @@ public class MainActivity extends AppCompatActivity {
     private void updateSchedule(){
         mainList.setVisibility(View.VISIBLE);
         expListPlayerStats.setVisibility(View.GONE);
-        TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
-        textTabDescription.setText(currentTeam.name + " Game Schedule:");
+        //TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
+        //textTabDescription.setText(currentTeam.name + " Game Schedule:");
 
         Game[] games = new Game[currentTeam.gameSchedule.size()];
         for (int i = 0; i < games.length; ++i) {
@@ -1094,6 +1073,7 @@ public class MainActivity extends AppCompatActivity {
                     invalidNameText.setText("");
                 }
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 newName = s.toString().trim();
@@ -1103,6 +1083,7 @@ public class MainActivity extends AppCompatActivity {
                     invalidNameText.setText("");
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 newName = s.toString().trim();
@@ -1151,6 +1132,9 @@ public class MainActivity extends AppCompatActivity {
         final CheckBox checkboxShowPopup = (CheckBox) dialog.findViewById(R.id.checkboxShowPopups);
         checkboxShowPopup.setChecked(showToasts);
 
+        final CheckBox checkboxShowInjury = (CheckBox) dialog.findViewById(R.id.checkboxShowInjuryReport);
+        checkboxShowInjury.setChecked(showInjuryReport);
+
         Button cancelChangeNameButton = (Button) dialog.findViewById(R.id.buttonCancelChangeName);
         Button okChangeNameButton = (Button) dialog.findViewById(R.id.buttonOkChangeName);
 
@@ -1158,6 +1142,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Perform action on click
                 showToasts = checkboxShowPopup.isChecked();
+                showInjuryReport = checkboxShowInjury.isChecked();
                 userTeam.showPopups = showToasts;
                 dialog.dismiss();
             }
@@ -1184,11 +1169,57 @@ public class MainActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                 }
                 showToasts = checkboxShowPopup.isChecked();
+                showInjuryReport = checkboxShowInjury.isChecked();
                 userTeam.showPopups = showToasts;
                 dialog.dismiss();
             }
         });
 
+    }
+
+    /**
+     * Show injury report.
+     */
+    public void showInjuryReportDialog() {
+        String[] injuries = userTeam.getInjuryReport();
+        if (injuries != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Injury Report")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //do nothing?
+                        }
+                    })
+                    .setNegativeButton("Set Lineup", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Manage Lineup
+                            showTeamLineupDialog();
+                        }
+                    })
+                    .setView(getLayoutInflater().inflate(R.layout.injury_report, null));
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            ListView injuryList = (ListView) dialog.findViewById(R.id.listViewInjuryReport);
+            injuryList.setAdapter(new PlayerStatsListArrayAdapter(this, injuries));
+
+            CheckBox showInjuryReportCheckBox = (CheckBox) dialog.findViewById(R.id.checkBoxInjuryReport);
+            showInjuryReportCheckBox.setChecked(true);
+
+            showInjuryReportCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    //do stuff
+                    setShowInjuryReport(isChecked);
+                }
+            });
+        }
+    }
+
+    public void setShowInjuryReport(boolean show) {
+        showInjuryReport = show;
     }
 
     /**
@@ -1328,28 +1359,29 @@ public class MainActivity extends AppCompatActivity {
     public void examinePlayer(String player) {
         Player p = currentTeam.findBenchPlayer(player);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        ArrayList<String> pStats = p.getDetailStatsList(currentTeam.numGames());
-        StringBuilder sb = new StringBuilder();
-        for (String s : pStats) {
-            sb.append(s + "\n");
-        }
-        builder.setMessage(sb.toString())
-                .setTitle(p.getPosNameYrOvrPot_OneLine());
+        ArrayList<String> pStatsList = p.getDetailStatsList(currentTeam.numGames());
+        if (p.injury != null) pStatsList.add(0, "Injured: " + p.injury.toString() + "> ");
+        String[] pStatsArray = pStatsList.toArray(new String[pStatsList.size()]);
+        PlayerStatsListArrayAdapter pStatsAdapter = new PlayerStatsListArrayAdapter(this, pStatsArray);
+        builder.setAdapter(pStatsAdapter, null)
+                .setTitle(p.getPosNameYrOvrPot_NoInjury())
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing
+                    }
+                });
         AlertDialog dialog = builder.create();
         dialog.show();
-        TextView msgTxt = (TextView) dialog.findViewById(android.R.id.message);
-        msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
    }
 
     /**
      * Start Recruiting Activity, sending over the user team's players and budget.
      */
     private void beginRecruiting() {
-        userTeam.getPlayersLeaving();
-        String gradPlayersStr = userTeam.getGraduatingPlayersStr();
+        simLeague.getPlayersLeaving();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(gradPlayersStr)
-                .setTitle(userTeam.abbr+" Players Leaving")
+        builder.setTitle(userTeam.abbr+" Players Leaving")
                 .setPositiveButton("Begin Recruiting", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -1373,11 +1405,42 @@ public class MainActivity extends AppCompatActivity {
                         myIntent.putExtra("USER_TEAM_INFO", sb.toString());
                         MainActivity.this.startActivity(myIntent);
                     }
-                });
+                })
+                .setView(getLayoutInflater().inflate(R.layout.team_rankings_dialog, null));
         AlertDialog dialog = builder.create();
         dialog.show();
-        TextView msgTxt = (TextView) dialog.findViewById(android.R.id.message);
-        msgTxt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+
+        String[] spinnerSelection = {"Players Leaving", "Mock Draft"};
+        Spinner beginRecruitingSpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
+        ArrayAdapter<String> beginRecruitingSpinnerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, spinnerSelection);
+        beginRecruitingSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        beginRecruitingSpinner.setAdapter(beginRecruitingSpinnerAdapter);
+
+        final ListView playerList = (ListView) dialog.findViewById(R.id.listViewTeamRankings);
+        final PlayerStatsListArrayAdapter playerStatsAdapter =
+                new PlayerStatsListArrayAdapter(this, userTeam.getGradPlayersList());
+        final MockDraftListArrayAdapter mockDraftAdapter =
+                new MockDraftListArrayAdapter(this, simLeague.getMockDraftPlayersList(), userTeam.strRep());
+        playerList.setAdapter(playerStatsAdapter);
+
+        beginRecruitingSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) {
+                            // Players Leaving
+                            playerList.setAdapter(playerStatsAdapter);
+                        } else {
+                            // Mock Draft
+                            playerList.setAdapter(mockDraftAdapter);
+                        }
+                    }
+
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // do nothing
+                    }
+                });
     }
 
     @Override
@@ -1416,7 +1479,8 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choose Save File to Overwrite:");
         final String[] fileInfos = getSaveFileInfos();
-        builder.setItems(fileInfos, new DialogInterface.OnClickListener() {
+        SaveFilesListArrayAdapter saveFilesAdapter = new SaveFilesListArrayAdapter(this, fileInfos);
+        builder.setAdapter(saveFilesAdapter, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 final int itemy = item;
                 // Do something with the selection
@@ -1430,7 +1494,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // Ask for confirmation to overwrite file
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage("Are you sure you want to overwrite this save file?\n" + fileInfos[itemy])
+                    builder.setMessage("Are you sure you want to overwrite this save file?\n\n" + fileInfos[itemy])
                             .setPositiveButton("Yes, Overwrite", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -1451,9 +1515,12 @@ public class MainActivity extends AppCompatActivity {
                             });
                     AlertDialog dialog2 = builder.create();
                     dialog2.show();
+                    TextView textView = (TextView) dialog2.findViewById(android.R.id.message);
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                 }
             }
-        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Do nothing

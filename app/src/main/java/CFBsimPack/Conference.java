@@ -54,8 +54,9 @@ public class Conference {
         evenYear = (league.leagueHistory.size()%2==0);
 
 
-        // Set up int arrays for each team's home/away rotation. Theoretically every year you should change off between having 5 home games and 4 away games in conference
-        if (league.leagueHistory.size() == 0) {
+        // Set up int arrays for each team's home/away rotation.
+        // Theoretically every year you should change off between having 5 home games and 4 away games in conference
+        if (league.leagueHistory.size() == 0 || confTeams.get(0).evenYearHomeOpp == null) {
             int[][] evenHomeGames = new int[10][];
             evenHomeGames[0] = new int[]{7, 4, 8, 3};
             evenHomeGames[1] = new int[]{8, 9, 5, 0, 4};
@@ -67,8 +68,6 @@ public class Conference {
             evenHomeGames[7] = new int[]{2, 6, 1, 5, 9};
             evenHomeGames[8] = new int[]{9, 3, 7, 2, 6};
             evenHomeGames[9] = new int[]{0, 2, 4, 6};
-
-
 
             for (int x = 0; x < evenHomeGames.length; x++) {
                 StringBuilder sb = new StringBuilder();
@@ -337,12 +336,15 @@ public class Conference {
             ArrayList<PlayerWR> wrs = new ArrayList<>();
 
             for (Team t : confTeams) {
-                qbs.add(t.getQB(0));
-                rbs.add(t.getRB(0));
-                rbs.add(t.getRB(1));
-                wrs.add(t.getWR(0));
-                wrs.add(t.getWR(1));
-                wrs.add(t.getWR(2));
+                for (int i = 0; i < t.teamQBs.size(); ++i) {
+                    qbs.add(t.getQB(i));
+                }
+                for (int i = 0; i < t.teamRBs.size(); ++i) {
+                    rbs.add(t.getRB(i));
+                }
+                for (int i = 0; i < t.teamWRs.size(); ++i) {
+                    wrs.add(t.getWR(i));
+                }
             }
 
             Collections.sort(qbs, new PlayerHeismanComp());

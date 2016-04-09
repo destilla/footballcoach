@@ -164,7 +164,8 @@ public class PlayerQB extends Player {
         ArrayList<String> pStats = new ArrayList<>();
         pStats.add("TD/Int: " + statsTD + "/" + statsInt + ">Comp Percent: " + (100*statsPassComp/(statsPassAtt+1))+"%");
         pStats.add("Pass Yards: " + statsPassYards + " yds>Yards/Att: " + ((double)(10*statsPassYards/(statsPassAtt+1))/10) + " yds");
-        pStats.add("Yds/Game: " + (statsPassYards/games) + " yds/g>Sacks: " + statsSacked);
+        pStats.add("Yds/Game: " + (statsPassYards/getGamesPlayed()) + " yds/g>Sacks: " + statsSacked);
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Pass Strength: " + getLetterGrade(ratPassPow));
         pStats.add("Accuracy: " + getLetterGrade(ratPassAcc) + ">Evasion: " + getLetterGrade(ratPassEva));
         return pStats;
@@ -172,8 +173,8 @@ public class PlayerQB extends Player {
 
     @Override
     public String getInfoForLineup() {
-        if (injury != null) return  getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " " + injury.toString();
-        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " " + injury.toString();
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " (" +
                 getLetterGrade(ratPassPow) + ", " + getLetterGrade(ratPassAcc) + ", " + getLetterGrade(ratPassEva) + ")";
     }
     

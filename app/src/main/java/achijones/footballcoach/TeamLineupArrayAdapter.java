@@ -46,7 +46,7 @@ public class TeamLineupArrayAdapter extends ArrayAdapter<Player> {
         if (players.get(position).injury == null) {
             playerInfo.setText(players.get(position).getInfoForLineup());
         } else {
-            playerInfo.setText(players.get(position).getPosNameYrOvrPot_OneLine());
+            playerInfo.setText(players.get(position).getInfoLineupInjury());
         }
 
 

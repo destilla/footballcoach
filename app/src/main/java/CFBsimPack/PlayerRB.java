@@ -154,7 +154,8 @@ public class PlayerRB extends Player {
         ArrayList<String> pStats = new ArrayList<>();
         pStats.add("TDs: " + statsTD + ">Fumbles: " + statsFumbles);
         pStats.add("Rush Yards: " + statsRushYards + " yds>Yards/Att: " + ((double)(10*statsRushYards/(statsRushAtt+1))/10) + " yds");
-        pStats.add("Yds/Game: " + (statsRushYards/games) + " yds/g>Rush Att: " + statsRushAtt);
+        pStats.add("Yds/Game: " + (statsRushYards/getGamesPlayed()) + " yds/g>Rush Att: " + statsRushAtt);
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Rush Power: " + getLetterGrade(ratRushPow));
         pStats.add("Rush Speed: " + getLetterGrade(ratRushSpd) + ">Evasion: " + getLetterGrade(ratRushEva));
         return pStats;
@@ -162,7 +163,8 @@ public class PlayerRB extends Player {
 
     @Override
     public String getInfoForLineup() {
-        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + ratPot + " (" +
+        if (injury != null) return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " " + injury.toString();
+        return getInitialName() + " [" + getYrStr() + "] " + ratOvr + "/" + getLetterGrade(ratPot) + " (" +
                 getLetterGrade(ratRushPow) + ", " + getLetterGrade(ratRushSpd) + ", " + getLetterGrade(ratRushEva) + ")";
     }
     
