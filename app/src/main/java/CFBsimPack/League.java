@@ -41,6 +41,12 @@ public class League {
     public boolean blessDevelopingStory;
     public int blessDevelopingWeek;
     public int blessDevelopingCase;
+    public boolean curseDevelopingStory;
+    public int curseDevelopingWeek;
+    public int curseDevelopingCase;
+    public String storyFullName;
+    public String storyFirstName;
+    public String storyLastName;
 
 
     //Current week, 1-14
@@ -212,6 +218,7 @@ public class League {
         heismanDecided = false;
         hasScheduledBowls = false;
         blessDevelopingStory = false;
+        curseDevelopingStory = false;
         bowlGames = new Game[10];
         // This will reference one line at a time
         String line = null;
@@ -284,6 +291,8 @@ public class League {
             }
             if (!sbBless.toString().equals("NULL")) {
                 saveBless = findTeamAbbr(sbBless.toString());
+                saveBless.sortPlayers();
+                findTeamAbbr(saveBless.rivalTeam).sortPlayers();
             } else {saveBless = null;
             }
 
@@ -293,6 +302,8 @@ public class League {
             }
             if (!sbCurse.toString().equals("NULL")) {
                 saveCurse = findTeamAbbr(sbCurse.toString());
+                saveCurse.sortPlayers();
+                findTeamAbbr(saveCurse.rivalTeam).sortPlayers();
             } else {saveCurse = null;}
 
             String[] record;
@@ -343,9 +354,9 @@ public class League {
             // Set up offseason news to be randomly added to Week 0, set up names to be used if random names are needed, and make first and last names available for later in the story
 
             if (saveBless != null){
-                String storyFullName = getRandName();
-                String storyFirstName = storyFullName.replaceAll(" .*", "");
-                String storyLastName = storyFullName.replaceAll(".* ", "");
+                storyFullName = getRandName();
+                storyFirstName = storyFullName.replaceAll(" .*", "");
+                storyLastName = storyFullName.replaceAll(".* ", "");
                 String storyPlayer;
 
                 switch((int)(Math.random() * 4)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
@@ -395,20 +406,22 @@ public class League {
             }
 
             if (saveCurse != null) {
-                String storyFullName = getRandName();
-                String storyFirstName = storyFullName.replaceAll(" .*", "");
-                String storyLastName = storyFullName.replaceAll(".* ", "");
+                storyFullName = getRandName();
+                storyFirstName = storyFullName.replaceAll(" .*", "");
+                storyLastName = storyFullName.replaceAll(".* ", "");
                 String storyPlayer;
 
-                switch((int)(Math.random() * 3)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 4)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Team broke the rules, placed on probation and it's harder to recruit (-prestige)
                         newsStories.get(0).add(saveCurse.name + " Rocked by Infractions Scandal!>After an investigation during the offseason, "+saveCurse.name +" has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + storyFullName + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
                         break;
+
                     case 1:
                         //Sleepover w/ star recruit
                         newsStories.get(0).add(saveCurse.name + " Coach Redefines \"Strange Bed Fellows\">" + saveCurse.name + " Head Coach " + storyFullName + " has landed in hot water after he was discovered at the home of a Class of " + (getYear() + 2) + " recruit, having a sleepover. Family of the recruit, who's name has been withheld, state that Coach " + storyLastName + " and the recruit \"watched GetPix and chilled.\" Despite a lack of charges against " +storyLastName+", the university has placed an indefinite suspension to the coach's recruiting travel privileges, pending an internal investigation.");
                         break;
+
                     case 2:
                         //Get the first offensive position player that isn't a Freshman and is good enough to be decent starter (or use a random name and say it was a coach if no players available) and use their name to describe them pulling a reverse catfish...literally -- Or that Coach lost his temper at a pre-season booster event and scared off some donors. Coach story is just a backup plan for the player story (in case somehow the whole starting O is unavailable)
                         // Only using the first 4 of the front 7, we'll just assume it's a 3-4 defense and those are their linebackers
@@ -435,8 +448,32 @@ public class League {
                         else newsStories.get(0).add(saveCurse.name + " Star Demonstrates The Rare \"Reverse Catfish\">After winning the nation's heart by finishing out the " + (getYear() - 1) + " season despite losing his girlfriend to a freak fishing accident, " +saveCurse.name+" star "+storyPlayer+" now faces intense scrutiny from national media for allegedly making the whole thing up. " +storyPlayerLast + " originally claimed his girlfriend was a student at " +playerGFSchool+", until internet message board users discovered a private blog run by the player that revealed the truth; the girlfriend was fake, and her name was actually the name of his pet catfish. The university's athletics department officially declined to comment, citing an ongoing internal investigation.");
                         break;
 
+                    case 3:
+                        //Hazing rituals by upper-classmen reported by under-classmen and scared off recruits
+
+                        //Figure out if the recruit scared off was a RS (if the cursed team is rivals with the user team) or a FR
+                        String starRSOrFR;
+
+                        //Does the cursed team's rivals have an RS players and is the best RS an overall better player than the best FR
+                        if (findTeamAbbr(saveCurse.rivalTeam).teamRSs.size()> 0 && (findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).ratOvr >= findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).ratOvr) ){
+                            // If so, the scared off player will be the RS
+                            starRSOrFR = ("highly sought after recruit and current " + findTeamAbbr(saveCurse.rivalTeam).name + " redshirt freshman " + findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).name);
+                        }
+                        else { // Grab the best Freshman on the rival's team
+                            starRSOrFR = (findTeamAbbr(saveCurse.rivalTeam).name + "'s star freshman recruit " + findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).name);
+                        }
+
+                        //Now that we know what recruit was scared off to the rival team
+                        newsStories.get(0).add("A New Kind of Summer Haze>" + saveCurse.name + " Senior " + saveCurse.teamSRs.get(0).position + " " + saveCurse.teamSRs.get(0).name + " stepped forward today, as the ringleader of a group of upperclassmen responsible for the extreme hazing of several of the program's underclassmen, including several non-player students. It was revealed earlier this year that " + starRSOrFR + " flipped his commitment from " + saveCurse.name + " after being contacted on social media by members of the group and told to \"prepare\" for the hazing he would face leading up to Spring Practice. There is currently no word on what punishment Coach " + storyFullName + " will hand out to the group.");
+                        curseDevelopingStory = true;
+                        curseDevelopingWeek = 0; // Print a new story after the week 1 games about the lack of punishment by coach
+                        curseDevelopingCase = 1; // First developing curse story
+                        break;
+
+
                     default:
                         //newsStories.get(0).add(saveCurse.name + " news story curse test case out of range");
+                        System.out.println("Curse Team News Story Broke");
                         break;
                 }
 
@@ -477,7 +514,7 @@ public class League {
         return 0;
     }
 
-    /**
+     /**
      * Plays week. If normal week, handled by conferences. If bowl week, handled here.
      */
     public void playWeek() {
@@ -537,20 +574,23 @@ public class League {
 
 
         // If there was a developing story and it's time for that story to print, print it based on which story was triggered
-        if (blessDevelopingStory && currentWeek == blessDevelopingWeek){
+        if (blessDevelopingStory){
 
-            switch (blessDevelopingCase) {
-                case 1: //Sports Drink Development
-                    if (findTeamAbbr(saveBless.abbr).rankTeamPollScore > 49) {
-                        //Looks like the "secret stuff" didn't do much -- Maybe it was just water all along?
-                        newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Still Thirsty For Wins>Despite the much talked about launch of their new Sport Enhancement Drink, " + saveBless.name + " still find themselves struggling to make the most of the talent available to them and break free from the bottom of the polls. With their eyes set on improvement in the years to come, all " + saveBless.abbr + " fans can do now is weather the drought.");
-                    } //Electrolytes: saveBless.name currentYear MVP
-                    else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore < 41 && findTeamAbbr(saveBless.abbr).rankTeamPollScore > 20) {
-                        newsStories.get(blessDevelopingWeek + 1).add("Success a Refreshing Change for " + saveBless.name + ">On the heels of a successful first week of sales for their new Sports Enhancement Drink, " + saveBless.name + "'s has much to celebrate as they seem to have found the light at the end of the tunnel. In less than a season, the program's fortunes have turned, both financially and in the polls, begging the question: What are they putting in those sports drinks?");
-                    } //The team is suddenly in the top 20 and wondering if they had it in themselves all along. The school is rolling in $$$$
-                    else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore <= 20){
-                        newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Being Propelled to New Heights>In the middle of a football season that is smashing all expectations, " + saveBless.name + " is managing to smash a few sales records, as well. Crediting both realms of success to the school's Sports Nutrition program, Athletic Director " + getRandName() + " praised the work of the program's graduate researchers in developing a world class sport enhancement drink, while also announcing the product's expansion into two new flavors.");
-                    }
+            switch (blessDevelopingCase) { // Which story was triggered?
+
+                    case 1: //Sports Drink Development
+                        if (blessDevelopingWeek == currentWeek) { // Is it time to print this yet?
+                        if (findTeamAbbr(saveBless.abbr).rankTeamPollScore > 49) {
+                            //Looks like the "secret stuff" didn't do much -- Maybe it was just water all along?
+                            newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Still Thirsty For Wins>Despite the much talked about launch of their new Sport Enhancement Drink, " + saveBless.name + " still find themselves struggling to make the most of the talent available to them and break free from the bottom of the polls. With their eyes set on improvement in the years to come, all " + saveBless.abbr + " fans can do now is weather the drought.");
+                        } //Electrolytes: saveBless.name currentYear MVP
+                        else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore < 41 && findTeamAbbr(saveBless.abbr).rankTeamPollScore > 20) {
+                            newsStories.get(blessDevelopingWeek + 1).add("Success a Refreshing Change for " + saveBless.name + ">On the heels of a successful first week of sales for their new Sports Enhancement Drink, " + saveBless.name + "'s has much to celebrate as they seem to have found the light at the end of the tunnel. In less than a season, the program's fortunes have turned, both financially and in the polls, begging the question: What are they putting in those sports drinks?");
+                        } //The team is suddenly in the top 20 and wondering if they had it in themselves all along. The school is rolling in $$$$
+                        else if (findTeamAbbr(saveBless.abbr).rankTeamPollScore <= 20) {
+                            newsStories.get(blessDevelopingWeek + 1).add(saveBless.name + " Being Propelled to New Heights>In the middle of a football season that is smashing all expectations, " + saveBless.name + " is managing to smash a few sales records, as well. Crediting both realms of success to the school's Sports Nutrition program, Athletic Director " + getRandName() + " praised the work of the program's graduate researchers in developing a world class sport enhancement drink, while also announcing the product's expansion into two new flavors.");
+                        }
+                }
                     break;
 
                 default:
@@ -559,11 +599,31 @@ public class League {
             }
         }
 
+        if (curseDevelopingStory){
+            switch (curseDevelopingCase){ //Which story was triggered?
+                    case 1: //Lack of punishment for hazing underclassmen
+                        if (curseDevelopingWeek == currentWeek) { //Print this story when the time comes, but from the player's perspective, print it in the week prior to the current week (add it to week 1 when the player sees week 2 -- Once games are played, the week is advanced)
+                            //No one missed playing time, no word from Coach
+                        newsStories.get(curseDevelopingWeek+1).add(saveCurse.name + " Hazing Scandal Update>After last week's report on the " + saveCurse.name + " hazing scandal, the college football world waited to see what punishments would be handed out to " + saveCurse.teamSRs.get(0).name + " and other implicated but unnamed players. With Week 1 officially in the books we have an answer: Nothing. Based on the final fall practice depth chart, no players missed playing time or starting status (" + saveCurse.teamSRs.get(0).name.replace("*. ","") + " played every down he was available for). Coach " + storyLastName + " has remained silent on the issue.");
+                }
+                        if (curseDevelopingWeek+1 == currentWeek) { //Populate this story into Week 2 --before-- the games are played.
 
+                        if (Math.random() < .5) { //"The boy's suffered enough"
+                            newsStories.get(curseDevelopingWeek+2).add("No Punishment for Group in Hazing Scandal>Last week, it was reported that " + saveCurse.name + " Head Coach " + storyFullName + " had not commented on the hazing scandal that resulted in lost recruits for the program. Today, " + storyLastName + " revealed that this was no mistake, and that there will be no punishment for those involved. In a brief statement released today by the program, " + storyLastName + " is quoted as saying that he considers this matter closed and that he believes the public scrutiny " + saveCurse.teamSRs.get(0).name + " faced after admitting to being the ringleader of the hazing group was \"punishment enough.\"");
+                        }
+                        else { //Time to make amends
+                            newsStories.get(curseDevelopingWeek+2).add("Punishment Announced for " + saveCurse.name + " Upperclassmen>In a statement released through its Athletics Department today, " +saveCurse.name+" Head Coach " + storyFullName + " announced that he had spoken with each member of the team privately and determined who the upperclassmen responsible for the over-the-top hazing occurring within the program were. Not wishing to draw further scrutiny to individual players, " +storyLastName+" stated that the group of players would be responsible for identifying the best way to give back to the local community and carrying out whatever volunteer work was necessary to see the project through to completion.");
+                        }
+                }
+
+            }
+
+
+        }
 
         currentWeek++;
     }
-
+    
     /**
      * Schedules bowl games based on team rankings.
      */

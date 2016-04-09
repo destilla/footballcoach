@@ -100,6 +100,12 @@ public class Team {
     public ArrayList<PlayerF7> teamF7s;
     public ArrayList<PlayerS> teamSs;
     public ArrayList<PlayerCB> teamCBs;
+    //By year
+    public ArrayList<Player> teamRSs;
+    public ArrayList<Player> teamFRs;
+    public ArrayList<Player> teamSOs;
+    public ArrayList<Player> teamJRs;
+    public ArrayList<Player> teamSRs;
 
     public ArrayList<Player> playersLeaving;
     public ArrayList<Player> playersInjured;
@@ -135,6 +141,12 @@ public class Team {
         teamF7s = new ArrayList<PlayerF7>();
         teamSs = new ArrayList<PlayerS>();
         teamCBs = new ArrayList<PlayerCB>();
+        
+        teamRSs = new ArrayList<Player>();
+        teamFRs = new ArrayList<Player>();
+        teamSOs = new ArrayList<Player>();
+        teamJRs = new ArrayList<Player>();
+        teamSRs = new ArrayList<Player>();
 
         gameSchedule = new ArrayList<Game>();
         gameOOCSchedule0 = null;
@@ -204,6 +216,12 @@ public class Team {
         teamF7s = new ArrayList<PlayerF7>();
         teamSs = new ArrayList<PlayerS>();
         teamCBs = new ArrayList<PlayerCB>();
+        
+        teamRSs = new ArrayList<Player>();
+        teamFRs = new ArrayList<Player>();
+        teamSOs = new ArrayList<Player>();
+        teamJRs = new ArrayList<Player>();
+        teamSRs = new ArrayList<Player>();
 
         gameSchedule = new ArrayList<Game>();
         gameOOCSchedule0 = null;
@@ -283,6 +301,10 @@ public class Team {
             recruitPlayerCSV(lines[i], false);
         }
 
+        // Group players by class standing (FRs, SOs, etc)
+           groupPlayerStandingCSV();
+        
+        
         wonRivalryGame = false;
         teamStratOff = getTeamStrategiesOff()[teamStratOffNum];
         teamStratDef = getTeamStrategiesDef()[teamStratDefNum];
@@ -1011,6 +1033,69 @@ public class Team {
     }
 
     /**
+     * For news stories or other info gathering, setup player groups by student standing
+     * Run through each type of player, add them to the appropriate year
+     */
+    private void groupPlayerStandingCSV() {
+        for (PlayerQB p : teamQBs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerRB p : teamRBs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerWR p : teamWRs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerK p : teamKs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerOL p : teamOLs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerS p : teamSs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerCB p : teamCBs){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+        for (PlayerF7 p : teamF7s){
+            if (p.year == 0) teamRSs.add(p);
+            if (p.year == 1) teamFRs.add(p);
+            if (p.year == 2) teamSOs.add(p);
+            if (p.year == 3) teamJRs.add(p);
+            if (p.year == 4) teamSRs.add(p);
+        }
+    }
+
+    /**
      * Resets all team stats to 0.
      */
     public void resetStats() {
@@ -1125,6 +1210,12 @@ public class Team {
         Collections.sort(teamCBs, new PlayerComparator());
         Collections.sort(teamSs, new PlayerComparator());
         Collections.sort(teamF7s, new PlayerComparator());
+        
+        Collections.sort(teamRSs, new PlayerComparator());
+        Collections.sort(teamFRs, new PlayerComparator());
+        Collections.sort(teamSOs, new PlayerComparator());
+        Collections.sort(teamJRs, new PlayerComparator());
+        Collections.sort(teamSRs, new PlayerComparator());
     }
 
     /**
