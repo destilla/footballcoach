@@ -120,11 +120,11 @@ public class Conference {
     public void setUpOOCSchedule() {
         //schedule OOC games
         int confNum = -1;
-        if ( "SOUTH".equals(confName) ) {
+        if ( " SEC ".equals(confName) ) {
             confNum = 0;
-        } else if ( "LAKES".equals(confName) ) {
+        } else if ( "BIG10".equals(confName) ) {
             confNum = 1;
-        } else if ( "NORTH".equals(confName) ) {
+        } else if ( " ACC ".equals(confName) ) {
             confNum = 2;
         }
         
