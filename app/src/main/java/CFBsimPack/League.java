@@ -383,7 +383,7 @@ public class League {
                         else if (saveBless.getF7(3).year >= 2) storyPlayer = saveBless.getF7(3).name;
                         else storyPlayer = storyFullName;
 
-                        playerLastName = storyPlayer.replaceAll(".* ", "");
+                        playerLastName = storyPlayer.replaceAll(".* ", ""); // For referencing last name all news like
                         //Coach Story -- Inspired by that time Kliff did the stanky leg in a circle of Tech players
                         if (storyPlayer.equals(storyFullName)) newsStories.get(0).add("Moves Like a Dancer from the Body of a Coach>When a cell phone recording of Coach " + storyFullName + " out dancing his players at the end of a Spring practice was uploaded to the internet, " +storyLastName + " thought nothing of it. When it hit one million views over night, Coach took notice. In response to wild popularity his moves have recieved, " + storyLastName + " has made it a new tradition at " + saveBless.name + " to have a dance off with all prospective recruits, much to the delight of fans and students, who have turned out in large numbers to watch the competitions." );
                             //Player Story
@@ -615,6 +615,11 @@ public class League {
                             newsStories.get(curseDevelopingWeek+2).add("Punishment Announced for " + saveCurse.name + " Upperclassmen>In a statement released through its Athletics Department today, " +saveCurse.name+" Head Coach " + storyFullName + " announced that he had spoken with each member of the team privately and determined who the upperclassmen responsible for the over-the-top hazing occurring within the program were. Not wishing to draw further scrutiny to individual players, " +storyLastName+" stated that the group of players would be responsible for identifying the best way to give back to the local community and carrying out whatever volunteer work was necessary to see the project through to completion.");
                         }
                 }
+                
+                default:
+                //We really shouldn't be here, turn back now!
+            
+                break;
 
             }
 
