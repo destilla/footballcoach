@@ -24,7 +24,7 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:parentActivityName=".Home"
-            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -34,7 +34,7 @@
             android:name=".RecruitingActivity"
             android:label="@string/title_activity_recruiting"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
