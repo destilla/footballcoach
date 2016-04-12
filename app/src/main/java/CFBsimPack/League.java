@@ -360,7 +360,7 @@ public class League {
                 String storyPlayer;
 
                 for(int i = 0; i < 1; i++){
-                switch((int)(Math.random() * 5)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 7)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Hired a shiny new coach who used to play for the school (feed those Vol fans wishing for Peyton something to dream on)
                         newsStories.get(0).add("Blue Chip hire for Bad Break University>" + saveBless.name + " announced the hire of alumnus and former professional coach " + getRandName() + ", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
@@ -412,7 +412,19 @@ public class League {
 
                     case 4:
                         //Inspired by that time Kliff did the stanky leg in a circle of Tech players)
-                        newsStories.get(0).add("Moves Like a Dancer from the Body of a Coach>When a cell phone recording of Coach " + storyFullName + " out dancing his players at the end of a Spring practice was uploaded to the internet, " + storyLastName + " thought nothing of it. When it hit one million views over night, Coach took notice. In response to wild popularity his moves have received, " + storyLastName + " has made it a new tradition at " + saveBless.name + " to have a dance off with all prospective recruits, much to the delight of fans and students, who have turned out in large numbers to watch the competitions.");
+                        newsStories.get(0).add("Just Call Him Coach Dougie>When a cell phone recording of Coach " + storyFullName + " out dancing his players at the end of a Spring practice was uploaded to the internet, " + storyLastName + " thought nothing of it. When it hit one million views over night, Coach took notice. In response to wild popularity his moves have received, " + storyLastName + " has made it a new tradition at " + saveBless.name + " to have a dance off with all prospective recruits, much to the delight of fans and students, who have turned out in large numbers to watch the competitions.");
+                        break;
+
+
+                    case 5:
+                        //Originally pitched as a story about the team partying hard, and getting positive recruiting as a result, before homecoming despite losing the game, I couldn't think of a good way to turn that into a preseason story directly. As a result this one is inspired by that.
+                        //And if the sarcasm/humor in this story isn't obvious, I've done something wrong
+                        newsStories.get(0).add("Breaking News: College Athletes Love Partying>A stunning development out of " + saveBless.name + " today, as it's being reported that college athletes, and athletic recruits for that matter, love to \"party and just have a good time.\" This surprising development grew out of reports on social media that " + saveBless.name + " fall practices were drawing large crowds. These stories eventually led to more reports that full fledged parties, complete with beer and music, were taking place after each practice. Recruits have been abuzz on social media declaring their intent to check out these parties and their desire to play for a school that \"knows how to have a good time.\" Coaching staffs around the country are scratching their collective heads in bewilderment while " + saveBless.name + " enjoys their sudden and unexpected recruiting boon.");
+                        break;
+
+                    case 6:
+                        //Increase academic standards have yielded an overall stronger group of recruits for saveBless.name
+                        newsStories.get(0).add("Success in the Classroom Spilling Onto the Field>" + saveBless.name + " find themselves in an unusual, but agreeable, position. The university, which has been slowly increasing admissions standards and taking strives to improve it's academic offerings, has begun to find itself counted among the Top 100 schools nationwide. As a result, the football Program program is finding itself with a new breed of recruit: smarter, more driven, and more capable of learning complex schemes. " + saveBless.name + " also finds itself with increased overall attention, as its name is beginning to have association with some of the most academically rigorous institutions in the country. As the school's mission to improve its academic standing continues, it stands to reason that it will enjoy an increased level of prestige.");
                         break;
 
 
@@ -432,7 +444,7 @@ public class League {
                 String storyPlayer;
 
                 for (int i = 0; i < 1; i++){
-                switch((int)(Math.random() * 6)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 7)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Team broke the rules, placed on probation and it's harder to recruit (-prestige)
                         newsStories.get(0).add(saveCurse.name + " Rocked by Infractions Scandal!>After an investigation during the offseason, " + saveCurse.name + " has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + storyFullName + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
@@ -517,6 +529,11 @@ public class League {
                         curseDevelopingWeek = 0;
                         curseDevelopingCase = 2; //Developing story will be about performance of QB and WR in Week 1
 
+                        break;
+
+                    case 6:
+                        //Academic Scandal -- Uni was falsifying grades (you-can't-do-that clap, clap, clapclapclap)
+                        newsStories.get(0).add(saveCurse.name + "'s Reputation Shaken by Fake Grading Scandal>" + saveCurse.name + " has announced the suspension of several university administrators pending an internal investigation into the falsification of grades for student athletes that were on the border of academic eligibility. Third party investigators uncovered the grading scheme after being asked to look into why several graduating players could not read the instructions provided with their Wonderlic Tests. Recruits from as far out as the class of " + (getYear() + 2) + " have rescinded verbal commitments, citing their desire to explore their options further. Currently, no academic or athletic sactions have been announced for the school.");
                         break;
 
                     default:
@@ -682,7 +699,7 @@ public class League {
                         cursedWR2 = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).awayTeam.getWR(1);
                         cursedWR3 = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).awayTeam.getWR(2);
                     }
-                    if ((cursedQB.statsPassComp/cursedQB.statsPassAtt * 100) > 60 && cursedWR.statsTargets > cursedWR2.statsTargets && cursedWR.statsTargets > cursedWR3.statsTargets) {
+                    if (100*cursedQB.statsPassComp/Math.max(1,cursedQB.statsPassAtt) > 60 && cursedWR.statsTargets > cursedWR2.statsTargets && cursedWR.statsTargets > cursedWR3.statsTargets) {
                         if (findTeam((saveCurse.abbr)).wins == 0) {
                             //QB and WR still in sync, but the team lost
                             newsStories.get(curseDevelopingWeek + 1).add(saveCurse.name + " Locker Room Scuffle Affects Week 1 Performance>Despite managing to find their sync after a locker room altercation last week, quarterback " + cursedQB.name + " and wide receiver " + cursedWR.name + " still left a lasting negative impression in the minds and performance of their teammates. " + cursedQB.name + "'s " + cursedQB.statsPassYards + " yards and " + cursedWR.name + "'s " + cursedWR.statsReceptions + " receptions could not bring the rest of the team out of the funk that eventually saw them drop their season opener.");
@@ -691,13 +708,28 @@ public class League {
                             newsStories.get(curseDevelopingWeek + 1).add("Water Under the Bridge at " + saveCurse.name + ">" + saveCurse.name + " didn't appear to remember the locker room altercation from last week nor the media attention it garnered as " + cursedQB.name + " threw for " + cursedQB.statsPassYards + " yards and " + cursedWR.name + " caught " + cursedWR.statsReceptions + " balls to help lift " + saveCurse.name + " in their season opener. " + cursedQB.name.replaceAll(".* ", "") + " still looked to his favorite target more than any other receiver, but all is still not perfectly well within the program.");
                         }
                     }
-                    else if(cursedQB.statsPassComp/cursedQB.statsPassAtt * 100 > 65){
+                    else if(100*cursedQB.statsPassComp/Math.max(1,cursedQB.statsPassAtt) > 59){
                         //QB had a good game but didn't hit his old favorite more than other WRs
-                        newsStories.get(curseDevelopingWeek+1).add("Team Unrest Continues at " + saveCurse.name + ">Quarterback " + cursedQB.name + " looked good in his season opener, throwing " + cursedQB.statsPassComp + " completions for " + cursedQB.statsPassYards + " yards, primairily to receivers not named " + cursedWR.name + ". Sources within the program have remained quiet since last week's locker room scuffle between the once tight QB-WR duo, but one thing is clear: " + cursedQB.name.replaceAll(".* ","") + " has not forgotten.");
+                        newsStories.get(curseDevelopingWeek+1).add("Team Unrest Continues at " + saveCurse.name + ">Quarterback " + cursedQB.name + " looked good in his season opener, throwing " + cursedQB.statsPassComp + " completions for " + cursedQB.statsPassYards + " yards, primarily to receivers not named " + cursedWR.name + ". Sources within the program have remained quiet since last week's locker room scuffle between the once tight QB-WR duo, but one thing is clear: " + cursedQB.name.replaceAll(".* ","") + " has not forgotten.");
                     }
+                    else if(100*cursedQB.statsPassComp/Math.max(1,cursedQB.statsPassAtt) > 44 && 100*cursedQB.statsPassComp/Math.max(1,cursedQB.statsPassAtt) < 60){
+                        //QB was pretty much a non-factor
+                        String winOrLoss;
+                        if(findTeam((saveCurse.abbr)).wins == 0) winOrLoss = "loss";
+                        else winOrLoss = "win";
+
+                        newsStories.get(curseDevelopingWeek+1).add(cursedQB.name + " a Non-Factor in Season Opener>On the heels of a locker room fight that dominated national media and brought the leadership capabilities of the " + saveCurse.name + " coaching staff into question, starting quarterback " + cursedQB.name + " opened his season without much fanfare. Or much of anything. " + cursedQB.name.replaceAll(".* ","") + " threw for " + cursedQB.statsPassYards + " yards on " + cursedQB.statsPassComp + " for " + cursedQB.statsPassAtt + " passing, managing to look perfectly average in a season opening " + winOrLoss + ".");
+                    }
+
                     else{
-                        //QB had a bad game
-                        newsStories.get(curseDevelopingWeek+1).add(cursedQB.name + " Fails to Find Rhythm in Season Opener>Just over a week after reports of a locker room fight between " + saveCurse.name + " quarterback " + cursedQB.name + " and his favorite target, wide receiver " + cursedWR.name + ", " + cursedQB.name.replaceAll(".* ","") + " looked out of sorts in his season debut. Looking visibly disoriented and confused at times, " + cursedQB.name.replaceAll(".* ","") + " failed to break a 60% completion percentage as fans were left wondering if they were watching the beginnings of a lost year of development.");
+                        //QB had a bad game and the team lost
+                        if(findTeam((saveCurse.abbr)).wins == 0){
+                            newsStories.get(curseDevelopingWeek + 1).add(cursedQB.name + " Fails to Find Rhythm in Season Opener>Just over a week after reports surfaced of a locker room fight between " + saveCurse.name + " quarterback " + cursedQB.name + " and his favorite target, wide receiver " + cursedWR.name + ", the two are back in the media spotlight for a lackluster performance in a season opening loss. Looking visibly disoriented and confused at times, " + cursedQB.name.replaceAll(".* ", "") + " went just " + cursedQB.statsPassComp + " for " + cursedQB.statsPassAtt + " passing, and failed to achieve any consistency in a losing effort.");
+                        }
+                        else{ //QB looked crappy but the team managed to pull one out anyway
+                            newsStories.get(curseDevelopingWeek+1).add(saveCurse.name + " Manage a Win Despite Poor QB Play>Appearing to still be caught up in the locker room drama of last week, " + cursedQB.name + " had to get by with a little help from his friends. Going " + cursedQB.statsPassComp + " for " + cursedQB.statsPassAtt + " while looking lost at times, " + cursedQB.name.replaceAll(".* ","") + "'s performance left a lot to be desired. Still, the damage done was not enough to surrender a loss, and " + saveCurse.name + " marches into Week 2 with a 1-0 record.");
+                        }
+
                     }
                 break;
 
