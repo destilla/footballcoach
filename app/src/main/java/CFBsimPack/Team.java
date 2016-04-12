@@ -116,6 +116,9 @@ public class Team {
     public int teamStratOffNum;
     public int teamStratDefNum;
 
+    public boolean confTVDeal;
+    public boolean teamTVDeal;
+
     private static final int NFL_OVR = 90;
     private static final double NFL_CHANCE = 0.5;
 
@@ -265,6 +268,8 @@ public class Team {
             totalCCs = Integer.parseInt(teamInfo[6]);
             totalNCs = Integer.parseInt(teamInfo[7]);
             rivalTeam = teamInfo[8];
+            teamTVDeal = Boolean.parseBoolean(teamInfo[20]);
+            confTVDeal = Boolean.parseBoolean(teamInfo[21]);
             if (teamInfo.length >= 13) {
                 totalNCLosses = Integer.parseInt(teamInfo[9]);
                 totalCCLosses = Integer.parseInt(teamInfo[10]);

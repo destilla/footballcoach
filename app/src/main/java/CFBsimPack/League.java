@@ -427,6 +427,90 @@ public class League {
                         newsStories.get(0).add("Success in the Classroom Spilling Onto the Field>" + saveBless.name + " find themselves in an unusual, but agreeable, position. The university, which has been slowly increasing admissions standards and taking strives to improve it's academic offerings, has begun to find itself counted among the Top 100 schools nationwide. As a result, the football Program program is finding itself with a new breed of recruit: smarter, more driven, and more capable of learning complex schemes. " + saveBless.name + " also finds itself with increased overall attention, as its name is beginning to have association with some of the most academically rigorous institutions in the country. As the school's mission to improve its academic standing continues, it stands to reason that it will enjoy an increased level of prestige.");
                         break;
 
+                    case 7:
+                        //TV Deal -- Each conf will have it's own network name and a story about a network getting a TV deal can't be posted more than once (same for individual tv deals)
+                        //If the conference doesn't get a TV deal, saveBless will get an individual deal which alters the story if/when the conference gets their own network
+
+                        String networkName; // Name of conf TV network
+
+                        switch(getConfNumber(saveBless.conference)){ //Set name using switch method fed by conference's number
+                            case 0:
+                                networkName = "SOUTH Sportsnet";
+                                break;
+                            case 1:
+                                networkName = "LAKES Vision";
+                                break;
+                            case 2:
+                                networkName = "The NORTH Network";
+                                break;
+                            case 3:
+                                networkName = "COWBY Championship Channel";
+                                break;
+                            case 4:
+                                networkName = "PACIF Pics";
+                                break;
+                            case 5:
+                                networkName = "MOUNT Mega Sports";
+                                break;
+                            default:
+                                networkName = "Collegiate Sports Network";
+                                break;
+                        }
+
+                        //Setup variables to check for individual Team TV deals
+                        int teamTVDeals = 0;
+                        ArrayList<String> tvDealTeams = new ArrayList<String>();
+
+                        for (int ttv = 0; i < conferences.get(getConfNumber(saveBless.conference)).confTeams.size(); ttv++){ //Check each team in the conference
+                            if(conferences.get(getConfNumber(saveBless.conference)).confTeams.get(ttv).teamTVDeal){ //To see if they have an individual deal
+                                teamTVDeals++; //If they do, increment teamTVDeals
+                                tvDealTeams.add(conferences.get(getConfNumber(saveBless.conference)).confTeams.get(ttv).name); //and add their name to the list of teams with a deal
+                            }
+                        }
+
+                        //Lets write some news -- Start by checking if the conf has a deal, if every team has their own deal, and a 20% chance
+                        if(Math.random() <= 0.20 && !findTeamAbbr(saveBless.abbr).confTVDeal && teamTVDeals == 0){ //If no teams have individual deals and the conference has no network, 20% a conference network is formed
+                            //Conference TV Deal -- Plus 5 prestige to the conference's member schools
+                            newsStories.get(0).add(saveBless.conference + " Announces Launch of New TV Network>In a joint press conference between conference officials and all member schools, The " + saveBless.conference + " Conference announced the launch of it's new TV network " + networkName + ". The network, which was largely spearheaded by member school " + saveBless.name + " is expected to increase the revenue and recruiting range of member schools in ways previously unseen by the conference. The channel goes live next week with the first broadcast expected to be the morning matchup between " + saveBless.gameSchedule.get(0).homeTeam.name + " and " + saveBless.gameSchedule.get(0).awayTeam.name + ".");
+
+                            //Add prestige and set confTVDeal to true for each team so that the next time this comes around, a duplicate story won't be posted about a network being formed (and prestige is only granted once)
+                           for(int ctv = 0; ctv < conferences.get(getConfNumber(saveBless.conference)).confTeams.size(); ctv++){
+                               conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).confTVDeal = true;
+                               conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).teamPrestige += 5;
+                           }
+                        }
+
+                        //Now check to see if it failed because a Team TV Deal Exists
+                        else if(Math.random() <= 0.20 && !findTeamAbbr(saveBless.abbr).confTVDeal && teamTVDeals != 0){
+                            //Conference TV Deal -- But there had to be negotiations with the teams that already had TV deals -- Plus prestige to the conference members
+                            //Teams that already have individual deals don't get the bonus prestige (or maybe get less) cause they were already on TV
+                            newsStories.get(0).add("FILL ME IN WITH A STORY ABOUT THE BIRTH OF A CONFERENCE NETWORK BUT THERE WERE NEGOTIATIONS WITH TEAMS THAT HAD INDIVIDUAL DEALS");
+
+                            //Add prestige and set confTVDeal to true for each team so that the next time this comes around, a duplicate story won't be posted about a network being formed (and prestige is only granted once)
+                            for(int ctv = 0; ctv < conferences.get(getConfNumber(saveBless.conference)).confTeams.size(); ctv++) {
+                                conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).confTVDeal = true;
+                                if(tvDealTeams.contains(conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).name)){
+                                    conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).teamPrestige += 1; // Your TV already exists, so this whole conference TV network is whatever to you
+                                }
+                                else {
+                                    conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).teamPrestige += 5; // Welcome to the Small Screen, bay bee!
+                                }
+                            }
+
+                        }
+
+                        //Check now to see if it was the 20% chance that failed
+                        else if(!findTeamAbbr(saveBless.abbr).confTVDeal && !findTeamAbbr(saveBless.abbr).teamTVDeal){ //If no conf tv deal and no team tv deal -- Congrats the saveBless.name Sports Network is born!
+                            newsStories.get(0).add("FILL ME IN WITH A STORY ABOUT THE BIRTH OF A TEAM NETWORK");
+                            findTeamAbbr(saveBless.abbr).teamTVDeal = true;
+                        }
+
+                        else { //There's a Conf TV deal, or a Team TV deal, or both, and the chance to form the Conf network failed, so, pull another story
+                            i--;
+                            break;
+                        }
+                        break;
+
 
                     default:
                         i--;
@@ -486,7 +570,7 @@ public class League {
                         break;
 
                     case 3:
-                        //Hazing rituals by upper-classmen reported by under-classmen and scared off recruits -- Curse Developing #1
+                        //Hazing rituals by upperclassmen reported by underclassmen and scared off recruits -- Curse Developing #1
 
                         //Figure out if the recruit scared off was a RS (if the cursed team is rivals with the user team) or a FR
                         String starRSOrFR;
@@ -1911,7 +1995,7 @@ public class League {
                     (t.totalWins - t.wins) + "," + (t.totalLosses - t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
                     t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," +
                     t.teamStratOffNum + "," + t.teamStratDefNum + "," + (t.showPopups ? 1 : 0) + "," +
-                    t.winStreak.getStreakCSV() + "%" + t.evenYearHomeOpp + "%\n");
+                    t.winStreak.getStreakCSV() + t.teamTVDeal + "," + t.confTVDeal + "%" + t.evenYearHomeOpp + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }
