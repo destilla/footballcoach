@@ -359,48 +359,68 @@ public class League {
                 storyLastName = storyFullName.replaceAll(".* ", "");
                 String storyPlayer;
 
-                switch((int)(Math.random() * 4)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                for(int i = 0; i < 1; i++){
+                switch((int)(Math.random() * 5)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Hired a shiny new coach who used to play for the school (feed those Vol fans wishing for Peyton something to dream on)
-                        newsStories.get(0).add("Blue Chip hire for Bad Break University>" + saveBless.name + " announced the hire of alumnus and former professional coach " +getRandName()+", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
+                        newsStories.get(0).add("Blue Chip hire for Bad Break University>" + saveBless.name + " announced the hire of alumnus and former professional coach " + getRandName() + ", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
                         break;
+
                     case 1:
                         //Rich Sports Apparel CEO alum giving flashy uniforms to the school
-                        newsStories.get(0).add("Fashion Speaks Louder Than Words>Renowned sports apparel mogul and " + saveBless.name + " alumnus " +storyFullName+" has declared war on boring uniforms. " + storyLastName +" has pledged his company's services to \"ensure that the university's football team never wears the same uniform twice.\" Recruits are already abuzz on social media declaring their newly found interest in playing for the school.");
+                        newsStories.get(0).add("Fashion Speaks Louder Than Words>Renowned sports apparel mogul and " + saveBless.name + " alumnus " + storyFullName + " has declared war on boring uniforms. " + storyLastName + " has pledged his company's services to \"ensure that the university's football team never wears the same uniform twice.\" Recruits are already abuzz on social media declaring their newly found interest in playing for the school.");
                         break;
-                    case 2:
-                        //Get the first defensive player that isn't a Freshman (or use a random name and say it was a coach if no players available) and use their name to describe being on the 'CFB News' top play for 50 days -- Or that a video of coach went viral. Coach story is just a backup plan for the player story (in case somehow the whole starting D is freshmen)
-                        // Only using the first 4 of the front 7, we'll just assume it's a 3-4 defense and those are their linebackers
 
+                    case 2:
+                        //Get the first defensive player that isn't a Freshman and use their name to describe being on the 'CFB News' top play for 50 days
+                        // Only using the first 4 of the front 7, we'll just assume it's a 3-4 defense and those are their linebackers
+                        // If no suitable players, decrement i and retry the loop for a usable story
                         String playerLastName;
                         if (saveBless.getS(0).year >= 2) storyPlayer = saveBless.getS(0).name;
-                        else if (saveBless.getCB(0).year >= 2) storyPlayer = saveBless.getCB(0).name;
-                        else if (saveBless.getF7(0).year >= 2) storyPlayer = saveBless.getF7(0).name;
-                        else if (saveBless.getCB(1).year >= 2) storyPlayer = saveBless.getCB(1).name;
-                        else if (saveBless.getF7(1).year >= 2) storyPlayer = saveBless.getF7(1).name;
-                        else if (saveBless.getCB(2).year >= 2) storyPlayer = saveBless.getCB(2).name;
-                        else if (saveBless.getF7(2).year >= 2) storyPlayer = saveBless.getF7(2).name;
-                        else if (saveBless.getF7(3).year >= 2) storyPlayer = saveBless.getF7(3).name;
-                        else storyPlayer = storyFullName;
+                        else if (saveBless.getCB(0).year >= 2)
+                            storyPlayer = saveBless.getCB(0).name;
+                        else if (saveBless.getF7(0).year >= 2)
+                            storyPlayer = saveBless.getF7(0).name;
+                        else if (saveBless.getCB(1).year >= 2)
+                            storyPlayer = saveBless.getCB(1).name;
+                        else if (saveBless.getF7(1).year >= 2)
+                            storyPlayer = saveBless.getF7(1).name;
+                        else if (saveBless.getCB(2).year >= 2)
+                            storyPlayer = saveBless.getCB(2).name;
+                        else if (saveBless.getF7(2).year >= 2)
+                            storyPlayer = saveBless.getF7(2).name;
+                        else if (saveBless.getF7(3).year >= 2)
+                            storyPlayer = saveBless.getF7(3).name;
+                        else{
+                            System.out.println("No suitable defensive players, new bless story");
+                            i--;
+                            break;
+                        }
 
-                        playerLastName = storyPlayer.replaceAll(".* ", "");
-                        //Coach Story -- Inspired by that time Kliff did the stanky leg in a circle of Tech players
-                        if (storyPlayer.equals(storyFullName)) newsStories.get(0).add("Moves Like a Dancer from the Body of a Coach>When a cell phone recording of Coach " + storyFullName + " out dancing his players at the end of a Spring practice was uploaded to the internet, " +storyLastName + " thought nothing of it. When it hit one million views over night, Coach took notice. In response to wild popularity his moves have recieved, " + storyLastName + " has made it a new tradition at " + saveBless.name + " to have a dance off with all prospective recruits, much to the delight of fans and students, who have turned out in large numbers to watch the competitions." );
-                            //Player Story
-                        else newsStories.get(0).add("The Hit That Keeps On Giving>For the 50th consecutive day, " + saveBless.name + " star " + storyPlayer + "'s explosive hit against " + saveBless.rivalTeam + " sits atop the CFB News Top Plays list. " + playerLastName + " credits Coach " + getRandName() + " with providing him the inspiration to stay in the weight room late and think clearly during plays. During its reign, \"The Hit\" has dethroned and outlasted the " + teamList.get((int)(Math.random()*60)).name + " Baseball Team's \"Puppies in the Park\" viral video, and " + teamList.get((int)(Math.random()*60)).name + "'s Make-A-Wish TD on the Top Plays list." );
+                        playerLastName = storyPlayer.replaceAll(".* ", ""); // For referencing last name all news like
+                        newsStories.get(0).add("The Hit That Keeps On Giving>For the 50th consecutive day, " + saveBless.name + " star " + storyPlayer + "'s explosive hit against " + saveBless.rivalTeam + " sits atop the CFB News Top Plays list. " + playerLastName + " credits Coach " + getRandName() + " with providing him the inspiration to stay in the weight room late and think clearly during plays. During its reign, \"The Hit\" has dethroned and outlasted the " + teamList.get((int) (Math.random() * 60)).name + " Baseball Team's \"Puppies in the Park\" viral video, and " + teamList.get((int) (Math.random() * 60)).name + "'s Make-A-Wish TD on the Top Plays list.");
                         break;
 
                     case 3:
                         // Free Prestige, is it in you? Set developing story for blessed team to true and add a story
                         newsStories.get(0).add(saveBless.name + " Nutrition Dept. Electro-Lighting Up the Field>Nutrition and Sport Science graduate students at " + saveBless.name + " are helping their team gain the upper hand on the field with their own work in the lab. At a press conference held today outside the team's practice field, the university announced the first production run of it's own sports enhancement drink. The drink is expected to be available in stores mid-season with an initial offering of three flavors: \"Berry Blitz\", \"Hail Cherry\", and \"The Man-Go Route.\" Despite recent struggles by " + saveBless.name + " on the football field, the school is hoping to boost it's overall image with this move.");
                         blessDevelopingStory = true;
-                        blessDevelopingWeek = ((int)(Math.random()*4)) + 5; // Print a new story "mid-season" (random week between 6 and 10)
+                        blessDevelopingWeek = ((int) (Math.random() * 4)) + 5; // Print a new story "mid-season" (random week between 6 and 10)
                         blessDevelopingCase = 1;
                         System.out.println("Check news in week " + (blessDevelopingWeek + 1) + " for " + saveBless.name + "'s story development");
+                        break;
+
+                    case 4:
+                        //Inspired by that time Kliff did the stanky leg in a circle of Tech players)
+                        newsStories.get(0).add("Moves Like a Dancer from the Body of a Coach>When a cell phone recording of Coach " + storyFullName + " out dancing his players at the end of a Spring practice was uploaded to the internet, " + storyLastName + " thought nothing of it. When it hit one million views over night, Coach took notice. In response to wild popularity his moves have received, " + storyLastName + " has made it a new tradition at " + saveBless.name + " to have a dance off with all prospective recruits, much to the delight of fans and students, who have turned out in large numbers to watch the competitions.");
+                        break;
+
 
                     default:
-                        //newsStories.get(0).add(saveBless.name + " news story bless test case out of range");
+                        i--;
+                        System.out.println("Error in selecting bless story (got default case), retrying...");
                         break;
+                    }
                 }
 
             }
@@ -411,55 +431,59 @@ public class League {
                 storyLastName = storyFullName.replaceAll(".* ", "");
                 String storyPlayer;
 
-                switch((int)(Math.random() * 4)){ //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                for (int i = 0; i < 1; i++){
+                switch((int)(Math.random() * 6)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Team broke the rules, placed on probation and it's harder to recruit (-prestige)
-                        newsStories.get(0).add(saveCurse.name + " Rocked by Infractions Scandal!>After an investigation during the offseason, "+saveCurse.name +" has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + storyFullName + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
+                        newsStories.get(0).add(saveCurse.name + " Rocked by Infractions Scandal!>After an investigation during the offseason, " + saveCurse.name + " has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + storyFullName + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
                         break;
 
                     case 1:
                         //Sleepover w/ star recruit
-                        newsStories.get(0).add(saveCurse.name + " Coach Redefines \"Strange Bed Fellows\">" + saveCurse.name + " Head Coach " + storyFullName + " has landed in hot water after he was discovered at the home of a Class of " + (getYear() + 2) + " recruit, having a sleepover. Family of the recruit, who's name has been withheld, state that Coach " + storyLastName + " and the recruit \"watched GetPix and chilled.\" Despite a lack of charges against " +storyLastName+", the university has placed an indefinite suspension to the coach's recruiting travel privileges, pending an internal investigation.");
+                        newsStories.get(0).add(saveCurse.name + " Coach Redefines \"Strange Bed Fellows\">" + saveCurse.name + " Head Coach " + storyFullName + " has landed in hot water after he was discovered at the home of a Class of " + (getYear() + 2) + " recruit, having a sleepover. Family of the recruit, who's name has been withheld, state that Coach " + storyLastName + " and the recruit \"watched GetPix and chilled.\" Despite a lack of charges against " + storyLastName + ", the university has placed an indefinite suspension to the coach's recruiting travel privileges, pending an internal investigation.");
                         break;
 
                     case 2:
-                        //Get the first offensive position player that isn't a Freshman and is good enough to be decent starter (or use a random name and say it was a coach if no players available) and use their name to describe them pulling a reverse catfish...literally -- Or that Coach lost his temper at a pre-season booster event and scared off some donors. Coach story is just a backup plan for the player story (in case somehow the whole starting O is unavailable)
-                        // Only using the first 4 of the front 7, we'll just assume it's a 3-4 defense and those are their linebackers
-
+                        //Get the first offensive position player that isn't a Freshman and is good enough to be a decent starter and use their name to describe them pulling a reverse catfish...literally
+                        //If no suitable players, decrement i and break so that the loop can try again to find a good story
                         String playerGFSchool;
-                        if (saveCurse.getQB(0).year >= 2 && saveCurse.getQB(0).ratOvr > 85) storyPlayer = saveCurse.getQB(0).name;
-                        else if (saveCurse.getRB(0).year >= 2 && saveCurse.getRB(0).ratOvr > 79) storyPlayer = saveCurse.getRB(0).name;
-                        else if (saveCurse.getWR(0).year >= 2  && saveCurse.getWR(0).ratOvr > 79) storyPlayer = saveCurse.getWR(0).name;
-                        else if (saveCurse.getRB(1).year >= 2  && saveCurse.getRB(1).ratOvr > 79) storyPlayer = saveCurse.getRB(1).name;
-                        else if (saveCurse.getWR(1).year >= 2  && saveCurse.getWR(1).ratOvr > 79) storyPlayer = saveCurse.getWR(1).name;
-                        else if (saveCurse.getWR(2).year >= 2 && saveCurse.getWR(2).ratOvr > 79) storyPlayer = saveCurse.getWR(2).name;
-                        else storyPlayer = storyFullName;
+                        if (saveCurse.getQB(0).year >= 2 && saveCurse.getQB(0).ratOvr > 85)
+                            storyPlayer = saveCurse.getQB(0).name;
+                        else if (saveCurse.getRB(0).year >= 2 && saveCurse.getRB(0).ratOvr > 79)
+                            storyPlayer = saveCurse.getRB(0).name;
+                        else if (saveCurse.getWR(0).year >= 2 && saveCurse.getWR(0).ratOvr > 79)
+                            storyPlayer = saveCurse.getWR(0).name;
+                        else if (saveCurse.getRB(1).year >= 2 && saveCurse.getRB(1).ratOvr > 79)
+                            storyPlayer = saveCurse.getRB(1).name;
+                        else if (saveCurse.getWR(1).year >= 2 && saveCurse.getWR(1).ratOvr > 79)
+                            storyPlayer = saveCurse.getWR(1).name;
+                        else if (saveCurse.getWR(2).year >= 2 && saveCurse.getWR(2).ratOvr > 79)
+                            storyPlayer = saveCurse.getWR(2).name;
+                        else {
+                            i--;
+                            break;
+                        }
 
                         //If the cursed team is Indiana, the gf's school was American Samoa and vice versa, otherwise gf school is random (and potentially the same as cursed school)
                         if (saveCurse.abbr.equals("SAM")) playerGFSchool = "Indiana";
                         else if (saveCurse.abbr.equals("IND")) playerGFSchool = "American Samoa";
-                        else playerGFSchool = teamList.get((int)(Math.random()*60)).name;
+                        else playerGFSchool = teamList.get((int) (Math.random() * 60)).name;
                         String storyPlayerLast = storyPlayer.replaceAll(".* ", "");
 
-
-                        //Coach Story -- Inspired a little bit by Sark, a little bit by "I'M A MAN, I'M 40", and also a little bit by how much Chip hated the political game
-                        if (storyPlayer.equals(storyFullName)) newsStories.get(0).add("Coach Tries, Fails, to Shield Team from Booster Politics>" + saveCurse.name + " Head Coach " + storyFullName + " is making headlines this week for launching into an expletive filled tirade directed at athletics boosters at a private \"Boosters Only\" event. " + storyLastName + " was set off when a particular booster asked for star quarterback " + saveCurse.getQB(0).name + "'s phone number and began chastising the audience for \"caring too much about a bunch of kids playing football.\" Athletic Director " + getRandName() + " released a statement stating \"The Athletics Department appreciates the support of all fans of all " + saveCurse.name + " sports, and we will be working with " + storyFirstName + " to help him understand that.\"");
-                            //Player Story
-                        else newsStories.get(0).add(saveCurse.name + " Star Demonstrates The Rare \"Reverse Catfish\">After winning the nation's heart by finishing out the " + (getYear() - 1) + " season despite losing his girlfriend to a freak fishing accident, " +saveCurse.name+" star "+storyPlayer+" now faces intense scrutiny from national media for allegedly making the whole thing up. " +storyPlayerLast + " originally claimed his girlfriend was a student at " +playerGFSchool+", until internet message board users discovered a private blog run by the player that revealed the truth; the girlfriend was fake, and her name was actually the name of his pet catfish. The university's athletics department officially declined to comment, citing an ongoing internal investigation.");
+                        newsStories.get(0).add(saveCurse.name + " Star Demonstrates The Rare \"Reverse Catfish\">After winning the nation's heart by finishing out the " + (getYear() - 1) + " season despite losing his girlfriend to a freak fishing accident, " + saveCurse.name + " star " + storyPlayer + " now faces intense scrutiny from national media for allegedly making the whole thing up. " + storyPlayerLast + " originally claimed his girlfriend was a student at " + playerGFSchool + ", until internet message board users discovered a private blog run by the player that revealed the truth; the girlfriend was fake, and her name was actually the name of his pet catfish. The university's athletics department officially declined to comment, citing an ongoing internal investigation.");
                         break;
 
                     case 3:
-                        //Hazing rituals by upper-classmen reported by under-classmen and scared off recruits
+                        //Hazing rituals by upper-classmen reported by under-classmen and scared off recruits -- Curse Developing #1
 
                         //Figure out if the recruit scared off was a RS (if the cursed team is rivals with the user team) or a FR
                         String starRSOrFR;
 
                         //Does the cursed team's rivals have an RS players and is the best RS an overall better player than the best FR
-                        if (findTeamAbbr(saveCurse.rivalTeam).teamRSs.size()> 0 && (findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).ratOvr >= findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).ratOvr) ){
+                        if (findTeamAbbr(saveCurse.rivalTeam).teamRSs.size() > 0 && (findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).ratOvr >= findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).ratOvr)) {
                             // If so, the scared off player will be the RS
                             starRSOrFR = ("highly sought after recruit and current " + findTeamAbbr(saveCurse.rivalTeam).name + " redshirt freshman " + findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).name);
-                        }
-                        else { // Grab the best Freshman on the rival's team
+                        } else { // Grab the best Freshman on the rival's team
                             starRSOrFR = (findTeamAbbr(saveCurse.rivalTeam).name + "'s star freshman recruit " + findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).name);
                         }
 
@@ -470,11 +494,36 @@ public class League {
                         curseDevelopingCase = 1; // First developing curse story
                         break;
 
+                    case 4:
+                        //Coach angers boosters -- Inspired a little bit by Sark, a little bit by "I'M A MAN, I'M 40", and also a little bit by how much Chip hated the political game
+                        newsStories.get(0).add("Coach Tries, Fails, to Shield Team from Booster Politics>" + saveCurse.name + " Head Coach " + storyFullName + " is making headlines this week for launching into an expletive filled tirade directed at athletics boosters at a private \"Boosters Only\" event. " + storyLastName + " was set off when a particular booster asked for star quarterback " + saveCurse.getQB(0).name + "'s phone number and began chastising the audience for \"caring too much about a bunch of kids playing football.\" Athletic Director " + getRandName() + " released a statement stating \"The Athletics Department appreciates the support of all fans of all " + saveCurse.name + " sports, and we will be working with " + storyFirstName + " to help him understand that.\"");
+                        break;
+
+                    case 5:
+                        //Huge team fight that coaches were slow to dispel and now is bleeding over into the season -- Curse Developing #2
+
+                        String saveCurseGameOneOpp = null;
+
+                        //Get cursed team's first opponent of the year
+                        if (saveCurse.gameSchedule.get(0).homeTeam == saveCurse){
+                            saveCurseGameOneOpp = saveCurse.gameSchedule.get(0).awayTeam.name;
+                        }
+                        else if (saveCurse.gameSchedule.get(0).awayTeam == saveCurse) {
+                            saveCurseGameOneOpp = saveCurse.gameSchedule.get(0).homeTeam.name;
+                        }
+
+                        newsStories.get(0).add("Collegiate Boxing Returns to " + saveCurse.name + "'s Locker Room>Sources inside the football program at " + saveCurse.name + " have reported that an offseason dispute between between starting quarterback " + saveCurse.teamQBs.get(0).name + " and top wide receiver " + saveCurse.teamWRs.get(1).name + " was left to fester over the summer and finally came to blows this afternoon. When contacted for comment, Head Coach " + storyFullName + " said only that he was \"aware of an issue within the team\" and that he will be \"looking into the matter further.\" " + saveCurse.name + " kicks their season off against " + saveCurseGameOneOpp + " next Saturday.");
+                        curseDevelopingStory = true;
+                        curseDevelopingWeek = 0;
+                        curseDevelopingCase = 2; //Developing story will be about performance of QB and WR in Week 1
+
+                        break;
 
                     default:
-                        //newsStories.get(0).add(saveCurse.name + " news story curse test case out of range");
-                        System.out.println("Curse Team News Story Broke");
+                        i--;
+                        System.out.println("Error in selecting curse story (got default case), retrying...");
                         break;
+                    }
                 }
 
             }
@@ -601,8 +650,8 @@ public class League {
 
         if (curseDevelopingStory){
             switch (curseDevelopingCase){ //Which story was triggered?
-                    case 1: //Lack of punishment for hazing underclassmen
-                        if (curseDevelopingWeek == currentWeek) { //Print this story when the time comes, but from the player's perspective, print it in the week prior to the current week (add it to week 1 when the player sees week 2 -- Once games are played, the week is advanced)
+                case 1: //Lack of punishment for hazing underclassmen
+                        if (curseDevelopingWeek == currentWeek) { //Print this story when the time comes, but from the user's perspective, print it in the week prior to the current week (add it to week 1 when the player sees week 2 -- Once games are played, the week is advanced)
                             //No one missed playing time, no word from Coach
                         newsStories.get(curseDevelopingWeek+1).add(saveCurse.name + " Hazing Scandal Update>After last week's report on the " + saveCurse.name + " hazing scandal, the college football world waited to see what punishments would be handed out to " + saveCurse.teamSRs.get(0).name + " and other implicated but unnamed players. With Week 1 officially in the books we have an answer: Nothing. Based on the final fall practice depth chart, no players missed playing time or starting status (" + saveCurse.teamSRs.get(0).name.replace("*. ","") + " played every down he was available for). Coach " + storyLastName + " has remained silent on the issue.");
                 }
@@ -615,6 +664,47 @@ public class League {
                             newsStories.get(curseDevelopingWeek+2).add("Punishment Announced for " + saveCurse.name + " Upperclassmen>In a statement released through its Athletics Department today, " +saveCurse.name+" Head Coach " + storyFullName + " announced that he had spoken with each member of the team privately and determined who the upperclassmen responsible for the over-the-top hazing occurring within the program were. Not wishing to draw further scrutiny to individual players, " +storyLastName+" stated that the group of players would be responsible for identifying the best way to give back to the local community and carrying out whatever volunteer work was necessary to see the project through to completion.");
                         }
                 }
+                case 2: //QB and WR had a fight, how did the first game go? -- More scenarios to be added later
+                    PlayerQB cursedQB;
+                    PlayerWR cursedWR;
+                    PlayerWR cursedWR2;
+                    PlayerWR cursedWR3;
+
+                    if(saveCurse.gameSchedule.get(0).homeTeam == saveCurse){
+                        cursedQB = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).homeTeam.getQB(0);
+                        cursedWR = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).homeTeam.getWR(0);
+                        cursedWR2 = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).homeTeam.getWR(1);
+                        cursedWR3 = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).homeTeam.getWR(2);
+                    }
+                    else{
+                        cursedQB = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).awayTeam.getQB(0);
+                        cursedWR = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).awayTeam.getWR(0);
+                        cursedWR2 = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).awayTeam.getWR(1);
+                        cursedWR3 = findTeamAbbr(saveCurse.abbr).gameSchedule.get(0).awayTeam.getWR(2);
+                    }
+                    if ((cursedQB.statsPassComp/cursedQB.statsPassAtt * 100) > 60 && cursedWR.statsTargets > cursedWR2.statsTargets && cursedWR.statsTargets > cursedWR3.statsTargets) {
+                        if (findTeam((saveCurse.abbr)).wins == 0) {
+                            //QB and WR still in sync, but the team lost
+                            newsStories.get(curseDevelopingWeek + 1).add(saveCurse.name + " Locker Room Scuffle Affects Week 1 Performance>Despite managing to find their sync after a locker room altercation last week, quarterback " + cursedQB.name + " and wide receiver " + cursedWR.name + " still left a lasting negative impression in the minds and performance of their teammates. " + cursedQB.name + "'s " + cursedQB.statsPassYards + " yards and " + cursedWR.name + "'s " + cursedWR.statsReceptions + " receptions could not bring the rest of the team out of the funk that eventually saw them drop their season opener.");
+                        } else {
+                            //Hey, boys will be boys, right? Team won and QB/WR still hooked up for a good game
+                            newsStories.get(curseDevelopingWeek + 1).add("Water Under the Bridge at " + saveCurse.name + ">" + saveCurse.name + " didn't appear to remember the locker room altercation from last week nor the media attention it garnered as " + cursedQB.name + " threw for " + cursedQB.statsPassYards + " yards and " + cursedWR.name + " caught " + cursedWR.statsReceptions + " balls to help lift " + saveCurse.name + " in their season opener. " + cursedQB.name.replaceAll(".* ", "") + " still looked to his favorite target more than any other receiver, but all is still not perfectly well within the program.");
+                        }
+                    }
+                    else if(cursedQB.statsPassComp/cursedQB.statsPassAtt * 100 > 65){
+                        //QB had a good game but didn't hit his old favorite more than other WRs
+                        newsStories.get(curseDevelopingWeek+1).add("Team Unrest Continues at " + saveCurse.name + ">Quarterback " + cursedQB.name + " looked good in his season opener, throwing " + cursedQB.statsPassComp + " completions for " + cursedQB.statsPassYards + " yards, primairily to receivers not named " + cursedWR.name + ". Sources within the program have remained quiet since last week's locker room scuffle between the once tight QB-WR duo, but one thing is clear: " + cursedQB.name.replaceAll(".* ","") + " has not forgotten.");
+                    }
+                    else{
+                        //QB had a bad game
+                        newsStories.get(curseDevelopingWeek+1).add(cursedQB.name + " Fails to Find Rhythm in Season Opener>Just over a week after reports of a locker room fight between " + saveCurse.name + " quarterback " + cursedQB.name + " and his favorite target, wide receiver " + cursedWR.name + ", " + cursedQB.name.replaceAll(".* ","") + " looked out of sorts in his season debut. Looking visibly disoriented and confused at times, " + cursedQB.name.replaceAll(".* ","") + " failed to break a 60% completion percentage as fans were left wondering if they were watching the beginnings of a lost year of development.");
+                    }
+                break;
+
+
+                default:
+                //We really shouldn't be here, turn back now!
+                break;
 
             }
 
