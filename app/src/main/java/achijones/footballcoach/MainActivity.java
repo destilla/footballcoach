@@ -334,7 +334,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Set up "Schedule" Button
-
         teamScheduleButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
