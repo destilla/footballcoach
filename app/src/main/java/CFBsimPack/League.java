@@ -360,7 +360,7 @@ public class League {
                 String storyPlayer;
 
                 for(int i = 0; i < 1; i++){
-                switch(6) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 7)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Hired a shiny new coach who used to play for the school (feed those Vol fans wishing for Peyton something to dream on)
                         newsStories.get(0).add("Blue Chip hire for Bad Break University>" + saveBless.name + " announced the hire of alumnus and former professional coach " + getRandName() + ", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
@@ -444,7 +444,7 @@ public class League {
                 String storyPlayer;
 
                 for (int i = 0; i < 1; i++){
-                switch(6) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 7)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Team broke the rules, placed on probation and it's harder to recruit (-prestige)
                         newsStories.get(0).add(saveCurse.name + " Rocked by Infractions Scandal!>After an investigation during the offseason, " + saveCurse.name + " has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + storyFullName + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
