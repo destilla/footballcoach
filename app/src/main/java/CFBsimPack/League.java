@@ -360,7 +360,7 @@ public class League {
                 String storyPlayer;
 
                 for(int i = 0; i < 1; i++){
-                switch((int)(Math.random() * 6)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch(6) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Hired a shiny new coach who used to play for the school (feed those Vol fans wishing for Peyton something to dream on)
                         newsStories.get(0).add("Blue Chip hire for Bad Break University>" + saveBless.name + " announced the hire of alumnus and former professional coach " + getRandName() + ", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
@@ -422,6 +422,11 @@ public class League {
                         newsStories.get(0).add("Breaking News: College Athletes Love Partying>A stunning development out of " + saveBless.name + " today, as it's being reported that college athletes, and athletic recruits for that matter, love to \"party and just have a good time.\" This surprising development grew out of reports on social media that " + saveBless.name + " fall practices were drawing large crowds. These stories eventually led to more reports that full fledged parties, complete with beer and music, were taking place after each practice. Recruits have been abuzz on social media declaring their intent to check out these parties and their desire to play for a school that \"knows how to have a good time.\" Coaching staffs around the country are scratching their collective heads in bewilderment while " + saveBless.name + " enjoys their sudden and unexpected recruiting boon.");
                         break;
 
+                    case 6:
+                        //Increase academic standards have yielded an overall stronger group of recruits for saveBless.name
+                        newsStories.get(0).add("Success in the Classroom Spilling Onto the Field>" + saveBless.name + " find themselves in an unusual, but agreeable, position. The university, which has been slowly increasing admissions standards and taking strives to improve it's academic offerings, has begun to find itself counted among the Top 100 schools nationwide. As a result, the football Program program is finding itself with a new breed of recruit: smarter, more driven, and more capable of learning complex schemes. " + saveBless.name + " also finds itself with increased overall attention, as its name is beginning to have association with some of the most academically rigorous institutions in the country. As the school's mission to improve its academic standing continues, it stands to reason that it will enjoy an increased level of prestige.");
+                        break;
+
 
                     default:
                         i--;
@@ -439,7 +444,7 @@ public class League {
                 String storyPlayer;
 
                 for (int i = 0; i < 1; i++){
-                switch((int)(Math.random() * 6)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch(6) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Team broke the rules, placed on probation and it's harder to recruit (-prestige)
                         newsStories.get(0).add(saveCurse.name + " Rocked by Infractions Scandal!>After an investigation during the offseason, " + saveCurse.name + " has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + storyFullName + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
@@ -524,6 +529,11 @@ public class League {
                         curseDevelopingWeek = 0;
                         curseDevelopingCase = 2; //Developing story will be about performance of QB and WR in Week 1
 
+                        break;
+
+                    case 6:
+                        //Academic Scandal -- Uni was falsifying grades (you-can't-do-that clap, clap, clapclapclap)
+                        newsStories.get(0).add(saveCurse.name + "'s Reputation Shaken by Fake Grading Scandal>" + saveCurse.name + " has announced the suspension of several university administrators pending an internal investigation into the falsification of grades for student athletes that were on the border of academic eligibility. Third party investigators uncovered the grading scheme after being asked to look into why several graduating players could not read the instructions provided with their Wonderlic Tests. Recruits from as far out as the class of " + (getYear() + 2) + " have rescinded verbal commitments, citing their desire to explore their options further. Currently, no academic or athletic sactions have been announced for the school.");
                         break;
 
                     default:
