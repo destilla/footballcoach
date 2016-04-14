@@ -360,7 +360,7 @@ public class League {
                 String storyPlayer;
 
                 for(int i = 0; i < 1; i++){
-                switch((int)(Math.random() * 6)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 8)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Hired a shiny new coach who used to play for the school (feed those Vol fans wishing for Peyton something to dream on)
                         newsStories.get(0).add("Blue Chip hire for Bad Break University>" + saveBless.name + " announced the hire of alumnus and former professional coach " + getRandName() + ", today. It was long rumored that the highly touted coach considered the position a \"dream job\", but talks between the two didn't heat up until this offseason. The hire certainly helps boost the prestige of the University's football program, which has fallen on hard times as of late.");
@@ -422,6 +422,137 @@ public class League {
                         newsStories.get(0).add("Breaking News: College Athletes Love Partying>A stunning development out of " + saveBless.name + " today, as it's being reported that college athletes, and athletic recruits for that matter, love to \"party and just have a good time.\" This surprising development grew out of reports on social media that " + saveBless.name + " fall practices were drawing large crowds. These stories eventually led to more reports that full fledged parties, complete with beer and music, were taking place after each practice. Recruits have been abuzz on social media declaring their intent to check out these parties and their desire to play for a school that \"knows how to have a good time.\" Coaching staffs around the country are scratching their collective heads in bewilderment while " + saveBless.name + " enjoys their sudden and unexpected recruiting boon.");
                         break;
 
+                    case 6:
+                        //Increase academic standards have yielded an overall stronger group of recruits for saveBless.name
+                        newsStories.get(0).add("Success in the Classroom Spilling Onto the Field>" + saveBless.name + " find themselves in an unusual, but agreeable, position. The university, which has been slowly increasing admissions standards and taking strives to improve it's academic offerings, has begun to find itself counted among the Top 100 schools nationwide. As a result, the football Program program is finding itself with a new breed of recruit: smarter, more driven, and more capable of learning complex schemes. " + saveBless.name + " also finds itself with increased overall attention, as its name is beginning to have association with some of the most academically rigorous institutions in the country. As the school's mission to improve its academic standing continues, it stands to reason that it will enjoy an increased level of prestige.");
+                        break;
+
+                    case 7:
+                        //TV Deal -- Each conf will have it's own network name and a story about a network getting a TV deal can't be posted more than once (same for individual tv deals)
+                        //If the conference doesn't get a TV deal, saveBless will get an individual deal which alters the story if/when the conference gets their own network
+
+                        String networkName; // Name of conf TV network
+
+                        switch(getConfNumber(saveBless.conference)){ //Set name using switch method fed by conference's number
+                            case 0:
+                                networkName = "SOUTH Sportsnet";
+                                break;
+                            case 1:
+                                networkName = "LAKES Vision";
+                                break;
+                            case 2:
+                                networkName = "The NORTH Network";
+                                break;
+                            case 3:
+                                networkName = "COWBY Championship Channel";
+                                break;
+                            case 4:
+                                networkName = "PACIF Pics";
+                                break;
+                            case 5:
+                                networkName = "MOUNT Mega Sports";
+                                break;
+                            default:
+                                networkName = (saveBless.conference + " Collegiate Sports Network");
+                                break;
+                        }
+
+                        //Setup variables to check for individual Team TV deals
+                        int teamTVDeals = 0;
+                        ArrayList<String> tvDealTeams = new ArrayList<String>();
+
+                        String memberSchoolsWithTV;
+
+                        for (int ttv = 0; ttv < conferences.get(getConfNumber(saveBless.conference)).confTeams.size(); ttv++){ //Check each team in the conference
+                            if(conferences.get(getConfNumber(saveBless.conference)).confTeams.get(ttv).teamTVDeal){ //To see if they have an individual deal
+                                teamTVDeals++; //If they do, increment teamTVDeals
+                                tvDealTeams.add(conferences.get(getConfNumber(saveBless.conference)).confTeams.get(ttv).name); //and add their name to the list of teams with a deal
+                            }
+                        }
+
+                        if (tvDealTeams.size() == 1){ //Set up string for story about teams with individual deals being negotiated with
+                            memberSchoolsWithTV = "member school " + tvDealTeams.get(0);
+                        }
+                        else{
+                            memberSchoolsWithTV = "member schools ";
+                            for(int tdt = 0; tdt < tvDealTeams.size(); tdt++){
+                                if(tdt == tvDealTeams.size()-1) { //If the last team in the list
+                                    memberSchoolsWithTV += " and ";
+                                }
+                                if (tvDealTeams.size() == 2){ //If just two teams, no need for a comma (SchoolX and SchoolY)
+                                    memberSchoolsWithTV += (tvDealTeams.get(tdt) + " ");
+                                }
+                                else{ //Need commas
+                                    if(tdt == tvDealTeams.size()-1){//Last team in the list, no need for a comma (, and SchoolZ)
+                                        memberSchoolsWithTV += (tvDealTeams.get(tdt) + " ");
+                                    }
+                                    else{ //A team at the start or middle of a list 3 or larger (School W, SchoolX, SchoolY, and)
+                                        //WE OXFORD COMMA NOW
+                                        memberSchoolsWithTV += (tvDealTeams.get(tdt) + ", ");
+                                    }
+                                }
+                            }
+                        }
+
+
+                        //Lets write some news -- Start by checking if the conf has a deal, if every team does not have their own deal, and a 20% chance
+                        if(Math.random() <= 0 && !findTeamAbbr(saveBless.abbr).confTVDeal && teamTVDeals == 0){ //If no teams have individual deals and the conference has no network, 20% a conference network is formed
+                            //Conference TV Deal -- Plus 5 prestige to the conference's member schools
+                            newsStories.get(0).add(saveBless.conference + " Announces Launch of New TV Network>In a joint press conference between conference officials and all member schools, The " + saveBless.conference + " Conference announced the launch of it's new TV network " + networkName + ". The network, which was largely spearheaded by member school " + saveBless.name + ", is expected to increase the revenue and recruiting range of member schools in ways previously unseen by the conference. The channel goes live next week with the first broadcast expected to be the morning matchup between " + saveBless.gameSchedule.get(0).homeTeam.name + " and " + saveBless.gameSchedule.get(0).awayTeam.name + ".");
+
+                            //Add prestige and set confTVDeal to true for each team so that the next time this comes around, a duplicate story won't be posted about a network being formed (and prestige is only granted once)
+                           for(int ctv = 0; ctv < conferences.get(getConfNumber(saveBless.conference)).confTeams.size(); ctv++){
+                               conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).confTVDeal = true;
+                               conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).teamPrestige += 5;
+                           }
+                        }
+
+                        //We didn't use the above story, so check to see if it failed because a Team TV Deal Exists
+                        else if(Math.random() <= 0.20 && !findTeamAbbr(saveBless.abbr).confTVDeal && teamTVDeals != 0){ //If 20% chance, no conf tv deal, but someone in the conf has an individual deal
+
+                            //Conference TV Deal -- But there had to be negotiations with the teams that already had TV deals -- Plus prestige to the conference members
+                            //Teams that already have individual deals don't get the bonus prestige (or maybe get less) cause they were already on TV
+                            newsStories.get(0).add(saveBless.conference + " Announces New Network After Lengthy Negotiations>After negotiations that went long into the night, The " + saveBless.conference + " Conference released a statement today detailing the launch of " + networkName + ", the conference's first exclusive TV network. Sources familiar with the situation explained that the agreement was delayed by negotiations with " + memberSchoolsWithTV + " who had previously inked TV deals of their own for team specific networks. Specific details were not released, but Conference Comissioner " + storyFullName + " did go on record as saying the only TV network for all conference teams will be " + networkName + " moving forward.");
+
+                            //Add prestige and set confTVDeal to true for each team so that the next time this comes around, a duplicate story won't be posted about a network being formed (and prestige is only granted once)
+                            for(int ctv = 0; ctv < conferences.get(getConfNumber(saveBless.conference)).confTeams.size(); ctv++) {
+                                conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).confTVDeal = true;
+                                if(tvDealTeams.contains(conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).name)){
+                                    //Give nothing to saveBless cause they already got a fat chunk of prestige
+                                    if(conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).name.equals(saveBless.name)) conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).teamPrestige += 0;
+                                    else conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).teamPrestige += 1; // Your TV network already existed, so this whole conference TV network is whatever to you
+                                }
+                                else {
+                                    conferences.get(getConfNumber((saveBless.conference))).confTeams.get(ctv).teamPrestige += 5; // Welcome to the Small Screen, bay bee!
+                                }
+                            }
+
+                        }
+
+                        //We didn't use either of the above stories, so now see if it's just the 20% chance that failed
+                        else if(!findTeamAbbr(saveBless.abbr).confTVDeal && !findTeamAbbr(saveBless.abbr).teamTVDeal){ //If no conf tv deal and no team tv deal -- Congrats, the saveBless.name Sports Network is born!
+                            if(saveBless.abbr.equals("HOL") || saveBless.abbr.equals("ULA")){//Different story for LA or Hollywood cause...well they're LA and Hollywood and they're inking a TV deal
+                                String holOrUlaTVName; //Different channel names for different schools
+                                if(saveBless.abbr.equals("HOL")){ //Hollywood St. Sportsnet -- LA Fans know and loathe the inspiration for this one
+                                    holOrUlaTVName = "Hollywood St announced today, that it will launch it's own exclusive athletics channel 'Hollywood St. Sportsnet'.";
+                                }
+                                else{ // ULA All Access, cause it's alliterative and catchy
+                                    holOrUlaTVName = "The University of Los Angeles announced that 'ULA All Access', a channel dedicated exclusively to hosting ULA Athletics content, is set to begin broadcasting.";
+                                }
+                                newsStories.get(0).add(saveBless.name + " Takes Advantage of Non-Athletic Local Talents>In a move that left everyone around the country wondering \"what took so long?\", " + holOrUlaTVName + " The channel goes live next week, with the first broadcast expected to be " + findTeamAbbr(saveBless.abbr).gameSchedule.get(0).awayTeam.name + " at " + findTeamAbbr(saveBless.abbr).gameSchedule.get(0).homeTeam.name + ". " + saveBless.name + " cited the wealth of local talent and expertise in the broadcasting industry as major catalysts for getting the network off the ground and on the air.");
+                            }
+                            else {//Any other school
+                                newsStories.get(0).add(saveBless.name + " Does Its Best Hollywood St Impression>In a move that's expected to greatly boost the national awareness and recruiting reach of " + saveBless.name + ", the university announced that it's ready to go live with its first foray into national broadcasting in the form of a university specific athletics television network. The school has remained hush on many details surrounding the network, but the channel is expected to go live next week when a name and availability will be announced at the conclusion of the final fall practice of the year.");
+                                findTeamAbbr(saveBless.abbr).teamTVDeal = true;
+                            }
+                        }
+
+                        else { //There's a Conf TV deal, or a Team TV deal, or both, or the chance to form the Conf network failed, so, pull another story
+                            i--;
+                            break;
+                        }
+                        break;
+
 
                     default:
                         i--;
@@ -439,7 +570,7 @@ public class League {
                 String storyPlayer;
 
                 for (int i = 0; i < 1; i++){
-                switch((int)(Math.random() * 6)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
+                switch((int)(Math.random() * 7)) { //Change the number Math.random is multiplied by to the number of cases (so last case # + 1)
                     case 0:
                         //Team broke the rules, placed on probation and it's harder to recruit (-prestige)
                         newsStories.get(0).add(saveCurse.name + " Rocked by Infractions Scandal!>After an investigation during the offseason, " + saveCurse.name + " has been placed on probation and assigned on-campus vistation limits for recruits. Athletic Director " + storyFullName + " released a statment vowing that the institution would work to repair the damage done to its prestige.");
@@ -481,7 +612,7 @@ public class League {
                         break;
 
                     case 3:
-                        //Hazing rituals by upper-classmen reported by under-classmen and scared off recruits -- Curse Developing #1
+                        //Hazing rituals by upperclassmen reported by underclassmen and scared off recruits -- Curse Developing #1
 
                         //Figure out if the recruit scared off was a RS (if the cursed team is rivals with the user team) or a FR
                         String starRSOrFR;
@@ -524,6 +655,11 @@ public class League {
                         curseDevelopingWeek = 0;
                         curseDevelopingCase = 2; //Developing story will be about performance of QB and WR in Week 1
 
+                        break;
+
+                    case 6:
+                        //Academic Scandal -- Uni was falsifying grades (you-can't-do-that clap, clap, clapclapclap)
+                        newsStories.get(0).add(saveCurse.name + "'s Reputation Shaken by Fake Grading Scandal>" + saveCurse.name + " has announced the suspension of several university administrators pending an internal investigation into the falsification of grades for student athletes that were on the border of academic eligibility. Third party investigators uncovered the grading scheme after being asked to look into why several graduating players could not read the instructions provided with their Wonderlic Tests. Recruits from as far out as the class of " + (getYear() + 2) + " have rescinded verbal commitments, citing their desire to explore their options further. Currently, no academic or athletic sactions have been announced for the school.");
                         break;
 
                     default:
@@ -1901,7 +2037,7 @@ public class League {
                     (t.totalWins - t.wins) + "," + (t.totalLosses - t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
                     t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," +
                     t.teamStratOffNum + "," + t.teamStratDefNum + "," + (t.showPopups ? 1 : 0) + "," +
-                    t.winStreak.getStreakCSV() + "%" + t.evenYearHomeOpp + "%\n");
+                    t.winStreak.getStreakCSV() + "," +  t.teamTVDeal + "," + t.confTVDeal + "%" + t.evenYearHomeOpp + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }
