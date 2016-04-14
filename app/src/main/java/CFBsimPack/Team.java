@@ -268,8 +268,6 @@ public class Team {
             totalCCs = Integer.parseInt(teamInfo[6]);
             totalNCs = Integer.parseInt(teamInfo[7]);
             rivalTeam = teamInfo[8];
-            teamTVDeal = Boolean.parseBoolean(teamInfo[20]);
-            confTVDeal = Boolean.parseBoolean(teamInfo[21]);
             if (teamInfo.length >= 13) {
                 totalNCLosses = Integer.parseInt(teamInfo[9]);
                 totalCCLosses = Integer.parseInt(teamInfo[10]);
@@ -284,6 +282,10 @@ public class Team {
                                 Integer.parseInt(teamInfo[19]),
                                 Integer.parseInt(teamInfo[16]),
                                 teamInfo[17]);
+                                if (teamInfo.length >= 22){
+                                    teamTVDeal = Boolean.parseBoolean(teamInfo[20]);
+                                    confTVDeal = Boolean.parseBoolean(teamInfo[21]);
+                                }
                     }
                 }
             } else {
