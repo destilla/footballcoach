@@ -116,6 +116,9 @@ public class Team {
     public int teamStratOffNum;
     public int teamStratDefNum;
 
+    public boolean confTVDeal;
+    public boolean teamTVDeal;
+
     private static final int NFL_OVR = 90;
     private static final double NFL_CHANCE = 0.5;
 
@@ -279,6 +282,10 @@ public class Team {
                                 Integer.parseInt(teamInfo[19]),
                                 Integer.parseInt(teamInfo[16]),
                                 teamInfo[17]);
+                                if (teamInfo.length >= 22){
+                                    teamTVDeal = Boolean.parseBoolean(teamInfo[20]);
+                                    confTVDeal = Boolean.parseBoolean(teamInfo[21]);
+                                }
                     }
                 }
             } else {
