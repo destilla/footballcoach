@@ -1236,7 +1236,15 @@ public class League {
             int fn = (int) (Math.random() * nameList.size());
             int ln = (int) (Math.random() * nameList.size());
             return nameList.get(fn) + " " + nameList.get(ln);
-        } else return "Mark Eeslee";
+        } else {
+            int chosenName = (int)(Math.random()*3);
+            switch (chosenName) {
+                case 0: return "Mark Eeslee";
+                case 1: return "Lee Sin";
+                case 2: return "Brent Uttwipe";
+            }
+        }
+        return "John Doe";
     }
 
     /**
