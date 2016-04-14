@@ -251,6 +251,8 @@ public class Team {
         teamPollScore = 0;
         teamStratOffNum = 1; // 1 is the default strats
         teamStratDefNum = 1;
+        teamTVDeal = false;
+        confTVDeal = false;
 
         // Actually load the team from the string
         String[] lines = loadStr.split("%");
@@ -282,10 +284,10 @@ public class Team {
                                 Integer.parseInt(teamInfo[19]),
                                 Integer.parseInt(teamInfo[16]),
                                 teamInfo[17]);
-                                if (teamInfo.length >= 22){
-                                    teamTVDeal = Boolean.parseBoolean(teamInfo[20]);
-                                    confTVDeal = Boolean.parseBoolean(teamInfo[21]);
-                                }
+                        if (teamInfo.length >= 22){
+                            teamTVDeal = Boolean.parseBoolean(teamInfo[20]);
+                            confTVDeal = Boolean.parseBoolean(teamInfo[21]);
+                        }
                     }
                 }
             } else {

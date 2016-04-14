@@ -5,6 +5,7 @@ package achijones.footballcoach;
  */
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,8 +46,11 @@ public class TeamRankingsListArrayAdapter extends ArrayAdapter<String> {
         if (teamStat[1].equals(userTeamStrRep)) {
             // Bold user team
             textLeft.setTypeface(textLeft.getTypeface(), Typeface.BOLD);
+            textLeft.setTextColor(Color.parseColor("#1A75FF"));
             textCenter.setTypeface(textCenter.getTypeface(), Typeface.BOLD);
+            textCenter.setTextColor(Color.parseColor("#1A75FF"));
             textRight.setTypeface(textRight.getTypeface(), Typeface.BOLD);
+            textRight.setTextColor(Color.parseColor("#1A75FF"));
         }
 
         return rowView;
