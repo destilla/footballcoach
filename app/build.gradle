@@ -18,8 +18,8 @@ android {
         applicationId "mirex.footballcoach"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 20
-        versionName "1.31"
+        versionCode 21
+        versionName "1.32"
     }
     buildTypes {
         release {
