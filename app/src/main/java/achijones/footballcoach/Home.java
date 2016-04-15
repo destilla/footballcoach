@@ -3,6 +3,7 @@ package achijones.footballcoach;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -41,10 +42,10 @@ public class Home extends AppCompatActivity {
             public void onClick(View v) {
                 // Perform action on click
                 AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
-                builder.setMessage("What difficulty would you like?\n\n"+
-                                    "Easy Mode has no injuries, normal rivalry mechanics, and a 50% chance your good players will leave early for the NFL.\n\n"+
-                                    "Hard Mode has injuries enabled, harder rivalry games, and a 70% chance your good players will leave early for the NFL.\n\n"+
-                                    "This cannot be changed later.")
+                builder.setMessage("What difficulty would you like?\n\n" +
+                        "Easy Mode has no injuries, normal rivalry mechanics, and a 50% chance your good players will leave early for the NFL.\n\n" +
+                        "Hard Mode has injuries enabled, harder rivalry games, and a 70% chance your good players will leave early for the NFL.\n\n" +
+                        "This cannot be changed later.")
                         .setTitle("Choose Difficulty:")
                         .setPositiveButton("EASY", new DialogInterface.OnClickListener() {
                             @Override
@@ -86,6 +87,17 @@ public class Home extends AppCompatActivity {
                 // Perform action on click
                 Intent myIntent = new Intent(Home.this, TutorialActivity.class);
                 Home.this.startActivity(myIntent);
+            }
+        });
+
+        Button subredditButton = (Button) findViewById(R.id.buttonSubreddit);
+        subredditButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("http://m.reddit.com/r/FootballCoach"));
+                startActivity(intent);
             }
         });
 
