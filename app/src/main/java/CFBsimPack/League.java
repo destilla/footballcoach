@@ -618,15 +618,21 @@ public class League {
                         String starRSOrFR;
 
                         //Does the cursed team's rivals have an RS players and is the best RS an overall better player than the best FR
-                        if (findTeamAbbr(saveCurse.rivalTeam).teamRSs.size() > 0 && (findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).ratOvr >= findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).ratOvr)) {
+                        if (findTeamAbbr(saveCurse.rivalTeam).teamRSs.size() > 0 && findTeamAbbr(saveCurse.rivalTeam).teamFRs.size() > 0 &&
+                                (findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).ratOvr >= findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).ratOvr)) {
                             // If so, the scared off player will be the RS
                             starRSOrFR = ("highly sought after recruit and current " + findTeamAbbr(saveCurse.rivalTeam).name + " redshirt freshman " + findTeamAbbr(saveCurse.rivalTeam).teamRSs.get(0).name);
                         } else { // Grab the best Freshman on the rival's team
-                            starRSOrFR = (findTeamAbbr(saveCurse.rivalTeam).name + "'s star freshman recruit " + findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).name);
+                            if (findTeamAbbr(saveCurse.rivalTeam).teamFRs.size() > 0 )
+                                starRSOrFR = (findTeamAbbr(saveCurse.rivalTeam).name + "'s star freshman recruit " + findTeamAbbr(saveCurse.rivalTeam).teamFRs.get(0).name);
+                            else starRSOrFR = (findTeamAbbr(saveCurse.rivalTeam).name + "'s star freshman recruit " + getRandName());
                         }
 
                         //Now that we know what recruit was scared off to the rival team
-                        newsStories.get(0).add("A New Kind of Summer Haze>" + saveCurse.name + " Senior " + saveCurse.teamSRs.get(0).position + " " + saveCurse.teamSRs.get(0).name + " stepped forward today, as the ringleader of a group of upperclassmen responsible for the extreme hazing of several of the program's underclassmen, including several non-player students. It was revealed earlier this year that " + starRSOrFR + " flipped his commitment from " + saveCurse.name + " after being contacted on social media by members of the group and told to \"prepare\" for the hazing he would face leading up to Spring Practice. There is currently no word on what punishment Coach " + storyFullName + " will hand out to the group.");
+                        Player srCurseTeam;
+                        if (saveCurse.teamSRs.size() > 0) srCurseTeam = saveCurse.teamSRs.get(0);
+                        else srCurseTeam = saveCurse.teamQBs.get(0);
+                        newsStories.get(0).add("A New Kind of Summer Haze>" + saveCurse.name + " Senior " + srCurseTeam.position + " " + srCurseTeam.name + " stepped forward today, as the ringleader of a group of upperclassmen responsible for the extreme hazing of several of the program's underclassmen, including several non-player students. It was revealed earlier this year that " + starRSOrFR + " flipped his commitment from " + saveCurse.name + " after being contacted on social media by members of the group and told to \"prepare\" for the hazing he would face leading up to Spring Practice. There is currently no word on what punishment Coach " + storyFullName + " will hand out to the group.");
                         curseDevelopingStory = true;
                         curseDevelopingWeek = 0; // Print a new story after the week 1 games about the lack of punishment by coach
                         curseDevelopingCase = 1; // First developing curse story
@@ -794,19 +800,22 @@ public class League {
         if (curseDevelopingStory){
             switch (curseDevelopingCase){ //Which story was triggered?
                 case 1: //Lack of punishment for hazing underclassmen
-                        if (curseDevelopingWeek == currentWeek) { //Print this story when the time comes, but from the user's perspective, print it in the week prior to the current week (add it to week 1 when the player sees week 2 -- Once games are played, the week is advanced)
-                            //No one missed playing time, no word from Coach
-                        newsStories.get(curseDevelopingWeek+1).add(saveCurse.name + " Hazing Scandal Update>After last week's report on the " + saveCurse.name + " hazing scandal, the college football world waited to see what punishments would be handed out to " + saveCurse.teamSRs.get(0).name + " and other implicated but unnamed players. With Week 1 officially in the books we have an answer: Nothing. Based on the final fall practice depth chart, no players missed playing time or starting status (" + saveCurse.teamSRs.get(0).name.replace("*. ","") + " played every down he was available for). Coach " + storyLastName + " has remained silent on the issue.");
-                }
-                        if (curseDevelopingWeek+1 == currentWeek) { //Populate this story into Week 2 --before-- the games are played.
+                    Player srCurseTeam;
+                    if (saveCurse.teamSRs.size() > 0) srCurseTeam = saveCurse.teamSRs.get(0);
+                    else srCurseTeam = saveCurse.teamQBs.get(0);
+                    if (curseDevelopingWeek == currentWeek) { //Print this story when the time comes, but from the user's perspective, print it in the week prior to the current week (add it to week 1 when the player sees week 2 -- Once games are played, the week is advanced)
+                        //No one missed playing time, no word from Coach
+                        newsStories.get(curseDevelopingWeek+1).add(saveCurse.name + " Hazing Scandal Update>After last week's report on the " + saveCurse.name + " hazing scandal, the college football world waited to see what punishments would be handed out to " + srCurseTeam.name + " and other implicated but unnamed players. With Week 1 officially in the books we have an answer: Nothing. Based on the final fall practice depth chart, no players missed playing time or starting status (" + srCurseTeam.name.replace("*. ","") + " played every down he was available for). Coach " + storyLastName + " has remained silent on the issue.");
+                    }
+                    else if (curseDevelopingWeek+1 == currentWeek) { //Populate this story into Week 2 --before-- the games are played.
 
                         if (Math.random() < .5) { //"The boy's suffered enough"
-                            newsStories.get(curseDevelopingWeek+2).add("No Punishment for Group in Hazing Scandal>Last week, it was reported that " + saveCurse.name + " Head Coach " + storyFullName + " had not commented on the hazing scandal that resulted in lost recruits for the program. Today, " + storyLastName + " revealed that this was no mistake, and that there will be no punishment for those involved. In a brief statement released today by the program, " + storyLastName + " is quoted as saying that he considers this matter closed and that he believes the public scrutiny " + saveCurse.teamSRs.get(0).name + " faced after admitting to being the ringleader of the hazing group was \"punishment enough.\"");
+                            newsStories.get(curseDevelopingWeek+2).add("No Punishment for Group in Hazing Scandal>Last week, it was reported that " + saveCurse.name + " Head Coach " + storyFullName + " had not commented on the hazing scandal that resulted in lost recruits for the program. Today, " + storyLastName + " revealed that this was no mistake, and that there will be no punishment for those involved. In a brief statement released today by the program, " + storyLastName + " is quoted as saying that he considers this matter closed and that he believes the public scrutiny " + srCurseTeam.name + " faced after admitting to being the ringleader of the hazing group was \"punishment enough.\"");
                         }
                         else { //Time to make amends
                             newsStories.get(curseDevelopingWeek+2).add("Punishment Announced for " + saveCurse.name + " Upperclassmen>In a statement released through its Athletics Department today, " +saveCurse.name+" Head Coach " + storyFullName + " announced that he had spoken with each member of the team privately and determined who the upperclassmen responsible for the over-the-top hazing occurring within the program were. Not wishing to draw further scrutiny to individual players, " +storyLastName+" stated that the group of players would be responsible for identifying the best way to give back to the local community and carrying out whatever volunteer work was necessary to see the project through to completion.");
                         }
-                }
+                    }
                 case 2: //QB and WR had a fight, how did the first game go? -- More scenarios to be added later
                     PlayerQB cursedQB;
                     PlayerWR cursedWR;
