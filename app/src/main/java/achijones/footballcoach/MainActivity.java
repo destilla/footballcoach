@@ -791,7 +791,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
 
         ArrayList<String> rankings = new ArrayList<String>();// = simLeague.getTeamRankingsStr(0);
-        String[] rankingsSelection = {"Poll Votes", "Strength of Sched", "Points Per Game", "Opp Points Per Game",
+        String[] rankingsSelection = {"Poll Votes", "Conference Standings", "Strength of Sched", "Points Per Game", "Opp Points Per Game",
                 "Yards Per Game", "Opp Yards Per Game", "Pass Yards Per Game", "Rush Yards Per Game",
                 "Opp Pass YPG", "Opp Rush YPG", "TO Differential", "Off Talent", "Def Talent", "Prestige"};
         Spinner teamRankingsSpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);

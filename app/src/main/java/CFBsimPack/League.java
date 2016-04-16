@@ -1623,19 +1623,20 @@ public class League {
     public ArrayList<String> getTeamRankingsStr(int selection) {
         /*
         0 = poll score
-        1 = sos
-        2 = points
-        3 = opp points
-        4 = yards
-        5 = opp yards
-        6 = pass yards
-        7 = rush yards
-        8 = opp pass yards
-        9 = opp rush yards
-        10 = TO diff
-        11 = off talent
-        12 = def talent
-        13 = prestige
+        1 = conf standings
+        2 = sos
+        3 = points
+        4 = opp points
+        5 = yards
+        6 = opp yards
+        7 = pass yards
+        8 = rush yards
+        9 = opp pass yards
+        10 = opp rush yards
+        11 = TO diff
+        12 = off talent
+        13 = def talent
+        14 = prestige
          */
         ArrayList<Team> teams = teamList; //(ArrayList<Team>) teamList.clone();
         ArrayList<String> rankings = new ArrayList<String>();
@@ -1647,80 +1648,81 @@ public class League {
                     rankings.add(t.getRankStrStarUser(i + 1) + "," + t.strRepWithBowlResults() + "," + t.teamPollScore);
                 }
                 break;
-            case 1: Collections.sort( teams, new TeamCompSoW() );
+            case 1: return getConfStandings();
+            case 2: Collections.sort( teams, new TeamCompSoW() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.teamStrengthOfWins);
                 }
                 break;
-            case 2: Collections.sort( teams, new TeamCompPPG() );
+            case 3: Collections.sort( teams, new TeamCompPPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamPoints/t.numGames()));
                 }
                 break;
-            case 3: Collections.sort( teams, new TeamCompOPPG() );
+            case 4: Collections.sort( teams, new TeamCompOPPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamOppPoints/t.numGames()));
                 }
                 break;
-            case 4: Collections.sort( teams, new TeamCompYPG() );
+            case 5: Collections.sort( teams, new TeamCompYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamYards/t.numGames()));
                 }
                 break;
-            case 5: Collections.sort( teams, new TeamCompOYPG() );
+            case 6: Collections.sort( teams, new TeamCompOYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamOppYards/t.numGames()));
                 }
                 break;
-            case 6: Collections.sort( teams, new TeamCompPYPG() );
+            case 7: Collections.sort( teams, new TeamCompPYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamPassYards/t.numGames()));
                 }
                 break;
-            case 7: Collections.sort( teams, new TeamCompRYPG() );
+            case 8: Collections.sort( teams, new TeamCompRYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamRushYards/t.numGames()));
                 }
                 break;
-            case 8: Collections.sort( teams, new TeamCompOPYPG() );
+            case 9: Collections.sort( teams, new TeamCompOPYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamOppPassYards/t.numGames()));
                 }
                 break;
-            case 9: Collections.sort( teams, new TeamCompORYPG() );
+            case 10: Collections.sort( teams, new TeamCompORYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamOppRushYards/t.numGames()));
                 }
                 break;
-            case 10: Collections.sort( teams, new TeamCompTODiff() );
+            case 11: Collections.sort( teams, new TeamCompTODiff() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     if (t.teamTODiff > 0) rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + ",+" + t.teamTODiff);
                     else rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.teamTODiff);
                 }
                 break;
-            case 11: Collections.sort( teams, new TeamCompOffTalent() );
+            case 12: Collections.sort( teams, new TeamCompOffTalent() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.teamOffTalent);
                 }
                 break;
-            case 12: Collections.sort( teams, new TeamCompDefTalent() );
+            case 13: Collections.sort( teams, new TeamCompDefTalent() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.teamDefTalent);
                 }
                 break;
-            case 13: Collections.sort( teams, new TeamCompPrestige() );
+            case 14: Collections.sort( teams, new TeamCompPrestige() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i + 1) + "," + t.strRepWithBowlResults() + "," + t.teamPrestige);
@@ -1735,6 +1737,27 @@ public class League {
         }
 
         return rankings;
+    }
+
+    /**
+     * Get conference standings in an list of Strings.
+     * Must be CSV form: Rank,Team,Num
+     */
+    public ArrayList<String> getConfStandings() {
+        ArrayList<String> confStandings = new ArrayList<>();
+        ArrayList<Team> confTeams = new ArrayList<>();
+        for (Conference c : conferences) {
+            confTeams.addAll(c.confTeams);
+            Collections.sort(confTeams, new TeamCompConfWins());
+            confStandings.add(c.confName+" Standings, ,Conf W-L");
+            Team t;
+            for (int i = 0; i < confTeams.size(); ++i) {
+                t = confTeams.get(i);
+                confStandings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.getConfWins()+"-"+t.getConfLosses());
+            }
+            confTeams.clear();
+        }
+        return confStandings;
     }
 
     /**
