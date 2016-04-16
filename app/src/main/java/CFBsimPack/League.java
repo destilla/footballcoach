@@ -770,7 +770,6 @@ public class League {
         setTeamRanks();
         updateLongestActiveWinStreak();
 
-
         // If there was a developing story and it's time for that story to print, print it based on which story was triggered
         if (blessDevelopingStory){
 
@@ -1758,7 +1757,7 @@ public class League {
         for (Conference c : conferences) {
             confTeams.addAll(c.confTeams);
             Collections.sort(confTeams, new TeamCompConfWins());
-            confStandings.add(c.confName+" Standings, ,Conf W-L");
+            confStandings.add(" ,"+c.confName+" Conference, ");
             Team t;
             for (int i = 0; i < confTeams.size(); ++i) {
                 t = confTeams.get(i);

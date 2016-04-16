@@ -1519,6 +1519,24 @@ public class Team {
     public String getTeamStatsStrCSV() {
         StringBuilder ts0 = new StringBuilder();
 
+        ArrayList<Team> confTeams = new ArrayList<>();
+        for (Conference c : league.conferences) {
+            if (c.confName.equals(conference)) {
+                confTeams.addAll(c.confTeams);
+                Collections.sort(confTeams, new TeamCompConfWins());
+                int confRank = 11;
+                for (int i = 0; i < confTeams.size(); ++i) {
+                    if (confTeams.get(i).equals(this)) {
+                        confRank = i+1;
+                        break;
+                    }
+                }
+                ts0.append(getConfWins()+"-"+getConfLosses() + ",");
+                ts0.append("Conf W-L" + ",");
+                ts0.append(getRankStr(confRank) + "%\n");
+            }
+        }
+
         ts0.append(teamPollScore + ",");
         ts0.append("AP Votes" + ",");
         ts0.append(getRankStr(rankTeamPollScore) + "%\n");
@@ -2338,6 +2356,9 @@ public class Team {
                 }
                 break;
         }
+
+        // Set ranks so that Off/Def Talent rankings are updated
+        league.setTeamRanks();
     }
 
     /**

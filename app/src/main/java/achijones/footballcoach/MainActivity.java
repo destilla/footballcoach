@@ -550,8 +550,6 @@ public class MainActivity extends AppCompatActivity {
     private void updateTeamStats(){
         mainList.setVisibility(View.VISIBLE);
         expListPlayerStats.setVisibility(View.GONE);
-        //TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
-        //textTabDescription.setText(currentTeam.name + " Team Stats:");
 
         String[] teamStatsStr = currentTeam.getTeamStatsStrCSV().split("%\n");
         mainList.setAdapter(new TeamStatsListArrayAdapter(this, teamStatsStr));
@@ -560,8 +558,6 @@ public class MainActivity extends AppCompatActivity {
     private void updatePlayerStats(){
         mainList.setVisibility(View.GONE);
         expListPlayerStats.setVisibility(View.VISIBLE);
-        //TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
-        //textTabDescription.setText(currentTeam.name + " Team Roster:");
 
         List<String> playerHeaders = currentTeam.getPlayerStatsExpandListStr();
         Map<String, List<String>> playerInfos = currentTeam.getPlayerStatsExpandListMap(playerHeaders);
@@ -573,8 +569,6 @@ public class MainActivity extends AppCompatActivity {
     private void updateSchedule(){
         mainList.setVisibility(View.VISIBLE);
         expListPlayerStats.setVisibility(View.GONE);
-        //TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
-        //textTabDescription.setText(currentTeam.name + " Game Schedule:");
 
         Game[] games = new Game[currentTeam.gameSchedule.size()];
         for (int i = 0; i < games.length; ++i) {
@@ -1270,6 +1264,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Perform action on click
                 dialog.dismiss();
+                updateCurrTeam();
             }
         });
 
