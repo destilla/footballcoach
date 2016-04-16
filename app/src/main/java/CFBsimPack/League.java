@@ -816,7 +816,9 @@ public class League {
                             newsStories.get(curseDevelopingWeek+2).add("Punishment Announced for " + saveCurse.name + " Upperclassmen>In a statement released through its Athletics Department today, " +saveCurse.name+" Head Coach " + storyFullName + " announced that he had spoken with each member of the team privately and determined who the upperclassmen responsible for the over-the-top hazing occurring within the program were. Not wishing to draw further scrutiny to individual players, " +storyLastName+" stated that the group of players would be responsible for identifying the best way to give back to the local community and carrying out whatever volunteer work was necessary to see the project through to completion.");
                         }
                     }
+                    break;
                 case 2: //QB and WR had a fight, how did the first game go? -- More scenarios to be added later
+                   if(curseDevelopingWeek == currentWeek){
                     PlayerQB cursedQB;
                     PlayerWR cursedWR;
                     PlayerWR cursedWR2;
@@ -838,14 +840,17 @@ public class League {
                         if (findTeam((saveCurse.abbr)).wins == 0) {
                             //QB and WR still in sync, but the team lost
                             newsStories.get(curseDevelopingWeek + 1).add(saveCurse.name + " Locker Room Scuffle Affects Week 1 Performance>Despite managing to find their sync after a locker room altercation last week, quarterback " + cursedQB.name + " and wide receiver " + cursedWR.name + " still left a lasting negative impression in the minds and performance of their teammates. " + cursedQB.name + "'s " + cursedQB.statsPassYards + " yards and " + cursedWR.name + "'s " + cursedWR.statsReceptions + " receptions could not bring the rest of the team out of the funk that eventually saw them drop their season opener.");
+                            break;
                         } else {
                             //Hey, boys will be boys, right? Team won and QB/WR still hooked up for a good game
                             newsStories.get(curseDevelopingWeek + 1).add("Water Under the Bridge at " + saveCurse.name + ">" + saveCurse.name + " didn't appear to remember the locker room altercation from last week nor the media attention it garnered as " + cursedQB.name + " threw for " + cursedQB.statsPassYards + " yards and " + cursedWR.name + " caught " + cursedWR.statsReceptions + " balls to help lift " + saveCurse.name + " in their season opener. " + cursedQB.name.replaceAll(".* ", "") + " still looked to his favorite target more than any other receiver, but all is still not perfectly well within the program.");
+                            break;
                         }
                     }
                     else if(100*cursedQB.statsPassComp/Math.max(1,cursedQB.statsPassAtt) > 59){
                         //QB had a good game but didn't hit his old favorite more than other WRs
                         newsStories.get(curseDevelopingWeek+1).add("Team Unrest Continues at " + saveCurse.name + ">Quarterback " + cursedQB.name + " looked good in his season opener, throwing " + cursedQB.statsPassComp + " completions for " + cursedQB.statsPassYards + " yards, primarily to receivers not named " + cursedWR.name + ". Sources within the program have remained quiet since last week's locker room scuffle between the once tight QB-WR duo, but one thing is clear: " + cursedQB.name.replaceAll(".* ","") + " has not forgotten.");
+                        break;
                     }
                     else if(100*cursedQB.statsPassComp/Math.max(1,cursedQB.statsPassAtt) > 44 && 100*cursedQB.statsPassComp/Math.max(1,cursedQB.statsPassAtt) < 60){
                         //QB was pretty much a non-factor
@@ -854,19 +859,23 @@ public class League {
                         else winOrLoss = "win";
 
                         newsStories.get(curseDevelopingWeek+1).add(cursedQB.name + " a Non-Factor in Season Opener>On the heels of a locker room fight that dominated national media and brought the leadership capabilities of the " + saveCurse.name + " coaching staff into question, starting quarterback " + cursedQB.name + " opened his season without much fanfare. Or much of anything. " + cursedQB.name.replaceAll(".* ","") + " threw for " + cursedQB.statsPassYards + " yards on " + cursedQB.statsPassComp + " for " + cursedQB.statsPassAtt + " passing, managing to look perfectly average in a season opening " + winOrLoss + ".");
+                        break;
                     }
 
                     else{
                         //QB had a bad game and the team lost
                         if(findTeam((saveCurse.abbr)).wins == 0){
                             newsStories.get(curseDevelopingWeek + 1).add(cursedQB.name + " Fails to Find Rhythm in Season Opener>Just over a week after reports surfaced of a locker room fight between " + saveCurse.name + " quarterback " + cursedQB.name + " and his favorite target, wide receiver " + cursedWR.name + ", the two are back in the media spotlight for a lackluster performance in a season opening loss. Looking visibly disoriented and confused at times, " + cursedQB.name.replaceAll(".* ", "") + " went just " + cursedQB.statsPassComp + " for " + cursedQB.statsPassAtt + " passing, and failed to achieve any consistency in a losing effort.");
+                            break;
                         }
                         else{ //QB looked crappy but the team managed to pull one out anyway
                             newsStories.get(curseDevelopingWeek+1).add(saveCurse.name + " Manage a Win Despite Poor QB Play>Appearing to still be caught up in the locker room drama of last week, " + cursedQB.name + " had to get by with a little help from his friends. Going " + cursedQB.statsPassComp + " for " + cursedQB.statsPassAtt + " while looking lost at times, " + cursedQB.name.replaceAll(".* ","") + "'s performance left a lot to be desired. Still, the damage done was not enough to surrender a loss, and " + saveCurse.name + " marches into Week 2 with a 1-0 record.");
+                            break;
                         }
 
                     }
-                break;
+                }
+                break; //This break occurs everyweek that isn't curseDevelopingWeek
 
 
                 default:
@@ -1623,20 +1632,19 @@ public class League {
     public ArrayList<String> getTeamRankingsStr(int selection) {
         /*
         0 = poll score
-        1 = conf standings
-        2 = sos
-        3 = points
-        4 = opp points
-        5 = yards
-        6 = opp yards
-        7 = pass yards
-        8 = rush yards
-        9 = opp pass yards
-        10 = opp rush yards
-        11 = TO diff
-        12 = off talent
-        13 = def talent
-        14 = prestige
+        1 = sos
+        2 = points
+        3 = opp points
+        4 = yards
+        5 = opp yards
+        6 = pass yards
+        7 = rush yards
+        8 = opp pass yards
+        9 = opp rush yards
+        10 = TO diff
+        11 = off talent
+        12 = def talent
+        13 = prestige
          */
         ArrayList<Team> teams = teamList; //(ArrayList<Team>) teamList.clone();
         ArrayList<String> rankings = new ArrayList<String>();
@@ -1648,81 +1656,80 @@ public class League {
                     rankings.add(t.getRankStrStarUser(i + 1) + "," + t.strRepWithBowlResults() + "," + t.teamPollScore);
                 }
                 break;
-            case 1: return getConfStandings();
-            case 2: Collections.sort( teams, new TeamCompSoW() );
+            case 1: Collections.sort( teams, new TeamCompSoW() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.teamStrengthOfWins);
                 }
                 break;
-            case 3: Collections.sort( teams, new TeamCompPPG() );
+            case 2: Collections.sort( teams, new TeamCompPPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamPoints/t.numGames()));
                 }
                 break;
-            case 4: Collections.sort( teams, new TeamCompOPPG() );
+            case 3: Collections.sort( teams, new TeamCompOPPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamOppPoints/t.numGames()));
                 }
                 break;
-            case 5: Collections.sort( teams, new TeamCompYPG() );
+            case 4: Collections.sort( teams, new TeamCompYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamYards/t.numGames()));
                 }
                 break;
-            case 6: Collections.sort( teams, new TeamCompOYPG() );
+            case 5: Collections.sort( teams, new TeamCompOYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamOppYards/t.numGames()));
                 }
                 break;
-            case 7: Collections.sort( teams, new TeamCompPYPG() );
+            case 6: Collections.sort( teams, new TeamCompPYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamPassYards/t.numGames()));
                 }
                 break;
-            case 8: Collections.sort( teams, new TeamCompRYPG() );
+            case 7: Collections.sort( teams, new TeamCompRYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamRushYards/t.numGames()));
                 }
                 break;
-            case 9: Collections.sort( teams, new TeamCompOPYPG() );
+            case 8: Collections.sort( teams, new TeamCompOPYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamOppPassYards/t.numGames()));
                 }
                 break;
-            case 10: Collections.sort( teams, new TeamCompORYPG() );
+            case 9: Collections.sort( teams, new TeamCompORYPG() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + (t.teamOppRushYards/t.numGames()));
                 }
                 break;
-            case 11: Collections.sort( teams, new TeamCompTODiff() );
+            case 10: Collections.sort( teams, new TeamCompTODiff() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     if (t.teamTODiff > 0) rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + ",+" + t.teamTODiff);
                     else rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.teamTODiff);
                 }
                 break;
-            case 12: Collections.sort( teams, new TeamCompOffTalent() );
+            case 11: Collections.sort( teams, new TeamCompOffTalent() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.teamOffTalent);
                 }
                 break;
-            case 13: Collections.sort( teams, new TeamCompDefTalent() );
+            case 12: Collections.sort( teams, new TeamCompDefTalent() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.teamDefTalent);
                 }
                 break;
-            case 14: Collections.sort( teams, new TeamCompPrestige() );
+            case 13: Collections.sort( teams, new TeamCompPrestige() );
                 for (int i = 0; i < teams.size(); ++i) {
                     t = teams.get(i);
                     rankings.add(t.getRankStrStarUser(i + 1) + "," + t.strRepWithBowlResults() + "," + t.teamPrestige);
@@ -1737,27 +1744,6 @@ public class League {
         }
 
         return rankings;
-    }
-
-    /**
-     * Get conference standings in an list of Strings.
-     * Must be CSV form: Rank,Team,Num
-     */
-    public ArrayList<String> getConfStandings() {
-        ArrayList<String> confStandings = new ArrayList<>();
-        ArrayList<Team> confTeams = new ArrayList<>();
-        for (Conference c : conferences) {
-            confTeams.addAll(c.confTeams);
-            Collections.sort(confTeams, new TeamCompConfWins());
-            confStandings.add(c.confName+" Standings, ,Conf W-L");
-            Team t;
-            for (int i = 0; i < confTeams.size(); ++i) {
-                t = confTeams.get(i);
-                confStandings.add(t.getRankStrStarUser(i+1) + "," + t.strRepWithBowlResults() + "," + t.getConfWins()+"-"+t.getConfLosses());
-            }
-            confTeams.clear();
-        }
-        return confStandings;
     }
 
     /**
