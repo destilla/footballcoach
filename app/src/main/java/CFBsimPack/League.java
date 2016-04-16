@@ -875,7 +875,7 @@ public class League {
     
                         }
                     }
-                break;
+                break; // this break happens every week that isn't curseDevelopingWeek
 
 
                 default:
