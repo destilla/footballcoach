@@ -1880,6 +1880,27 @@ public class Team {
     }
 
     /**
+     * Gets the number of in-conference losses, used for CCG rankings
+     * @return number of in-conf losses
+     */
+    public int getConfLosses() {
+        int confLosses = 0;
+        Game g;
+        for (int i = 0; i < gameWLSchedule.size(); ++i) {
+            g = gameSchedule.get(i);
+            if ( g.gameName.equals("In Conf") || g.gameName.equals("Rivalry Game") ) {
+                // in conference game, see if was won
+                if ( g.homeTeam == this && g.homeScore < g.awayScore ) {
+                    confLosses++;
+                } else if ( g.awayTeam == this && g.homeScore > g.awayScore ) {
+                    confLosses++;
+                }
+            }
+        }
+        return confLosses;
+    }
+
+    /**
      * Str rep of team, no bowl results
      * @return ranking abbr (w-l)
      */
