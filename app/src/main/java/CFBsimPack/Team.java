@@ -1167,8 +1167,34 @@ public class Team {
      * Updates team history.
      */
     public void updateTeamHistory() {
-        teamHistory.add(league.getYear() + ": #" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ") "
-                + confChampion + " " + semiFinalWL + natChampWL);
+        String histYear = league.getYear() + ": #" + rankTeamPollScore + " " + abbr + " (" + wins + "-" + losses + ") "
+                + confChampion + " " + semiFinalWL + natChampWL;
+
+        for (int i = 12; i < gameSchedule.size(); ++i) {
+            Game g = gameSchedule.get(i);
+            histYear += ">" + g.gameName + ": ";
+            String[] gameSum = getGameSummaryStr(i);
+            histYear += gameSum[1] + " " + gameSum[2];
+        }
+
+        teamHistory.add(histYear);
+    }
+
+    /**
+     * Gets the team history as a String array
+     * @return team history
+     */
+    public String[] getTeamHistoryList() {
+        String[] hist = new String[teamHistory.size()+5];
+        hist[0] = "Overall W-L: " + totalWins + "-" + totalLosses;
+        hist[1] = "Conf Champ Record: " + totalCCs + "-" + totalCCLosses;
+        hist[2] = "Bowl Game Record: " + totalBowls + "-" + totalBowlLosses;
+        hist[3] = "National Champ Record: " + totalNCs + "-" + totalNCLosses;
+        hist[4] = " ";
+        for (int i = 0; i < teamHistory.size(); ++i) {
+            hist[i+5] = teamHistory.get(i);
+        }
+        return hist;
     }
 
     /**

@@ -416,7 +416,8 @@ public class MainActivity extends AppCompatActivity {
             /**
              * Clicked Team History in drop down menu
              */
-            String historyStr = userTeam.getTeamHistoryStr();
+            showTeamHistoryDialog();
+            /*String historyStr = userTeam.getTeamHistoryStr();
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(historyStr)
                     .setTitle(userTeam.name + " Team History")
@@ -427,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
             AlertDialog dialog = builder.create();
-            dialog.show();
+            dialog.show();*/
         } else if (id == R.id.action_ccg_bowl_watch) {
             /**
              * Clicked CCG / Bowl Watch in drop down menu
@@ -856,6 +857,25 @@ public class MainActivity extends AppCompatActivity {
                         // do nothing
                     }
                 });
+    }
+
+    public void showTeamHistoryDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Team History")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing?
+                    }
+                })
+                .setView(getLayoutInflater().inflate(R.layout.simple_list_dialog, null));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        final ListView teamHistoryList = (ListView) dialog.findViewById(R.id.listViewDialog);
+        TeamHistoryListArrayAdapter teamHistoryAdapter =
+                new TeamHistoryListArrayAdapter(MainActivity.this, userTeam.getTeamHistoryList());
+        teamHistoryList.setAdapter(teamHistoryAdapter);
     }
 
     public void showBowlCCGDialog() {
