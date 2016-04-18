@@ -52,6 +52,58 @@ public class PlayerCB extends Player {
         ratingsVector.addElement(ratCBCov);
         ratingsVector.addElement(ratCBSpd);
         ratingsVector.addElement(ratCBTkl);
+
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+        statsWins = 0;
+
+        careerGamesPlayed = 0;
+        careerHeismans = 0;
+        careerAllAmerican = 0;
+        careerAllConference = 0;
+        careerWins = 0;
+    }
+
+    public PlayerCB( String nm, Team t, int yr, int pot, int iq, int cov, int spd, int tkl, boolean rs, int dur,
+                     int cGamesPlayed, int cHeismans, int cAA, int cAC, int cWins ) {
+        team = t;
+        name = nm;
+        year = yr;
+        gamesPlayed = 0;
+        isInjured = false;
+        ratOvr = (cov*2 + spd + tkl)/4;
+        ratPot = pot;
+        ratFootIQ = iq;
+        ratDur = dur;
+        ratCBCov = cov;
+        ratCBSpd = spd;
+        ratCBTkl = tkl;
+        isRedshirt = rs;
+        if (isRedshirt) year = 0;
+        position = "CB";
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/4.5) + 50 + (int)(Math.random()*100) - 50;
+
+        ratingsVector = new Vector();
+        ratingsVector.addElement(name+" ("+getYrStr()+")");
+        ratingsVector.addElement(ratOvr+" (+"+ratImprovement+")");
+        ratingsVector.addElement(ratPot);
+        ratingsVector.addElement(ratFootIQ);
+        ratingsVector.addElement(ratCBCov);
+        ratingsVector.addElement(ratCBSpd);
+        ratingsVector.addElement(ratCBTkl);
+
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+        statsWins = 0;
+
+        careerGamesPlayed = cGamesPlayed;
+        careerHeismans = cHeismans;
+        careerAllAmerican = cAA;
+        careerAllConference = cAC;
+        careerWins = cWins;
     }
     
     public PlayerCB( String nm, int yr, int stars, Team t ) {
@@ -79,6 +131,17 @@ public class PlayerCB extends Player {
         ratingsVector.addElement(ratCBCov);
         ratingsVector.addElement(ratCBSpd);
         ratingsVector.addElement(ratCBTkl);
+
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+        statsWins = 0;
+
+        careerGamesPlayed = 0;
+        careerHeismans = 0;
+        careerAllAmerican = 0;
+        careerAllConference = 0;
+        careerWins = 0;
     }
     
     public Vector getRatingsVector() {
@@ -111,14 +174,33 @@ public class PlayerCB extends Player {
         }
         ratOvr = (ratCBCov*2 + ratCBSpd + ratCBTkl)/4;
         ratImprovement = ratOvr - oldOvr;
+
+        careerGamesPlayed += gamesPlayed;
+        careerWins += statsWins;
+
+        if (wonHeisman) careerHeismans++;
+        if (wonAllAmerican) careerAllAmerican++;
+        if (wonAllConference) careerAllConference++;
     }
 
     @Override
-    public ArrayList<String> getDetailStatsList(int games) {
+     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Coverage: " + getLetterGrade(ratCBCov));
         pStats.add("Speed: " + getLetterGrade(ratCBSpd) + ">Tackling: " + getLetterGrade(ratCBTkl));
+        pStats.add(" > ");
+        return pStats;
+    }
+
+    @Override
+    public ArrayList<String> getDetailAllStatsList(int games) {
+        ArrayList<String> pStats = new ArrayList<>();
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Coverage: " + getLetterGrade(ratCBCov));
+        pStats.add("Speed: " + getLetterGrade(ratCBSpd) + ">Tackling: " + getLetterGrade(ratCBTkl));
+        pStats.add("CAREER STATS:> ");
+        pStats.addAll(getCareerStatsList());
         return pStats;
     }
 

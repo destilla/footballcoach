@@ -57,7 +57,60 @@ public class PlayerF7 extends Player {
         ratingsVector.addElement(ratF7Pow);
         ratingsVector.addElement(ratF7Rsh);
         ratingsVector.addElement(ratF7Pas);
+
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+        statsWins = 0;
+
+        careerGamesPlayed = 0;
+        careerHeismans = 0;
+        careerAllAmerican = 0;
+        careerAllConference = 0;
+        careerWins = 0;
         
+    }
+
+    public PlayerF7( String nm, Team t, int yr, int pot, int iq, int pow, int rsh, int pas, boolean rs, int dur,
+                     int cGamesPlayed, int cHeismans, int cAA, int cAC, int cWins ) {
+        team = t;
+        name = nm;
+        year = yr;
+        gamesPlayed = 0;
+        isInjured = false;
+        ratOvr = (pow*3 + rsh + pas)/5;
+        ratPot = pot;
+        ratFootIQ = iq;
+        ratDur = dur;
+        ratF7Pow = pow;
+        ratF7Rsh = rsh;
+        ratF7Pas = pas;
+        isRedshirt = rs;
+        if (isRedshirt) year = 0;
+        position = "F7";
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/6) + 50 + (int)(Math.random()*100) - 50;
+
+        ratingsVector = new Vector();
+        ratingsVector.addElement(name+" ("+getYrStr()+")");
+        ratingsVector.addElement(ratOvr+" (+"+ratImprovement+")");
+        ratingsVector.addElement(ratPot);
+        ratingsVector.addElement(ratFootIQ);
+        ratingsVector.addElement(ratF7Pow);
+        ratingsVector.addElement(ratF7Rsh);
+        ratingsVector.addElement(ratF7Pas);
+
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+        statsWins = 0;
+
+        careerGamesPlayed = cGamesPlayed;
+        careerHeismans = cHeismans;
+        careerAllAmerican = cAA;
+        careerAllConference = cAC;
+        careerWins = cWins;
+
     }
     
     public PlayerF7( String nm, int yr, int stars, Team t ) {
@@ -85,6 +138,17 @@ public class PlayerF7 extends Player {
         ratingsVector.addElement(ratF7Pow);
         ratingsVector.addElement(ratF7Rsh);
         ratingsVector.addElement(ratF7Pas);
+
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+        statsWins = 0;
+
+        careerGamesPlayed = 0;
+        careerHeismans = 0;
+        careerAllAmerican = 0;
+        careerAllConference = 0;
+        careerWins = 0;
     }
     
     public Vector getRatingsVector() {
@@ -115,14 +179,33 @@ public class PlayerF7 extends Player {
         }
         ratOvr = (ratF7Pow*3 + ratF7Rsh + ratF7Pas)/5;
         ratImprovement = ratOvr - oldOvr;
+
+        careerGamesPlayed += gamesPlayed;
+        careerWins += statsWins;
+
+        if (wonHeisman) careerHeismans++;
+        if (wonAllAmerican) careerAllAmerican++;
+        if (wonAllConference) careerAllConference++;
     }
 
     @Override
     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Strength: " + getLetterGrade(ratF7Pow));
         pStats.add("Run Stop: " + getLetterGrade(ratF7Rsh) + ">Pass Pressure: " + getLetterGrade(ratF7Pas));
+        pStats.add(" > ");
+        return pStats;
+    }
+
+    @Override
+    public ArrayList<String> getDetailAllStatsList(int games) {
+        ArrayList<String> pStats = new ArrayList<>();
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Strength: " + getLetterGrade(ratF7Pow));
+        pStats.add("Run Stop: " + getLetterGrade(ratF7Rsh) + ">Pass Pressure: " + getLetterGrade(ratF7Pas));
+        pStats.add("CAREER STATS:> ");
+        pStats.addAll(getCareerStatsList());
         return pStats;
     }
 

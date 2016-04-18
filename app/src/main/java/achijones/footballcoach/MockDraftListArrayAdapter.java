@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import achijones.footballcoach.R;
@@ -37,6 +38,9 @@ public class MockDraftListArrayAdapter extends ArrayAdapter<String> {
         itemL.setText((1+position) + ". " + detailSplit[0]);
         TextView itemR = (TextView) rowView.findViewById(R.id.textPlayerStatsRightChild);
         itemR.setText(detailSplit[1]);
+
+        Button butt = (Button) rowView.findViewById(R.id.buttonPlayerStatsViewAll);
+        butt.setVisibility(View.GONE);
 
         if (detailSplit[1].equals(userTeamStrRep)) {
             itemL.setTextColor(Color.parseColor("#1A75FF"));

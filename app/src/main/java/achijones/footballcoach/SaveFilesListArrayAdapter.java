@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import achijones.footballcoach.R;
@@ -29,6 +30,9 @@ public class SaveFilesListArrayAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.child_player_stats, parent, false);
+
+        Button butt = (Button) rowView.findViewById(R.id.buttonPlayerStatsViewAll);
+        butt.setVisibility(View.GONE);
 
         String[] detailSplit = values[position].split(">");
         TextView itemL = (TextView) rowView.findViewById(R.id.textPlayerStatsLeftChild);

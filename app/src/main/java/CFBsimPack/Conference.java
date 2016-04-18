@@ -334,29 +334,58 @@ public class Conference {
             ArrayList<PlayerQB> qbs = new ArrayList<>();
             ArrayList<PlayerRB> rbs = new ArrayList<>();
             ArrayList<PlayerWR> wrs = new ArrayList<>();
+            ArrayList<PlayerOL> ols = new ArrayList<>();
+            ArrayList<PlayerK> ks = new ArrayList<>();
+            ArrayList<PlayerS> ss = new ArrayList<>();
+            ArrayList<PlayerCB> cbs = new ArrayList<>();
+            ArrayList<PlayerF7> f7s = new ArrayList<>();
 
             for (Team t : confTeams) {
-                for (int i = 0; i < t.teamQBs.size(); ++i) {
-                    qbs.add(t.getQB(i));
-                }
-                for (int i = 0; i < t.teamRBs.size(); ++i) {
-                    rbs.add(t.getRB(i));
-                }
-                for (int i = 0; i < t.teamWRs.size(); ++i) {
-                    wrs.add(t.getWR(i));
-                }
+                qbs.addAll(t.teamQBs);
+                rbs.addAll(t.teamRBs);
+                wrs.addAll(t.teamWRs);
+                ols.addAll(t.teamOLs);
+                ks.addAll(t.teamKs);
+                ss.addAll(t.teamSs);
+                cbs.addAll(t.teamCBs);
+                f7s.addAll(t.teamF7s);
             }
 
             Collections.sort(qbs, new PlayerHeismanComp());
             Collections.sort(rbs, new PlayerHeismanComp());
             Collections.sort(wrs, new PlayerHeismanComp());
+            Collections.sort(ols, new PlayerHeismanComp());
+            Collections.sort(ks, new PlayerHeismanComp());
+            Collections.sort(ss, new PlayerHeismanComp());
+            Collections.sort(cbs, new PlayerHeismanComp());
+            Collections.sort(f7s, new PlayerHeismanComp());
 
             allConfPlayers.add(qbs.get(0));
+            qbs.get(0).wonAllConference = true;
             allConfPlayers.add(rbs.get(0));
+            rbs.get(0).wonAllConference = true;
             allConfPlayers.add(rbs.get(1));
-            allConfPlayers.add(wrs.get(0));
-            allConfPlayers.add(wrs.get(1));
-            allConfPlayers.add(wrs.get(2));
+            rbs.get(1).wonAllConference = true;
+            for (int i = 0; i < 3; ++i) {
+                allConfPlayers.add(wrs.get(i));
+                wrs.get(i).wonAllConference = true;
+            }
+            for (int i = 0; i < 5; ++i) {
+                allConfPlayers.add(ols.get(i));
+                ols.get(i).wonAllConference = true;
+            }
+            allConfPlayers.add(ks.get(0));
+            ks.get(0).wonAllConference = true;
+            allConfPlayers.add(ss.get(0));
+            ss.get(0).wonAllConference = true;
+            for (int i = 0; i < 3; ++i) {
+                allConfPlayers.add(cbs.get(i));
+                cbs.get(i).wonAllConference = true;
+            }
+            for (int i = 0; i < 7; ++i) {
+                allConfPlayers.add(f7s.get(i));
+                f7s.get(i).wonAllConference = true;
+            }
         }
 
         return allConfPlayers;
@@ -367,7 +396,9 @@ public class Conference {
 class TeamCompConfWins implements Comparator<Team> {
     @Override
     public int compare( Team a, Team b ) {
-        if (a.getConfWins() > b.getConfWins()) {
+        if (a.confChampion.equals("CC")) return -1;
+        else if (b.confChampion.equals("CC")) return 1;
+        else if (a.getConfWins() > b.getConfWins()) {
             return -1;
         } else if (a.getConfWins() == b.getConfWins()) {
             //check for h2h tiebreaker

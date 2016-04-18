@@ -57,6 +57,58 @@ public class PlayerS extends Player {
         ratingsVector.addElement(ratSCov);
         ratingsVector.addElement(ratSSpd);
         ratingsVector.addElement(ratSTkl);
+
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+        statsWins = 0;
+
+        careerGamesPlayed = 0;
+        careerHeismans = 0;
+        careerAllAmerican = 0;
+        careerAllConference = 0;
+        careerWins = 0;
+    }
+
+    public PlayerS( String nm, Team t, int yr, int pot, int iq, int cov, int spd, int tkl, boolean rs, int dur,
+                    int cGamesPlayed, int cHeismans, int cAA, int cAC, int cWins ) {
+        team = t;
+        name = nm;
+        year = yr;
+        gamesPlayed = 0;
+        isInjured = false;
+        ratOvr = (cov*2 + spd + tkl)/4;
+        ratPot = pot;
+        ratFootIQ = iq;
+        ratDur = dur;
+        ratSCov = cov;
+        ratSSpd = spd;
+        ratSTkl = tkl;
+        isRedshirt = rs;
+        if (isRedshirt) year = 0;
+        position = "S";
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/3.5) + 125 + (int)(Math.random()*100) - 50;
+
+        ratingsVector = new Vector();
+        ratingsVector.addElement(name+" ("+getYrStr()+")");
+        ratingsVector.addElement(ratOvr+" (+"+ratImprovement+")");
+        ratingsVector.addElement(ratPot);
+        ratingsVector.addElement(ratFootIQ);
+        ratingsVector.addElement(ratSCov);
+        ratingsVector.addElement(ratSSpd);
+        ratingsVector.addElement(ratSTkl);
+
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+        statsWins = 0;
+
+        careerGamesPlayed = cGamesPlayed;
+        careerHeismans = cHeismans;
+        careerAllAmerican = cAA;
+        careerAllConference = cAC;
+        careerWins = 0;
     }
     
     public PlayerS( String nm, int yr, int stars, Team t ) {
@@ -84,6 +136,17 @@ public class PlayerS extends Player {
         ratingsVector.addElement(ratSCov);
         ratingsVector.addElement(ratSSpd);
         ratingsVector.addElement(ratSTkl);
+
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+        statsWins = 0;
+
+        careerGamesPlayed = 0;
+        careerHeismans = 0;
+        careerAllAmerican = 0;
+        careerAllConference = 0;
+        careerWins = 0;
     }
     
     public Vector getRatingsVector() {
@@ -114,14 +177,33 @@ public class PlayerS extends Player {
         }
         ratOvr = (ratSCov*2 + ratSSpd + ratSTkl)/4;
         ratImprovement = ratOvr - oldOvr;
+
+        careerGamesPlayed += gamesPlayed;
+        careerWins += statsWins;
+
+        if (wonHeisman) careerHeismans++;
+        if (wonAllAmerican) careerAllAmerican++;
+        if (wonAllConference) careerAllConference++;
     }
 
     @Override
     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Coverage: " + getLetterGrade(ratSCov));
         pStats.add("Speed: " + getLetterGrade(ratSSpd) + ">Tackling: " + getLetterGrade(ratSTkl));
+        pStats.add(" > ");
+        return pStats;
+    }
+
+    @Override
+    public ArrayList<String> getDetailAllStatsList(int games) {
+        ArrayList<String> pStats = new ArrayList<>();
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Coverage: " + getLetterGrade(ratSCov));
+        pStats.add("Speed: " + getLetterGrade(ratSSpd) + ">Tackling: " + getLetterGrade(ratSTkl));
+        pStats.add("CAREER STATS:> ");
+        pStats.addAll(getCareerStatsList());
         return pStats;
     }
 
