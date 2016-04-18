@@ -416,18 +416,7 @@ public class MainActivity extends AppCompatActivity {
             /**
              * Clicked Team History in drop down menu
              */
-            String historyStr = userTeam.getTeamHistoryStr();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(historyStr)
-                    .setTitle(userTeam.name + " Team History")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //do nothing?
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            showTeamHistoryDialog();
         } else if (id == R.id.action_ccg_bowl_watch) {
             /**
              * Clicked CCG / Bowl Watch in drop down menu
@@ -550,8 +539,6 @@ public class MainActivity extends AppCompatActivity {
     private void updateTeamStats(){
         mainList.setVisibility(View.VISIBLE);
         expListPlayerStats.setVisibility(View.GONE);
-        //TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
-        //textTabDescription.setText(currentTeam.name + " Team Stats:");
 
         String[] teamStatsStr = currentTeam.getTeamStatsStrCSV().split("%\n");
         mainList.setAdapter(new TeamStatsListArrayAdapter(this, teamStatsStr));
@@ -560,8 +547,6 @@ public class MainActivity extends AppCompatActivity {
     private void updatePlayerStats(){
         mainList.setVisibility(View.GONE);
         expListPlayerStats.setVisibility(View.VISIBLE);
-        //TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
-        //textTabDescription.setText(currentTeam.name + " Team Roster:");
 
         List<String> playerHeaders = currentTeam.getPlayerStatsExpandListStr();
         Map<String, List<String>> playerInfos = currentTeam.getPlayerStatsExpandListMap(playerHeaders);
@@ -573,8 +558,6 @@ public class MainActivity extends AppCompatActivity {
     private void updateSchedule(){
         mainList.setVisibility(View.VISIBLE);
         expListPlayerStats.setVisibility(View.GONE);
-        //TextView textTabDescription = (TextView) findViewById(R.id.textTabDescription);
-        //textTabDescription.setText(currentTeam.name + " Game Schedule:");
 
         Game[] games = new Game[currentTeam.gameSchedule.size()];
         for (int i = 0; i < games.length; ++i) {
@@ -599,7 +582,7 @@ public class MainActivity extends AppCompatActivity {
                         //do nothing?
                     }
                 })
-                .setView(getLayoutInflater().inflate(R.layout.bowl_ccg_dialog, null));
+                .setView(getLayoutInflater().inflate(R.layout.team_rankings_dialog, null));
         AlertDialog dialog = builder.create();
         dialog.show();
 
@@ -616,24 +599,32 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        Spinner potySpinner = (Spinner) dialog.findViewById(R.id.spinnerBowlCCG);
+        Spinner potySpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
         ArrayAdapter<String> potyAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, selection);
         potyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         potySpinner.setAdapter(potyAdapter);
 
-        final TextView potyText = (TextView) dialog.findViewById(R.id.textViewBowlCCGDialog);
+        final ListView potyList = (ListView) dialog.findViewById(R.id.listViewTeamRankings);
+
+        // Get all american and all conf
+        final String[] allAmericans = simLeague.getAllAmericanStr().split(">");
+        final String[][] allConference = new String[6][];
+        for (int i = 0; i < 6; ++i) {
+            allConference[i] = simLeague.getAllConfStr(i).split(">");
+        }
+
 
         potySpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(
                             AdapterView<?> parent, View view, int position, long id) {
                         if (position == 0) {
-                            potyText.setText(simLeague.getHeismanCeremonyStr());
+                            potyList.setAdapter( new SeasonAwardsListArrayAdapter(MainActivity.this, simLeague.getHeismanCeremonyStr().split(">"), userTeam.abbr));
                         } else if (position == 1) {
-                            potyText.setText(simLeague.getAllAmericanStr());
+                            potyList.setAdapter(new SeasonAwardsListArrayAdapter(MainActivity.this, allAmericans, userTeam.abbr));
                         } else {
-                            potyText.setText(simLeague.getAllConfStr(position-2));
+                            potyList.setAdapter(new SeasonAwardsListArrayAdapter(MainActivity.this, allConference[position-2], userTeam.abbr));
                         }
                     }
 
@@ -855,6 +846,53 @@ public class MainActivity extends AppCompatActivity {
                             final LeagueHistoryListArrayAdapter leagueHistoryAdapter =
                                     new LeagueHistoryListArrayAdapter(MainActivity.this, simLeague.getLeagueHistoryStr().split("%"), userTeam.abbr);
                             leagueHistoryList.setAdapter(leagueHistoryAdapter);
+                        }
+                    }
+
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // do nothing
+                    }
+                });
+    }
+
+    public void showTeamHistoryDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Team History")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing?
+                    }
+                })
+                .setView(getLayoutInflater().inflate(R.layout.team_rankings_dialog, null));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        String[] selection = {"Team History", "Hall of Fame"};
+        Spinner teamHistSpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
+        final ArrayAdapter<String> teamHistAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, selection);
+        teamHistAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        teamHistSpinner.setAdapter(teamHistAdapter);
+
+        final ListView teamHistoryList = (ListView) dialog.findViewById(R.id.listViewTeamRankings);
+
+        final String[] hofPlayers = new String[ userTeam.hallOfFame.size() ];
+        for (int i = 0; i < userTeam.hallOfFame.size(); ++i) {
+            hofPlayers[i] = userTeam.hallOfFame.get(i);
+        }
+
+        teamHistSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) {
+                            TeamHistoryListArrayAdapter teamHistoryAdapter =
+                                    new TeamHistoryListArrayAdapter(MainActivity.this, userTeam.getTeamHistoryList());
+                            teamHistoryList.setAdapter(teamHistoryAdapter);
+                        } else {
+                            HallOfFameListArrayAdapter hofAdapter = new HallOfFameListArrayAdapter(MainActivity.this, hofPlayers);
+                            teamHistoryList.setAdapter(hofAdapter);
                         }
                     }
 
@@ -1270,6 +1308,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Perform action on click
                 dialog.dismiss();
+                updateCurrTeam();
             }
         });
 
@@ -1357,8 +1396,9 @@ public class MainActivity extends AppCompatActivity {
      */
     public void examinePlayer(String player) {
         Player p = currentTeam.findBenchPlayer(player);
+        if (p == null) p = currentTeam.getQB(0);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        ArrayList<String> pStatsList = p.getDetailStatsList(currentTeam.numGames());
+        ArrayList<String> pStatsList = p.getDetailAllStatsList(currentTeam.numGames());
         if (p.injury != null) pStatsList.add(0, "Injured: " + p.injury.toString() + "> ");
         String[] pStatsArray = pStatsList.toArray(new String[pStatsList.size()]);
         PlayerStatsListArrayAdapter pStatsAdapter = new PlayerStatsListArrayAdapter(this, pStatsArray);
@@ -1372,7 +1412,22 @@ public class MainActivity extends AppCompatActivity {
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
-   }
+    }
+
+    /**
+     * Checks to see if a player won any awards, for highlighting purposes.
+     * Uses findBenchPlayer(..) to find the correct player.
+     * @param player as a string
+     * @return 3 if POTY, 2 if AA, 1 if AC
+     */
+    public int checkAwardPlayer(String player) {
+        Player p = currentTeam.findBenchPlayer(player);
+        if (p == null) return 0;
+        if (p.wonHeisman) return 3;
+        if (p.wonAllAmerican) return 2;
+        if (p.wonAllConference) return 1;
+        return 0;
+    }
 
     /**
      * Start Recruiting Activity, sending over the user team's players and budget.

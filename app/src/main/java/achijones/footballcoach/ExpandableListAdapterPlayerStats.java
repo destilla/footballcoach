@@ -8,12 +8,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import achijones.footballcoach.R;
@@ -63,6 +65,14 @@ public class ExpandableListAdapterPlayerStats extends BaseExpandableListAdapter 
         TextView itemR = (TextView) convertView.findViewById(R.id.textPlayerStatsRightChild);
         itemR.setText(detailSplit[1]);
 
+        Button buttonViewStats = (Button) convertView.findViewById(R.id.buttonPlayerStatsViewAll);
+        buttonViewStats.setText("View Career Stats");
+        buttonViewStats.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                mainAct.examinePlayer(players.get(groupPosition));
+            }
+        });
+
         if (players.get(groupPosition).equals("BENCH > BENCH")) {
             // Last group, meaning its the bench
             itemL.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +80,10 @@ public class ExpandableListAdapterPlayerStats extends BaseExpandableListAdapter 
                     mainAct.examinePlayer(playerDetail);
                 }
             });
+            buttonViewStats.setVisibility(View.GONE);
         } else {
+            if (!isLastChild) buttonViewStats.setVisibility(View.GONE);
+            else buttonViewStats.setVisibility(View.VISIBLE);
             itemL.setOnClickListener(null);
         }
 
@@ -95,17 +108,39 @@ public class ExpandableListAdapterPlayerStats extends BaseExpandableListAdapter 
 
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.group_player_stats, null);
-        }
+        LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        convertView = infalInflater.inflate(R.layout.group_player_stats, null);
+
         String[] detailSplit = getGroup(groupPosition).split(">");
         TextView itemL = (TextView) convertView.findViewById(R.id.textPlayerStatsLeft);
         itemL.setText(detailSplit[0]);
         itemL.setTypeface(null, Typeface.BOLD);
+
         TextView itemR = (TextView) convertView.findViewById(R.id.textPlayerStatsRight);
         itemR.setText(detailSplit[1]);
         itemR.setTypeface(null, Typeface.BOLD);
+
+        // Highlight POTYs, All Americans, and All Conf players
+        int playerAwards = 0;
+        if (getGroup(groupPosition).equals("BENCH > BENCH")) playerAwards = 0;
+        else playerAwards = mainAct.checkAwardPlayer(getGroup(groupPosition));
+
+        if (playerAwards == 3) {
+            // POTY
+            itemL.setTextColor(Color.parseColor("#FF9933"));
+            itemR.setTextColor(Color.parseColor("#FF9933"));
+        }
+        else if (playerAwards == 2) {
+            // All American
+            itemL.setTextColor(Color.parseColor("#1A75FF"));
+            itemR.setTextColor(Color.parseColor("#1A75FF"));
+        }
+        else if (playerAwards == 1) {
+            // All Conf
+            itemL.setTextColor(Color.parseColor("#00B300"));
+            itemR.setTextColor(Color.parseColor("#00B300"));
+        }
+
         return convertView;
     }
 
