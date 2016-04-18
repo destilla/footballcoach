@@ -20,7 +20,16 @@ public class Player {
     public int ratDur;
     public int ratImprovement;
     public int cost;
+
     public int gamesPlayed;
+    public boolean wonHeisman;
+    public boolean wonAllAmerican;
+    public boolean wonAllConference;
+
+    public int careerGamesPlayed;
+    public int careerHeismans;
+    public int careerAllAmerican;
+    public int careerAllConference;
 
     public boolean isRedshirt;
 
@@ -52,7 +61,9 @@ public class Player {
     }
     
     public int getHeismanScore() {
-        return 0;
+        int adjGames = gamesPlayed;
+        if (adjGames > 10) adjGames = 10;
+        return ratOvr * adjGames;
     }
 
     public String getInitialName() {
@@ -128,6 +139,41 @@ public class Player {
 
     public ArrayList<String> getDetailStatsList(int games) {
         return null;
+    }
+
+    public ArrayList<String> getDetailAllStatsList(int games) {
+        return null;
+    }
+
+    public ArrayList<String> getCareerStatsList() {
+        ArrayList<String> pStats = new ArrayList<>();
+        pStats.add("Games Played: " + (gamesPlayed+careerGamesPlayed) + ">Years: " + getYearsPlayed());
+        pStats.add("Awards: " + getAwards() + "> ");
+        return pStats;
+    }
+
+    public String getYearsPlayed() {
+        int startYear = team.league.getYear() - year + 1;
+        int endYear = team.league.getYear();
+        return startYear + "-" + endYear;
+    }
+
+    public String getAwards() {
+        ArrayList<String> awards = new ArrayList<>();
+        int heis = careerHeismans + (wonHeisman ? 1 : 0);
+        int aa = careerAllAmerican + (wonAllAmerican ? 1 : 0);
+        int ac = careerAllConference + (wonAllConference ? 1 : 0);
+        if (heis > 0) awards.add(heis + "x POTY");
+        if (aa > 0) awards.add(aa + "x All-Amer");
+        if (ac > 0) awards.add(ac + "x All-Conf");
+
+        String awardsStr = "";
+        for (int i = 0; i < awards.size(); ++i) {
+            awardsStr += awards.get(i);
+            if (i != awards.size()-1) awardsStr += ", ";
+        }
+
+        return awardsStr;
     }
 
     public String getInfoForLineup() {

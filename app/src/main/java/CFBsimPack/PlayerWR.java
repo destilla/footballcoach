@@ -37,6 +37,13 @@ public class PlayerWR extends Player {
     public int statsTD;
     public int statsDrops;
     public int statsFumbles;
+
+    public int careerTargets;
+    public int careerReceptions;
+    public int careerRecYards;
+    public int careerTD;
+    public int careerDrops;
+    public int careerFumbles;
     
     public PlayerWR( String nm, Team t, int yr, int pot, int iq, int cat, int spd, int eva, boolean rs, int dur ) {
         team = t;
@@ -71,6 +78,73 @@ public class PlayerWR extends Player {
         statsTD = 0;
         statsDrops = 0;
         statsFumbles = 0;
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+
+        careerTargets = 0;
+        careerReceptions = 0;
+        careerRecYards = 0;
+        careerTD = 0;
+        careerDrops = 0;
+        careerFumbles = 0;
+        careerGamesPlayed = 0;
+        careerHeismans = 0;
+        careerAllAmerican = 0;
+        careerAllConference = 0;
+
+        position = "WR";
+    }
+
+    public PlayerWR( String nm, Team t, int yr, int pot, int iq, int cat, int spd, int eva, boolean rs, int dur,
+                     int cGamesPlayed, int cTargets, int cReceptions, int cRecYards, int cTD, int cDrops, int cFumbles,
+                     int cHeismans, int cAA, int cAC) {
+        team = t;
+        name = nm;
+        year = yr;
+        gamesPlayed = 0;
+        isInjured = false;
+        ratOvr = (cat*2 + spd + eva)/4;
+        ratPot = pot;
+        ratFootIQ = iq;
+        ratDur = dur;
+        ratRecCat = cat;
+        ratRecSpd = spd;
+        ratRecEva = eva;
+        isRedshirt = rs;
+        if (isRedshirt) year = 0;
+
+        cost = (int)(Math.pow((float)ratOvr - 55,2)/3.5) + 80 + (int)(Math.random()*100) - 50;
+
+        ratingsVector = new Vector();
+        ratingsVector.addElement(name+" ("+getYrStr()+")");
+        ratingsVector.addElement(ratOvr+" (+"+ratImprovement+")");
+        ratingsVector.addElement(ratPot);
+        ratingsVector.addElement(ratFootIQ);
+        ratingsVector.addElement(ratRecCat);
+        ratingsVector.addElement(ratRecSpd);
+        ratingsVector.addElement(ratRecEva);
+
+        statsTargets = 0;
+        statsReceptions = 0;
+        statsRecYards = 0;
+        statsTD = 0;
+        statsDrops = 0;
+        statsFumbles = 0;
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+
+        careerTargets = cTargets;
+        careerReceptions = cReceptions;
+        careerRecYards = cRecYards;
+        careerTD = cTD;
+        careerDrops = cDrops;
+        careerFumbles = cFumbles;
+        careerGamesPlayed = cGamesPlayed;
+        careerHeismans = cHeismans;
+        careerAllAmerican = cAA;
+        careerAllConference = cAC;
 
         position = "WR";
     }
@@ -106,6 +180,20 @@ public class PlayerWR extends Player {
         statsTD = 0;
         statsDrops = 0;
         statsFumbles = 0;
+        wonHeisman = false;
+        wonAllAmerican = false;
+        wonAllConference = false;
+
+        careerTargets = 0;
+        careerReceptions = 0;
+        careerRecYards = 0;
+        careerTD = 0;
+        careerDrops = 0;
+        careerFumbles = 0;
+        careerGamesPlayed = 0;
+        careerHeismans = 0;
+        careerAllAmerican = 0;
+        careerAllConference = 0;
 
         position = "WR";
     }
@@ -151,6 +239,18 @@ public class PlayerWR extends Player {
         ratOvr = (ratRecCat*2 + ratRecSpd + ratRecEva)/4;
         ratImprovement = ratOvr - oldOvr;
         //reset stats (keep career stats?)
+        careerTargets += statsTargets;
+        careerReceptions += statsReceptions;
+        careerRecYards += statsRecYards;
+        careerTD += statsTD;
+        careerDrops += statsDrops;
+        careerFumbles += statsFumbles;
+        careerGamesPlayed += gamesPlayed;
+
+        if (wonHeisman) careerHeismans++;
+        if (wonAllAmerican) careerAllAmerican++;
+        if (wonAllConference) careerAllConference++;
+
         statsTargets = 0;
         statsReceptions = 0;
         statsRecYards = 0;
@@ -173,6 +273,31 @@ public class PlayerWR extends Player {
         pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Catching: " + getLetterGrade(ratRecCat));
         pStats.add("Rec Speed: " + getLetterGrade(ratRecSpd) + ">Evasion: " + getLetterGrade(ratRecEva));
+        pStats.add(" > ");
+        return pStats;
+    }
+
+    @Override
+    public ArrayList<String> getDetailAllStatsList(int games) {
+        ArrayList<String> pStats = new ArrayList<>();
+        pStats.add("TDs/Fumbles: " + statsTD + "/" + statsFumbles + ">Catch Percent: " + (100*statsReceptions/(statsTargets+1))+"%");
+        pStats.add("Rec Yards: " + statsRecYards + " yds" + ">Yards/Tgt: " + ((double)(10*statsRecYards/(statsTargets+1))/10) + " yds");
+        pStats.add("Yds/Game: " + (statsRecYards/getGamesPlayed()) + " yds/g>Drops: " + statsDrops);
+        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Catching: " + getLetterGrade(ratRecCat));
+        pStats.add("Rec Speed: " + getLetterGrade(ratRecSpd) + ">Evasion: " + getLetterGrade(ratRecEva));
+        pStats.addAll(getCareerStatsList());
+        return pStats;
+    }
+
+    @Override
+    public ArrayList<String> getCareerStatsList() {
+        ArrayList<String> pStats = new ArrayList<>();
+        pStats.add("CAREER STATS:> ");
+        pStats.add("TDs/Fumbles: " + (statsTD+careerTD) + "/" + (statsFumbles+careerFumbles) + ">Catch Percent: " + (100*(statsReceptions+careerReceptions)/(statsTargets+careerTargets+1))+"%");
+        pStats.add("Rec Yards: " + (statsRecYards+careerRecYards) + " yds" + ">Yards/Tgt: " + ((double)(10*(statsRecYards+careerRecYards)/(statsTargets+careerTargets+1))/10) + " yds");
+        pStats.add("Yds/Game: " + ((statsRecYards+careerRecYards)/(getGamesPlayed()+careerGamesPlayed)) + " yds/g>Sacks: " + (statsDrops+careerDrops));
+        pStats.addAll(super.getCareerStatsList());
         return pStats;
     }
 

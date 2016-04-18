@@ -1432,6 +1432,7 @@ public class League {
             heismanDecided = true;
             heismanCandidates = getHeisman();
             heisman = heismanCandidates.get(0);
+            heisman.wonHeisman = true;
             putNewsStory = true;
             //full results string
             String heismanTop5 = "\n";
@@ -1508,6 +1509,11 @@ public class League {
             ArrayList<PlayerQB> qbs = new ArrayList<>();
             ArrayList<PlayerRB> rbs = new ArrayList<>();
             ArrayList<PlayerWR> wrs = new ArrayList<>();
+            ArrayList<PlayerOL> ols = new ArrayList<>();
+            ArrayList<PlayerK> ks = new ArrayList<>();
+            ArrayList<PlayerS> ss = new ArrayList<>();
+            ArrayList<PlayerCB> cbs = new ArrayList<>();
+            ArrayList<PlayerF7> f7s = new ArrayList<>();
 
             for (Conference c : conferences) {
                 c.getAllConfPlayers();
@@ -1517,22 +1523,58 @@ public class League {
                 wrs.add((PlayerWR) c.allConfPlayers.get(3));
                 wrs.add((PlayerWR) c.allConfPlayers.get(4));
                 wrs.add((PlayerWR) c.allConfPlayers.get(5));
+                for (int i = 6; i < 11; ++i) {
+                    ols.add((PlayerOL) c.allConfPlayers.get(i));
+                }
+                ks.add((PlayerK) c.allConfPlayers.get(11));
+                ss.add((PlayerS) c.allConfPlayers.get(12));
+                for (int i = 13; i < 16; ++i) {
+                    cbs.add((PlayerCB) c.allConfPlayers.get(i));
+                }
+                for (int i = 16; i < 23; ++i) {
+                    f7s.add((PlayerF7) c.allConfPlayers.get(i));
+                }
             }
 
             Collections.sort(qbs, new PlayerHeismanComp());
             Collections.sort(rbs, new PlayerHeismanComp());
             Collections.sort(wrs, new PlayerHeismanComp());
+            Collections.sort(ols, new PlayerHeismanComp());
+            Collections.sort(ks, new PlayerHeismanComp());
+            Collections.sort(ss, new PlayerHeismanComp());
+            Collections.sort(cbs, new PlayerHeismanComp());
+            Collections.sort(f7s, new PlayerHeismanComp());
 
             allAmericans.add(qbs.get(0));
+            qbs.get(0).wonAllAmerican = true;
             allAmericans.add(rbs.get(0));
+            rbs.get(0).wonAllAmerican = true;
             allAmericans.add(rbs.get(1));
-            allAmericans.add(wrs.get(0));
-            allAmericans.add(wrs.get(1));
-            allAmericans.add(wrs.get(2));
+            rbs.get(1).wonAllAmerican = true;
+            for (int i = 0; i < 3; ++i) {
+                allAmericans.add(wrs.get(i));
+                wrs.get(i).wonAllAmerican = true;
+            }
+            for (int i = 0; i < 5; ++i) {
+                allAmericans.add(ols.get(i));
+                ols.get(i).wonAllAmerican = true;
+            }
+            allAmericans.add(ks.get(0));
+            ks.get(0).wonAllAmerican = true;
+            allAmericans.add(ss.get(0));
+            ss.get(0).wonAllAmerican = true;
+            for (int i = 0; i < 3; ++i) {
+                allAmericans.add(cbs.get(i));
+                cbs.get(i).wonAllAmerican = true;
+            }
+            for (int i = 0; i < 7; ++i) {
+                allAmericans.add(f7s.get(i));
+                f7s.get(i).wonAllAmerican = true;
+            }
         }
 
         StringBuilder allAmerican = new StringBuilder();
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < allAmericans.size(); ++i) {
             Player p = allAmericans.get(i);
             allAmerican.append(p.team.abbr + "(" + p.team.wins + "-" + p.team.losses + ")" + " - ");
             if (p instanceof PlayerQB) {
@@ -1547,8 +1589,14 @@ public class League {
                 PlayerWR pwr = (PlayerWR) p;
                 allAmerican.append(" WR " + pwr.name + " [" + pwr.getYrStr() + "]\n \t\t" +
                         pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds\n");
+            } else if (p instanceof PlayerK) {
+                PlayerK pk = (PlayerK) p;
+                allAmerican.append(" K " + pk.name + " [" + pk.getYrStr() + "]\n \t\t" +
+                        "FGs: " + pk.statsFGMade + "/" + pk.statsFGAtt + ", XPs: " + pk.statsXPMade + "/" + pk.statsXPAtt + "\n");
+            } else {
+                allAmerican.append(" " + p.position + " " + p.name + " [" + p.getYrStr() + "]\n");
             }
-            allAmerican.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.getLetterGrade(p.ratPot) + "\n\n");
+            allAmerican.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.getLetterGrade(p.ratPot) + "\n\n>");
         }
 
         // Go through all the all conf players to get the all americans
@@ -1563,7 +1611,7 @@ public class League {
     public String getAllConfStr(int confNum) {
         ArrayList<Player> allConfPlayers = conferences.get(confNum).getAllConfPlayers();
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < allConfPlayers.size(); ++i) {
             Player p = allConfPlayers.get(i);
             sb.append(p.team.abbr + "(" + p.team.wins + "-" + p.team.losses + ")" + " - ");
             if (p instanceof PlayerQB) {
@@ -1578,8 +1626,14 @@ public class League {
                 PlayerWR pwr = (PlayerWR) p;
                 sb.append(" WR " + pwr.name + " [" + pwr.getYrStr() + "]\n \t\t" +
                         pwr.statsTD + " TDs, " + pwr.statsFumbles + " Fum, " + pwr.statsRecYards + " Yds\n");
+            } else if (p instanceof PlayerK) {
+                PlayerK pk = (PlayerK) p;
+                sb.append(" K " + pk.name + " [" + pk.getYrStr() + "]\n \t\t" +
+                        "FGs: " + pk.statsFGMade + "/" + pk.statsFGAtt + ", XPs: " + pk.statsXPMade + "/" + pk.statsXPAtt + "\n");
+            } else {
+                sb.append(" " + p.position + " " + p.name + " [" + p.getYrStr() + "]\n");
             }
-            sb.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.getLetterGrade(p.ratPot) + "\n\n");
+            sb.append(" \t\tOverall: " + p.ratOvr + ", Potential: " + p.getLetterGrade(p.ratPot) + "\n\n>");
         }
 
         return sb.toString();

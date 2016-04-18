@@ -417,18 +417,6 @@ public class MainActivity extends AppCompatActivity {
              * Clicked Team History in drop down menu
              */
             showTeamHistoryDialog();
-            /*String historyStr = userTeam.getTeamHistoryStr();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(historyStr)
-                    .setTitle(userTeam.name + " Team History")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //do nothing?
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();*/
         } else if (id == R.id.action_ccg_bowl_watch) {
             /**
              * Clicked CCG / Bowl Watch in drop down menu
@@ -594,7 +582,7 @@ public class MainActivity extends AppCompatActivity {
                         //do nothing?
                     }
                 })
-                .setView(getLayoutInflater().inflate(R.layout.bowl_ccg_dialog, null));
+                .setView(getLayoutInflater().inflate(R.layout.team_rankings_dialog, null));
         AlertDialog dialog = builder.create();
         dialog.show();
 
@@ -611,24 +599,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        Spinner potySpinner = (Spinner) dialog.findViewById(R.id.spinnerBowlCCG);
+        Spinner potySpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
         ArrayAdapter<String> potyAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, selection);
         potyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         potySpinner.setAdapter(potyAdapter);
 
-        final TextView potyText = (TextView) dialog.findViewById(R.id.textViewBowlCCGDialog);
+        final ListView potyList = (ListView) dialog.findViewById(R.id.listViewTeamRankings);
 
         potySpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(
                             AdapterView<?> parent, View view, int position, long id) {
                         if (position == 0) {
-                            potyText.setText(simLeague.getHeismanCeremonyStr());
+                            potyList.setAdapter( new SeasonAwardsListArrayAdapter(MainActivity.this, simLeague.getHeismanCeremonyStr().split(">"), userTeam.abbr));
                         } else if (position == 1) {
-                            potyText.setText(simLeague.getAllAmericanStr());
+                            potyList.setAdapter(new SeasonAwardsListArrayAdapter(MainActivity.this, simLeague.getAllAmericanStr().split(">"), userTeam.abbr));
                         } else {
-                            potyText.setText(simLeague.getAllConfStr(position-2));
+                            potyList.setAdapter(new SeasonAwardsListArrayAdapter(MainActivity.this, simLeague.getAllConfStr(position-2).split(">"), userTeam.abbr));
                         }
                     }
 
@@ -1372,8 +1360,9 @@ public class MainActivity extends AppCompatActivity {
      */
     public void examinePlayer(String player) {
         Player p = currentTeam.findBenchPlayer(player);
+        if (p == null) p = currentTeam.getQB(0);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        ArrayList<String> pStatsList = p.getDetailStatsList(currentTeam.numGames());
+        ArrayList<String> pStatsList = p.getDetailAllStatsList(currentTeam.numGames());
         if (p.injury != null) pStatsList.add(0, "Injured: " + p.injury.toString() + "> ");
         String[] pStatsArray = pStatsList.toArray(new String[pStatsList.size()]);
         PlayerStatsListArrayAdapter pStatsAdapter = new PlayerStatsListArrayAdapter(this, pStatsArray);
@@ -1387,7 +1376,22 @@ public class MainActivity extends AppCompatActivity {
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
-   }
+    }
+
+    /**
+     * Checks to see if a player won any awards, for highlighting purposes.
+     * Uses findBenchPlayer(..) to find the correct player.
+     * @param player as a string
+     * @return 3 if POTY, 2 if AA, 1 if AC
+     */
+    public int checkAwardPlayer(String player) {
+        Player p = currentTeam.findBenchPlayer(player);
+        if (p == null) return 0;
+        if (p.wonHeisman) return 3;
+        if (p.wonAllAmerican) return 2;
+        if (p.wonAllConference) return 1;
+        return 0;
+    }
 
     /**
      * Start Recruiting Activity, sending over the user team's players and budget.
