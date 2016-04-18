@@ -490,8 +490,8 @@ public class Game implements Serializable {
             }
 
             // Add points/opp points
-            homeTeam.addGamePlayedPlayers();
-            awayTeam.addGamePlayedPlayers();
+            homeTeam.addGamePlayedPlayers(homeScore > awayScore);
+            awayTeam.addGamePlayedPlayers(awayScore > homeScore);
 
             homeTeam.teamPoints += homeScore;
             awayTeam.teamPoints += awayScore;

@@ -607,6 +607,14 @@ public class MainActivity extends AppCompatActivity {
 
         final ListView potyList = (ListView) dialog.findViewById(R.id.listViewTeamRankings);
 
+        // Get all american and all conf
+        final String[] allAmericans = simLeague.getAllAmericanStr().split(">");
+        final String[][] allConference = new String[6][];
+        for (int i = 0; i < 6; ++i) {
+            allConference[i] = simLeague.getAllConfStr(i).split(">");
+        }
+
+
         potySpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(
@@ -614,9 +622,9 @@ public class MainActivity extends AppCompatActivity {
                         if (position == 0) {
                             potyList.setAdapter( new SeasonAwardsListArrayAdapter(MainActivity.this, simLeague.getHeismanCeremonyStr().split(">"), userTeam.abbr));
                         } else if (position == 1) {
-                            potyList.setAdapter(new SeasonAwardsListArrayAdapter(MainActivity.this, simLeague.getAllAmericanStr().split(">"), userTeam.abbr));
+                            potyList.setAdapter(new SeasonAwardsListArrayAdapter(MainActivity.this, allAmericans, userTeam.abbr));
                         } else {
-                            potyList.setAdapter(new SeasonAwardsListArrayAdapter(MainActivity.this, simLeague.getAllConfStr(position-2).split(">"), userTeam.abbr));
+                            potyList.setAdapter(new SeasonAwardsListArrayAdapter(MainActivity.this, allConference[position-2], userTeam.abbr));
                         }
                     }
 
@@ -856,14 +864,42 @@ public class MainActivity extends AppCompatActivity {
                         //do nothing?
                     }
                 })
-                .setView(getLayoutInflater().inflate(R.layout.simple_list_dialog, null));
+                .setView(getLayoutInflater().inflate(R.layout.team_rankings_dialog, null));
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        final ListView teamHistoryList = (ListView) dialog.findViewById(R.id.listViewDialog);
-        TeamHistoryListArrayAdapter teamHistoryAdapter =
-                new TeamHistoryListArrayAdapter(MainActivity.this, userTeam.getTeamHistoryList());
-        teamHistoryList.setAdapter(teamHistoryAdapter);
+        String[] selection = {"Team History", "Hall of Fame"};
+        Spinner teamHistSpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
+        final ArrayAdapter<String> teamHistAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, selection);
+        teamHistAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        teamHistSpinner.setAdapter(teamHistAdapter);
+
+        final ListView teamHistoryList = (ListView) dialog.findViewById(R.id.listViewTeamRankings);
+
+        final String[] hofPlayers = new String[ userTeam.hallOfFame.size() ];
+        for (int i = 0; i < userTeam.hallOfFame.size(); ++i) {
+            hofPlayers[i] = userTeam.hallOfFame.get(i);
+        }
+
+        teamHistSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) {
+                            TeamHistoryListArrayAdapter teamHistoryAdapter =
+                                    new TeamHistoryListArrayAdapter(MainActivity.this, userTeam.getTeamHistoryList());
+                            teamHistoryList.setAdapter(teamHistoryAdapter);
+                        } else {
+                            HallOfFameListArrayAdapter hofAdapter = new HallOfFameListArrayAdapter(MainActivity.this, hofPlayers);
+                            teamHistoryList.setAdapter(hofAdapter);
+                        }
+                    }
+
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // do nothing
+                    }
+                });
     }
 
     public void showBowlCCGDialog() {

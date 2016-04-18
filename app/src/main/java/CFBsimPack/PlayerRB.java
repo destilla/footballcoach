@@ -71,6 +71,7 @@ public class PlayerRB extends Player {
         wonHeisman = false;
         wonAllAmerican = false;
         wonAllConference = false;
+        statsWins = 0;
 
         careerRushAtt = 0;
         careerRushYards = 0;
@@ -80,13 +81,14 @@ public class PlayerRB extends Player {
         careerHeismans = 0;
         careerAllAmerican = 0;
         careerAllConference = 0;
+        careerWins = 0;
 
         position = "RB";
     }
 
     public PlayerRB( String nm, Team t, int yr, int pot, int iq, int pow, int spd, int eva, boolean rs, int dur,
                      int cGamesPlayed, int cRushAtt, int cRushYards, int cTDs, int cFumbles,
-                     int cHeismans, int cAA, int cAC) {
+                     int cHeismans, int cAA, int cAC, int cWins) {
         team = t;
         name = nm;
         year = yr;
@@ -120,6 +122,7 @@ public class PlayerRB extends Player {
         wonHeisman = false;
         wonAllAmerican = false;
         wonAllConference = false;
+        statsWins = 0;
 
         careerRushAtt = cRushAtt;
         careerRushYards = cRushYards;
@@ -129,6 +132,7 @@ public class PlayerRB extends Player {
         careerHeismans = cHeismans;
         careerAllAmerican = cAA;
         careerAllConference = cAC;
+        careerWins = cWins;
 
         position = "RB";
     }
@@ -157,7 +161,7 @@ public class PlayerRB extends Player {
         ratingsVector.addElement(ratRushPow);
         ratingsVector.addElement(ratRushSpd);
         ratingsVector.addElement(ratRushEva);
-        
+
         statsRushAtt = 0;
         statsRushYards = 0;
         statsTD = 0;
@@ -165,6 +169,7 @@ public class PlayerRB extends Player {
         wonHeisman = false;
         wonAllAmerican = false;
         wonAllConference = false;
+        statsWins = 0;
 
         careerRushAtt = 0;
         careerRushYards = 0;
@@ -174,6 +179,7 @@ public class PlayerRB extends Player {
         careerHeismans = 0;
         careerAllAmerican = 0;
         careerAllConference = 0;
+        careerWins = 0;
 
         position = "RB";
     }
@@ -222,6 +228,7 @@ public class PlayerRB extends Player {
         careerTDs += statsTD;
         careerFumbles += statsFumbles;
         careerGamesPlayed += gamesPlayed;
+        careerWins += statsWins;
 
         if (wonHeisman) careerHeismans++;
         if (wonAllAmerican) careerAllAmerican++;
@@ -244,7 +251,7 @@ public class PlayerRB extends Player {
         pStats.add("TDs: " + statsTD + ">Fumbles: " + statsFumbles);
         pStats.add("Rush Yards: " + statsRushYards + " yds>Yards/Att: " + ((double)(10*statsRushYards/(statsRushAtt+1))/10) + " yds");
         pStats.add("Yds/Game: " + (statsRushYards/getGamesPlayed()) + " yds/g>Rush Att: " + statsRushAtt);
-        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Rush Power: " + getLetterGrade(ratRushPow));
         pStats.add("Rush Speed: " + getLetterGrade(ratRushSpd) + ">Evasion: " + getLetterGrade(ratRushEva));
         pStats.add(" > ");
@@ -257,9 +264,10 @@ public class PlayerRB extends Player {
         pStats.add("TDs: " + statsTD + ">Fumbles: " + statsFumbles);
         pStats.add("Rush Yards: " + statsRushYards + " yds>Yards/Att: " + ((double)(10*statsRushYards/(statsRushAtt+1))/10) + " yds");
         pStats.add("Yds/Game: " + (statsRushYards/getGamesPlayed()) + " yds/g>Rush Att: " + statsRushAtt);
-        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Rush Power: " + getLetterGrade(ratRushPow));
         pStats.add("Rush Speed: " + getLetterGrade(ratRushSpd) + ">Evasion: " + getLetterGrade(ratRushEva));
+        pStats.add("CAREER STATS:> ");
         pStats.addAll(getCareerStatsList());
         return pStats;
     }
@@ -267,7 +275,6 @@ public class PlayerRB extends Player {
     @Override
     public ArrayList<String> getCareerStatsList() {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("CAREER STATS:> ");
         pStats.add("TDs: " + (statsTD+careerTDs) + ">Fumbles: " + (statsFumbles+careerFumbles));
         pStats.add("Rush Yards: " + (statsRushYards+careerRushYards) + " yds>Yards/Att: " + ((double)(10*(statsRushYards+careerRushYards)/(statsRushAtt+careerRushAtt+1))/10) + " yds");
         pStats.add("Yds/Game: " + ((statsRushYards+careerRushYards)/(getGamesPlayed()+careerGamesPlayed)) + " yds/g>Rush Att: " + (statsRushAtt+careerRushAtt));

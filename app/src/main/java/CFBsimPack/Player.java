@@ -22,6 +22,7 @@ public class Player {
     public int cost;
 
     public int gamesPlayed;
+    public int statsWins;
     public boolean wonHeisman;
     public boolean wonAllAmerican;
     public boolean wonAllConference;
@@ -30,6 +31,7 @@ public class Player {
     public int careerHeismans;
     public int careerAllAmerican;
     public int careerAllConference;
+    public int careerWins;
 
     public boolean isRedshirt;
 
@@ -147,7 +149,8 @@ public class Player {
 
     public ArrayList<String> getCareerStatsList() {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("Games Played: " + (gamesPlayed+careerGamesPlayed) + ">Years: " + getYearsPlayed());
+        pStats.add("Games: " + (gamesPlayed+careerGamesPlayed) + " (" + (statsWins+careerWins) + "-" + (gamesPlayed+careerGamesPlayed-(statsWins+careerWins)) + ")"
+                + ">Yrs: " + getYearsPlayed());
         pStats.add("Awards: " + getAwards() + "> ");
         return pStats;
     }

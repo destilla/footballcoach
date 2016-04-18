@@ -312,10 +312,15 @@ public class League {
                 System.out.println("Checking record:" + line);
                 leagueRecords.checkRecord(record[0], Integer.parseInt(record[1]), record[2], Integer.parseInt(record[3]));
             }
+
             while((line = bufferedReader.readLine()) != null && !line.equals("END_LEAGUE_WIN_STREAK")) {
                 record = line.split(",");
                 longestWinStreak = new TeamStreak(
                         Integer.parseInt(record[2]), Integer.parseInt(record[3]), Integer.parseInt(record[0]), record[1]);
+            }
+
+            while((line = bufferedReader.readLine()) != null && !line.equals("END_HALL_OF_FAME")) {
+                userTeam.hallOfFame.add(line);
             }
 
             // Always close files.
@@ -2174,6 +2179,12 @@ public class League {
 
         sb.append(longestWinStreak.getStreakCSV());
         sb.append("\nEND_LEAGUE_WIN_STREAK\n");
+
+        // Save all the Hall of Famers
+        for (String s : userTeam.hallOfFame) {
+            sb.append(s + "\n");
+        }
+        sb.append("END_HALL_OF_FAME\n");
 
         // Actually write to the file
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(

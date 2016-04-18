@@ -74,6 +74,7 @@ public class PlayerQB extends Player {
         wonHeisman = false;
         wonAllAmerican = false;
         wonAllConference = false;
+        statsWins = 0;
 
         careerPassAtt = 0;
         careerPassComp = 0;
@@ -85,13 +86,14 @@ public class PlayerQB extends Player {
         careerHeismans = 0;
         careerAllAmerican = 0;
         careerAllConference = 0;
+        careerWins = 0;
 
         position = "QB";
     }
 
     public PlayerQB( String nm, Team t, int yr, int pot, int iq, int pow, int acc, int eva, boolean rs, int dur,
                      int cGamesPlayed, int cPassAtt, int cPassComp, int cTDs, int cInt, int cPassYards, int cSacked,
-                     int cHeismans, int cAA, int cAC) {
+                     int cHeismans, int cAA, int cAC, int cWins) {
         team = t;
         name = nm;
         year = yr;
@@ -127,6 +129,7 @@ public class PlayerQB extends Player {
         wonHeisman = false;
         wonAllAmerican = false;
         wonAllConference = false;
+        statsWins = 0;
 
         careerPassAtt = cPassAtt;
         careerPassComp = cPassComp;
@@ -138,6 +141,7 @@ public class PlayerQB extends Player {
         careerHeismans = cHeismans;
         careerAllAmerican = cAA;
         careerAllConference = cAC;
+        careerWins = cWins;
 
         position = "QB";
     }
@@ -166,7 +170,7 @@ public class PlayerQB extends Player {
         ratingsVector.addElement(ratPassPow);
         ratingsVector.addElement(ratPassAcc);
         ratingsVector.addElement(ratPassEva);
-        
+
         statsPassAtt = 0;
         statsPassComp = 0;
         statsTD = 0;
@@ -176,6 +180,7 @@ public class PlayerQB extends Player {
         wonHeisman = false;
         wonAllAmerican = false;
         wonAllConference = false;
+        statsWins = 0;
 
         careerPassAtt = 0;
         careerPassComp = 0;
@@ -187,6 +192,7 @@ public class PlayerQB extends Player {
         careerHeismans = 0;
         careerAllAmerican = 0;
         careerAllConference = 0;
+        careerWins = 0;
 
         position = "QB";
     }
@@ -241,6 +247,7 @@ public class PlayerQB extends Player {
         careerPassYards += statsPassYards;
         careerSacked += statsSacked;
         careerGamesPlayed += gamesPlayed;
+        careerWins += statsWins;
 
         if (wonHeisman) careerHeismans++;
         if (wonAllAmerican) careerAllAmerican++;
@@ -265,7 +272,7 @@ public class PlayerQB extends Player {
         pStats.add("TD/Int: " + statsTD + "/" + statsInt + ">Comp Percent: " + (100*statsPassComp/(statsPassAtt+1))+"%");
         pStats.add("Pass Yards: " + statsPassYards + " yds>Yards/Att: " + ((double)(10*statsPassYards/(statsPassAtt+1))/10) + " yds");
         pStats.add("Yds/Game: " + (statsPassYards/getGamesPlayed()) + " yds/g>Sacks: " + statsSacked);
-        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Pass Strength: " + getLetterGrade(ratPassPow));
         pStats.add("Accuracy: " + getLetterGrade(ratPassAcc) + ">Evasion: " + getLetterGrade(ratPassEva));
         pStats.add(" > ");
@@ -278,9 +285,10 @@ public class PlayerQB extends Player {
         pStats.add("TD/Int: " + statsTD + "/" + statsInt + ">Comp Percent: " + (100*statsPassComp/(statsPassAtt+1))+"%");
         pStats.add("Pass Yards: " + statsPassYards + " yds>Yards/Att: " + ((double)(10*statsPassYards/(statsPassAtt+1))/10) + " yds");
         pStats.add("Yds/Game: " + (statsPassYards/getGamesPlayed()) + " yds/g>Sacks: " + statsSacked);
-        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Pass Strength: " + getLetterGrade(ratPassPow));
         pStats.add("Accuracy: " + getLetterGrade(ratPassAcc) + ">Evasion: " + getLetterGrade(ratPassEva));
+        pStats.add("CAREER STATS:> ");
         pStats.addAll(getCareerStatsList());
         return pStats;
     }
@@ -288,7 +296,6 @@ public class PlayerQB extends Player {
     @Override
     public ArrayList<String> getCareerStatsList() {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("CAREER STATS:> ");
         pStats.add("TD/Int: " + (statsTD+careerTDs) + "/" + (statsInt+careerInt) + ">Comp Percent: " + (100*(statsPassComp+careerPassComp)/(statsPassAtt+careerPassAtt+1))+"%");
         pStats.add("Pass Yards: " + (statsPassYards+careerPassYards) + " yds>Yards/Att: " + ((double)(10*(statsPassYards+careerPassYards)/(statsPassAtt+careerPassAtt+1))/10) + " yds");
         pStats.add("Yds/Game: " + ((statsPassYards+careerPassYards)/(getGamesPlayed()+careerGamesPlayed)) + " yds/g>Sacks: " + (statsSacked+careerSacked));

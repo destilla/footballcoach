@@ -56,15 +56,17 @@ public class PlayerOL extends Player {
         wonHeisman = false;
         wonAllAmerican = false;
         wonAllConference = false;
+        statsWins = 0;
 
         careerGamesPlayed = 0;
         careerHeismans = 0;
         careerAllAmerican = 0;
         careerAllConference = 0;
+        careerWins = 0;
     }
 
     public PlayerOL( String nm, Team t, int yr, int pot, int iq, int pow, int bkr, int bkp, boolean rs, int dur,
-                     int cGamesPlayed, int cHeismans, int cAA, int cAC ) {
+                     int cGamesPlayed, int cHeismans, int cAA, int cAC, int cWins ) {
         team = t;
         name = nm;
         year = yr;
@@ -95,11 +97,13 @@ public class PlayerOL extends Player {
         wonHeisman = false;
         wonAllAmerican = false;
         wonAllConference = false;
+        statsWins = 0;
 
         careerGamesPlayed = cGamesPlayed;
         careerHeismans = cHeismans;
         careerAllAmerican = cAA;
         careerAllConference = cAC;
+        careerWins = cWins;
     }
     
     public PlayerOL( String nm, int yr, int stars, Team t ) {
@@ -131,11 +135,13 @@ public class PlayerOL extends Player {
         wonHeisman = false;
         wonAllAmerican = false;
         wonAllConference = false;
+        statsWins = 0;
 
         careerGamesPlayed = 0;
         careerHeismans = 0;
         careerAllAmerican = 0;
         careerAllConference = 0;
+        careerWins = 0;
     }
     
     public Vector getRatingsVector() {
@@ -168,6 +174,7 @@ public class PlayerOL extends Player {
         ratImprovement = ratOvr - oldOvr;
 
         careerGamesPlayed += gamesPlayed;
+        careerWins += statsWins;
 
         if (wonHeisman) careerHeismans++;
         if (wonAllAmerican) careerAllAmerican++;
@@ -177,7 +184,7 @@ public class PlayerOL extends Player {
     @Override
     public ArrayList<String> getDetailStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Strength: " + getLetterGrade(ratOLPow));
         pStats.add("Run Block: " + getLetterGrade(ratOLBkR) + ">Pass Block: " + getLetterGrade(ratOLBkP));
         pStats.add(" > ");
@@ -187,7 +194,7 @@ public class PlayerOL extends Player {
     @Override
     public ArrayList<String> getDetailAllStatsList(int games) {
         ArrayList<String> pStats = new ArrayList<>();
-        pStats.add("Games Played: " + gamesPlayed + ">Durability: " + getLetterGrade(ratDur));
+        pStats.add("Games: " + gamesPlayed + " (" + statsWins + "-" + (gamesPlayed-statsWins) + ")" + ">Durability: " + getLetterGrade(ratDur));
         pStats.add("Football IQ: " + getLetterGrade(ratFootIQ) + ">Strength: " + getLetterGrade(ratOLPow));
         pStats.add("Run Block: " + getLetterGrade(ratOLBkR) + ">Pass Block: " + getLetterGrade(ratOLBkP));
         pStats.add("CAREER STATS:> ");
