@@ -462,20 +462,20 @@ public class Team {
         for (Player p : playersLeaving) {
             if (p instanceof PlayerQB) {
                 PlayerQB qb = (PlayerQB) p;
-                records.checkRecord("Career Pass Yards", qb.statsPassYards+qb.careerPassYards, abbr + " " + qb.getInitialName(), league.getYear());
-                records.checkRecord("Career Pass TDs", qb.statsTD+qb.careerTDs, abbr + " " + qb.getInitialName(), league.getYear());
-                records.checkRecord("Career Interceptions", qb.statsInt+qb.careerInt, abbr + " " + qb.getInitialName(), league.getYear());
+                records.checkRecord("Career Pass Yards", qb.statsPassYards+qb.careerPassYards, abbr + " " + qb.getInitialName(), league.getYear()-1);
+                records.checkRecord("Career Pass TDs", qb.statsTD+qb.careerTDs, abbr + " " + qb.getInitialName(), league.getYear()-1);
+                records.checkRecord("Career Interceptions", qb.statsInt+qb.careerInt, abbr + " " + qb.getInitialName(), league.getYear()-1);
             }
             else if (p instanceof PlayerRB) {
                 PlayerRB rb = (PlayerRB) p;
-                records.checkRecord("Career Rush Yards", rb.statsRushYards+rb.careerRushYards, abbr + " " + rb.getInitialName(), league.getYear());
-                records.checkRecord("Career Rush TDs", rb.statsTD+rb.careerTDs, abbr + " " + rb.getInitialName(), league.getYear());
-                records.checkRecord("Career Rush Fumbles", rb.statsFumbles+rb.careerFumbles, abbr + " " + rb.getInitialName(), league.getYear());
+                records.checkRecord("Career Rush Yards", rb.statsRushYards+rb.careerRushYards, abbr + " " + rb.getInitialName(), league.getYear()-1);
+                records.checkRecord("Career Rush TDs", rb.statsTD+rb.careerTDs, abbr + " " + rb.getInitialName(), league.getYear()-1);
+                records.checkRecord("Career Rush Fumbles", rb.statsFumbles+rb.careerFumbles, abbr + " " + rb.getInitialName(), league.getYear()-1);
             }
             else if (p instanceof PlayerWR) {
                 PlayerWR wr = (PlayerWR) p;
-                records.checkRecord("Career Rec Yards", wr.statsRecYards+wr.careerRecYards, abbr + " " + wr.getInitialName(), league.getYear());
-                records.checkRecord("Career Rec TDs", wr.statsTD+wr.careerTD, abbr + " " + wr.getInitialName(), league.getYear());
+                records.checkRecord("Career Rec Yards", wr.statsRecYards+wr.careerRecYards, abbr + " " + wr.getInitialName(), league.getYear()-1);
+                records.checkRecord("Career Rec TDs", wr.statsTD+wr.careerTD, abbr + " " + wr.getInitialName(), league.getYear()-1);
             }
         }
     }

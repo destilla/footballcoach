@@ -667,7 +667,7 @@ public class Game implements Serializable {
             double preferRush = (offense.getRushProf()*2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
 
             // If it's 1st and Goal to go, adjust yards needed to reflect distance for a TD so that play selection reflects actual yards to go
-            // If we don't do this, gameYardsNeed may be higher than the actualy distance for a TD and suboptimal plays may be chosen
+            // If we don't do this, gameYardsNeed may be higher than the actually distance for a TD and suboptimal plays may be chosen
             if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine;
 
             //Under 30 seconds to play, check that the team with the ball is trailing or tied, do something based on the score difference

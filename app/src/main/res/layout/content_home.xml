@@ -79,5 +79,13 @@
             android:id="@+id/buttonDonate" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Copyright Achi Jones, 2016"
+        />
+
 
 </LinearLayout>
