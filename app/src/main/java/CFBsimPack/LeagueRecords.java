@@ -115,7 +115,7 @@ public class LeagueRecords {
         Record r;
         for (String s : recordsList) {
             r = records.get(s);
-            if (r.getHolder().split(" ")[0].equals(oldAbbr)) {
+            if (r != null && r.getHolder().split(" ")[0].equals(oldAbbr)) {
                 r.changeAbbr(newAbbr);
             }
         }
