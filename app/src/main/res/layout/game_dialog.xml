@@ -60,8 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:paddingStart="3dp"
-                android:paddingEnd="3dp"
-                android:layout_toRightOf="@id/gameDialogCenter"/>
+                android:paddingEnd="3dp" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

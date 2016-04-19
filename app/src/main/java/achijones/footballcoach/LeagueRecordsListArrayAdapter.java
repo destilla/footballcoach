@@ -6,10 +6,12 @@ package achijones.footballcoach;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import achijones.footballcoach.R;
@@ -36,7 +38,13 @@ public class LeagueRecordsListArrayAdapter extends ArrayAdapter<String> {
         TextView textRight = (TextView) rowView.findViewById(R.id.textLeagueRecordRight);
 
         String[] record = values[position].split(",");
-        if (!record[2].equals("XXX")) {
+        if (record[1].equals("-1")) {
+            textLeft.setText("");
+            textCenter.setText(record[0]);
+            textCenter.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            textRight.setText("");
+        }
+        else if (!record[2].equals("XXX")) {
             // Only show record if it exists
             textLeft.setText(record[1]);
             textCenter.setText(record[0]);
