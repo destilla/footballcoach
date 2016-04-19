@@ -80,7 +80,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:paddingTop="15dp"
-                android:paddingBottom="20dp">
+                android:paddingBottom="10dp">
                 <TextView
                     android:layout_width="0dip"
                     android:text="Defense Strategy:"
@@ -96,6 +96,19 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/spinnerScoutDefenseStrategy" />
             </LinearLayout>
+
+            <TextView
+                android:text="ha3"
+                android:id="@+id/gameScoutDialogBottom"
+                android:textAlignment="gravity"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_weight="1.0"
+                android:paddingStart="3dp"
+                android:paddingEnd="3dp"
+                android:paddingBottom="20dp"/>
 
         </LinearLayout>
 

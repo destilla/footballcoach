@@ -111,6 +111,7 @@ public class Team {
     public ArrayList<Player> playersLeaving;
     public ArrayList<Player> playersInjured;
     public ArrayList<Player> playersRecovered;
+    public ArrayList<Player> playersInjuredAll;
 
     public TeamStrategy teamStratOff;
     public TeamStrategy teamStratDef;
@@ -137,6 +138,7 @@ public class Team {
         showPopups = true;
         teamHistory = new ArrayList<String>();
         hallOfFame = new ArrayList<>();
+        playersInjuredAll = new ArrayList<>();
 
         teamQBs = new ArrayList<PlayerQB>();
         teamRBs = new ArrayList<PlayerRB>();
@@ -213,6 +215,7 @@ public class Team {
         showPopups = true;
         teamHistory = new ArrayList<String>();
         hallOfFame = new ArrayList<>();
+        playersInjuredAll = new ArrayList<>();
 
         teamQBs = new ArrayList<PlayerQB>();
         teamRBs = new ArrayList<PlayerRB>();
@@ -382,6 +385,9 @@ public class Team {
 
         if (userControlled) checkHallofFame();
 
+        checkCareerRecords(league.leagueRecords);
+        if (league.userTeam == this) checkCareerRecords(league.userTeamRecords);
+
         advanceSeasonPlayers();
 
     }
@@ -413,40 +419,65 @@ public class Team {
     /**
      * Checks if any of the league records were broken by this team.
      */
-    public void checkLeagueRecords() {
-        league.leagueRecords.checkRecord("Team PPG", teamPoints/numGames(), abbr, league.getYear());
-        league.leagueRecords.checkRecord("Team Opp PPG", teamOppPoints/numGames(), abbr, league.getYear());
-        league.leagueRecords.checkRecord("Team YPG", teamYards/numGames(), abbr, league.getYear());
-        league.leagueRecords.checkRecord("Team Opp YPG", teamOppYards/numGames(), abbr, league.getYear());
-        league.leagueRecords.checkRecord("Team PPG", teamPoints/numGames(), abbr, league.getYear());
-        league.leagueRecords.checkRecord("Team TO Diff", teamTODiff, abbr, league.getYear());
+    public void checkLeagueRecords(LeagueRecords records) {
+        records.checkRecord("Team PPG", teamPoints/numGames(), abbr, league.getYear());
+        records.checkRecord("Team Opp PPG", teamOppPoints/numGames(), abbr, league.getYear());
+        records.checkRecord("Team YPG", teamYards/numGames(), abbr, league.getYear());
+        records.checkRecord("Team Opp YPG", teamOppYards/numGames(), abbr, league.getYear());
+        records.checkRecord("Team PPG", teamPoints/numGames(), abbr, league.getYear());
+        records.checkRecord("Team TO Diff", teamTODiff, abbr, league.getYear());
 
         for (int i = 0; i < teamQBs.size(); ++i) {
             if (getQB(i).gamesPlayed > 6) {
-                league.leagueRecords.checkRecord("Pass Yards", getQB(i).statsPassYards, abbr + " " + getQB(i).getInitialName(), league.getYear());
-                league.leagueRecords.checkRecord("Pass TDs", getQB(i).statsTD, abbr + " " + getQB(i).getInitialName(), league.getYear());
-                league.leagueRecords.checkRecord("Interceptions", getQB(i).statsInt, abbr + " " + getQB(i).getInitialName(), league.getYear());
-                league.leagueRecords.checkRecord("Comp Percent", (100 * getQB(i).statsPassComp) / (getQB(i).statsPassAtt + 1), abbr + " " + getQB(i).getInitialName(), league.getYear());
+                records.checkRecord("Pass Yards", getQB(i).statsPassYards, abbr + " " + getQB(i).getInitialName(), league.getYear());
+                records.checkRecord("Pass TDs", getQB(i).statsTD, abbr + " " + getQB(i).getInitialName(), league.getYear());
+                records.checkRecord("Interceptions", getQB(i).statsInt, abbr + " " + getQB(i).getInitialName(), league.getYear());
+                records.checkRecord("Comp Percent", (100 * getQB(i).statsPassComp) / (getQB(i).statsPassAtt + 1), abbr + " " + getQB(i).getInitialName(), league.getYear());
             }
         }
 
 
         for (int i = 0; i < teamRBs.size(); ++i) {
             if (getRB(i).gamesPlayed > 6) {
-                league.leagueRecords.checkRecord("Rush Yards", getRB(i).statsRushYards, abbr + " " + getRB(i).getInitialName(), league.getYear());
-                league.leagueRecords.checkRecord("Rush TDs", getRB(i).statsTD, abbr + " " + getRB(i).getInitialName(), league.getYear());
-                league.leagueRecords.checkRecord("Rush Fumbles", getRB(i).statsFumbles, abbr + " " + getRB(i).getInitialName(), league.getYear());
+                records.checkRecord("Rush Yards", getRB(i).statsRushYards, abbr + " " + getRB(i).getInitialName(), league.getYear());
+                records.checkRecord("Rush TDs", getRB(i).statsTD, abbr + " " + getRB(i).getInitialName(), league.getYear());
+                records.checkRecord("Rush Fumbles", getRB(i).statsFumbles, abbr + " " + getRB(i).getInitialName(), league.getYear());
             }
         }
 
         for (int i = 0; i < teamWRs.size(); ++i) {
             if (getWR(i).gamesPlayed > 6) {
-                league.leagueRecords.checkRecord("Rec Yards", getWR(i).statsRecYards, abbr + " " + getWR(i).getInitialName(), league.getYear());
-                league.leagueRecords.checkRecord("Rec TDs", getWR(i).statsTD, abbr + " " + getWR(i).getInitialName(), league.getYear());
-                league.leagueRecords.checkRecord("Catch Percent", (100 * getWR(i).statsReceptions) / (getWR(i).statsTargets + 1), abbr + " " + getWR(i).getInitialName(), league.getYear());
+                records.checkRecord("Rec Yards", getWR(i).statsRecYards, abbr + " " + getWR(i).getInitialName(), league.getYear());
+                records.checkRecord("Rec TDs", getWR(i).statsTD, abbr + " " + getWR(i).getInitialName(), league.getYear());
+                records.checkRecord("Catch Percent", (100 * getWR(i).statsReceptions) / (getWR(i).statsTargets + 1), abbr + " " + getWR(i).getInitialName(), league.getYear());
             }
         }
 
+    }
+
+    /**
+     * Checks the career records for all the leaving players. Must be done after playersLeaving is populated.
+     */
+    public void checkCareerRecords(LeagueRecords records) {
+        for (Player p : playersLeaving) {
+            if (p instanceof PlayerQB) {
+                PlayerQB qb = (PlayerQB) p;
+                records.checkRecord("Career Pass Yards", qb.statsPassYards+qb.careerPassYards, abbr + " " + qb.getInitialName(), league.getYear());
+                records.checkRecord("Career Pass TDs", qb.statsTD+qb.careerTDs, abbr + " " + qb.getInitialName(), league.getYear());
+                records.checkRecord("Career Interceptions", qb.statsInt+qb.careerInt, abbr + " " + qb.getInitialName(), league.getYear());
+            }
+            else if (p instanceof PlayerRB) {
+                PlayerRB rb = (PlayerRB) p;
+                records.checkRecord("Career Rush Yards", rb.statsRushYards+rb.careerRushYards, abbr + " " + rb.getInitialName(), league.getYear());
+                records.checkRecord("Career Rush TDs", rb.statsTD+rb.careerTDs, abbr + " " + rb.getInitialName(), league.getYear());
+                records.checkRecord("Career Rush Fumbles", rb.statsFumbles+rb.careerFumbles, abbr + " " + rb.getInitialName(), league.getYear());
+            }
+            else if (p instanceof PlayerWR) {
+                PlayerWR wr = (PlayerWR) p;
+                records.checkRecord("Career Rec Yards", wr.statsRecYards+wr.careerRecYards, abbr + " " + wr.getInitialName(), league.getYear());
+                records.checkRecord("Career Rec TDs", wr.statsTD+wr.careerTD, abbr + " " + wr.getInitialName(), league.getYear());
+            }
+        }
     }
 
     public void getPlayersLeaving() {
@@ -1387,7 +1418,10 @@ public class Team {
             if (p.injury != null) {
                 p.injury.advanceGame();
                 numInjured++;
-                if (p.injury == null) playersRecovered.add(p);
+                if (p.injury == null) {
+                    playersRecovered.add(p);
+                    playersInjuredAll.remove(p);
+                }
             }
         }
 
@@ -1399,6 +1433,7 @@ public class Team {
                     // injury!
                     p.injury = new Injury(p);
                     playersInjured.add(p);
+                    playersInjuredAll.add(p);
                     numInjured++;
                 }
             }
@@ -2557,5 +2592,17 @@ class PlayerComparator implements Comparator<Player> {
         } else {
             return a.ratOvr > b.ratOvr ? -1 : a.ratOvr == b.ratOvr ? 0 : 1;
         }
+    }
+}
+
+/**
+ * Comparator used to sort players by position, QB-RB-WR-OL-K-S-CB-F7
+ */
+class PlayerPositionComparator implements Comparator<Player> {
+    @Override
+    public int compare( Player a, Player b ) {
+        int aPos = Player.getPosNumber(a.position);
+        int bPos = Player.getPosNumber(b.position);
+        return aPos < bPos ? -1 : aPos == bPos ? 0 : 1;
     }
 }

@@ -2,6 +2,7 @@ package CFBsimPack;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Class for storing games. Has all stats for the game.
@@ -321,7 +322,24 @@ public class Game implements Serializable {
         gameSum[0] = gameL.toString();
         gameSum[1] = gameC.toString();
         gameSum[2] = gameR.toString();
-        gameSum[3] = "SCOUTING REPORT";
+
+        StringBuilder gameScout = new StringBuilder();
+        if (awayTeam.playersInjuredAll != null && !awayTeam.playersInjuredAll.isEmpty()) {
+            Collections.sort(awayTeam.playersInjuredAll, new PlayerPositionComparator());
+            gameScout.append("\n" + awayTeam.abbr + " Injury Report:\n");
+            for (Player p : awayTeam.playersInjuredAll) {
+                gameScout.append(p.getPosNameYrOvrPot_OneLine() + "\n");
+            }
+        }
+        if (homeTeam.playersInjuredAll != null && !homeTeam.playersInjuredAll.isEmpty()) {
+            Collections.sort(homeTeam.playersInjuredAll, new PlayerPositionComparator());
+            gameScout.append("\n" + homeTeam.abbr + " Injury Report:\n");
+            for (Player p : homeTeam.playersInjuredAll) {
+                gameScout.append(p.getPosNameYrOvrPot_OneLine() + "\n");
+            }
+        }
+
+        gameSum[3] = gameScout.toString();
 
         return gameSum;
     }
@@ -403,7 +421,7 @@ public class Game implements Serializable {
                 if (secTime < 10) secStr = "0" + secTime;
                 else secStr = "" + secTime;
                 return minTime + ":" + secStr + " OT" + numOT;
-            } else if (gameTime < 0 && numOT <= 0) { // Prevent Q5 1X:XX from displaying in the game log
+            } else if (gameTime <= 0 && numOT <= 0) { // Prevent Q5 1X:XX from displaying in the game log
                 return "0:00 Q4";
             }
             else {
@@ -446,6 +464,13 @@ public class Game implements Serializable {
                 //play ball!
                 if (gamePoss) runPlay(homeTeam, awayTeam);
                 else runPlay(awayTeam, homeTeam);
+            }
+
+            // Add last play
+            if (homeScore != awayScore) {
+                gameEventLog += getEventPrefix() + "Time has expired! The game is over.";
+            } else {
+                gameEventLog += getEventPrefix() + "OVERTIME!\nTie game at 0:00, overtime begins!";
             }
 
             //Overtime (if needed)

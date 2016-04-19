@@ -682,6 +682,8 @@ public class MainActivity extends AppCompatActivity {
             gameC.setText(gameStr[1]);
             final TextView gameR = (TextView) dialog.findViewById(R.id.gameScoutDialogRight);
             gameR.setText(gameStr[2]);
+            final TextView gameB = (TextView) dialog.findViewById(R.id.gameScoutDialogBottom);
+            gameB.setText(gameStr[3]);
 
             // Set up spinners to choose strategy, if the game involves the user team
             if (g.awayTeam == userTeam || g.homeTeam == userTeam) {
@@ -868,7 +870,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        String[] selection = {"Team History", "Hall of Fame"};
+        String[] selection = {"Team History", "Team Records", "Hall of Fame"};
         Spinner teamHistSpinner = (Spinner) dialog.findViewById(R.id.spinnerTeamRankings);
         final ArrayAdapter<String> teamHistAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, selection);
@@ -890,6 +892,10 @@ public class MainActivity extends AppCompatActivity {
                             TeamHistoryListArrayAdapter teamHistoryAdapter =
                                     new TeamHistoryListArrayAdapter(MainActivity.this, userTeam.getTeamHistoryList());
                             teamHistoryList.setAdapter(teamHistoryAdapter);
+                        } else if (position == 1) {
+                            LeagueRecordsListArrayAdapter leagueRecordsAdapter =
+                                    new LeagueRecordsListArrayAdapter(MainActivity.this, simLeague.userTeamRecords.getRecordsStr().split("\n"), "---");
+                            teamHistoryList.setAdapter(leagueRecordsAdapter);
                         } else {
                             HallOfFameListArrayAdapter hofAdapter = new HallOfFameListArrayAdapter(MainActivity.this, hofPlayers);
                             teamHistoryList.setAdapter(hofAdapter);

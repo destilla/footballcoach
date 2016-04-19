@@ -44,10 +44,13 @@ public class LeagueRecords {
 
     private HashMap<String, Record> records;
 
-    public final String[] recordsList = {"Team PPG","Team Opp PPG","Team YPG","Team Opp YPG","Team TO Diff",
-            "Pass Yards","Pass TDs","Interceptions","Comp Percent",
+    public final String[] recordsList = {"TEAM","Team PPG","Team Opp PPG","Team YPG","Team Opp YPG","Team TO Diff",
+            "SEASON","Pass Yards","Pass TDs","Interceptions","Comp Percent",
             "Rush Yards","Rush TDs","Rush Fumbles",
-            "Rec Yards","Rec TDs","Catch Percent"};
+            "Rec Yards","Rec TDs","Catch Percent",
+            "CAREER","Career Pass Yards","Career Pass TDs","Career Interceptions",
+            "Career Rush Yards","Career Rush TDs","Career Rush Fumbles",
+            "Career Rec Yards","Career Rec TDs"};
 
     public LeagueRecords(ArrayList<String> recordStrings) {
         records = new HashMap<String, Record>();
@@ -60,11 +63,13 @@ public class LeagueRecords {
 
     public LeagueRecords() {
         records = new HashMap<String, Record>();
+        records.put("TEAM", null);
         records.put("Team PPG", new Record(0, "XXX", 0));
         records.put("Team Opp PPG", new Record(1000, "XXX", 0));
         records.put("Team YPG", new Record(0, "XXX", 0));
         records.put("Team Opp YPG", new Record(1000, "XXX", 0));
         records.put("Team TO Diff", new Record(0, "XXX", 0));
+        records.put("SEASON", null);
         records.put("Pass Yards", new Record(0, "XXX", 0));
         records.put("Pass TDs", new Record(0, "XXX", 0));
         records.put("Interceptions", new Record(0, "XXX", 0));
@@ -75,6 +80,15 @@ public class LeagueRecords {
         records.put("Rec Yards", new Record(0, "XXX", 0));
         records.put("Rec TDs", new Record(0, "XXX", 0));
         records.put("Catch Percent", new Record(0, "XXX", 0));
+        records.put("CAREER", null);
+        records.put("Career Pass Yards", new Record(0, "XXX", 0));
+        records.put("Career Pass TDs", new Record(0, "XXX", 0));
+        records.put("Career Interceptions", new Record(0, "XXX", 0));
+        records.put("Career Rush Yards", new Record(0, "XXX", 0));
+        records.put("Career Rush TDs", new Record(0, "XXX", 0));
+        records.put("Career Rush Fumbles", new Record(0, "XXX", 0));
+        records.put("Career Rec Yards", new Record(0, "XXX", 0));
+        records.put("Career Rec TDs", new Record(0, "XXX", 0));
     }
 
     public void checkRecord(String record, int number, String holder, int year) {
@@ -118,6 +132,7 @@ public class LeagueRecords {
     private String recordStrCSV(String key) {
         if (records.containsKey(key)) {
             Record r = records.get(key);
+            if (r == null) return key+",-1,-1,-1";
             return key+","+r.getNumber()+","+r.getHolder()+","+r.getYear();
         }
         else return "ERROR,ERROR,ERROR,ERROR";
@@ -130,10 +145,12 @@ public class LeagueRecords {
     public String brokenRecordsStr(int year, String abbr) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Record> r : records.entrySet()) {
-            if (r.getValue().getHolder().split(" ")[0].equals(abbr) &&
-                    r.getValue().getYear() == year) {
+            if (r.getValue() != null &&
+                    r.getValue().getHolder().split(" ")[0].equals(abbr) &&
+                    r.getValue().getYear() == year &&
+                    !r.getKey().split(" ")[0].equals("Career")) {
                 sb.append(r.getValue().getHolder() + " broke the record for " +
-                    r.getKey() + " in a season with " + r.getValue().getNumber() + "!\n");
+                    r.getKey() + " with " + r.getValue().getNumber() + "!\n");
             }
         }
 

@@ -31,6 +31,7 @@ public class League {
     public ArrayList< ArrayList<String> > newsStories;
 
     public LeagueRecords leagueRecords;
+    public LeagueRecords userTeamRecords;
     public TeamStreak longestWinStreak;
     public TeamStreak longestActiveWinStreak;
 
@@ -105,6 +106,7 @@ public class League {
                 "on your mind, or just a winning season, good luck!");
 
         leagueRecords = new LeagueRecords();
+        userTeamRecords = new LeagueRecords();
         longestWinStreak = new TeamStreak(getYear(), getYear(), 0, "XXX");
         longestActiveWinStreak = new TeamStreak(getYear(), getYear(), 0, "XXX");
 
@@ -158,9 +160,9 @@ public class League {
         conferences.get(3).confTeams.add( new Team( "Texas", "TEX", "COWBY", this, 90, "OKL" ));
         conferences.get(3).confTeams.add( new Team( "Houston", "HOU", "COWBY", this, 80, "DAL" ));
         conferences.get(3).confTeams.add( new Team( "Dallas", "DAL", "COWBY", this, 80, "HOU" ));
-        conferences.get(3).confTeams.add( new Team( "Alamo St", "AMO", "COWBY", this, 70, "PAS" ));
+        conferences.get(3).confTeams.add( new Team( "Nebraska", "NEB", "COWBY", this, 70, "PAS" ));
         conferences.get(3).confTeams.add( new Team( "Oklahoma St", "OKS", "COWBY", this, 70, "TUL" ));
-        conferences.get(3).confTeams.add( new Team( "El Paso St", "PAS", "COWBY", this, 60, "AMO" ));
+        conferences.get(3).confTeams.add( new Team( "El Paso St", "PAS", "COWBY", this, 60, "NEB" ));
         conferences.get(3).confTeams.add( new Team( "Texas St", "TXS", "COWBY", this, 60, "AUS" ));
         conferences.get(3).confTeams.add( new Team( "Tulsa", "TUL", "COWBY", this, 55, "OKS" ));
         conferences.get(3).confTeams.add( new Team( "Univ of Austin", "AUS", "COWBY", this, 50, "TXS" ));
@@ -225,6 +227,7 @@ public class League {
         currentWeek = 0;
 
         leagueRecords = new LeagueRecords();
+        userTeamRecords = new LeagueRecords();
         longestWinStreak = new TeamStreak(2016, 2016, 0, "XXX");
         longestActiveWinStreak = new TeamStreak(2016, 2016, 0, "XXX");
 
@@ -309,14 +312,20 @@ public class League {
             String[] record;
             while((line = bufferedReader.readLine()) != null && !line.equals("END_LEAGUE_RECORDS")) {
                 record = line.split(",");
-                System.out.println("Checking record:" + line);
-                leagueRecords.checkRecord(record[0], Integer.parseInt(record[1]), record[2], Integer.parseInt(record[3]));
+                if (!record[1].equals("-1"))
+                    leagueRecords.checkRecord(record[0], Integer.parseInt(record[1]), record[2], Integer.parseInt(record[3]));
             }
 
             while((line = bufferedReader.readLine()) != null && !line.equals("END_LEAGUE_WIN_STREAK")) {
                 record = line.split(",");
                 longestWinStreak = new TeamStreak(
                         Integer.parseInt(record[2]), Integer.parseInt(record[3]), Integer.parseInt(record[0]), record[1]);
+            }
+
+            while((line = bufferedReader.readLine()) != null && !line.equals("END_USER_TEAM_RECORDS")) {
+                record = line.split(",");
+                if (!record[1].equals("-1"))
+                    userTeamRecords.checkRecord(record[0], Integer.parseInt(record[1]), record[2], Integer.parseInt(record[3]));
             }
 
             while((line = bufferedReader.readLine()) != null && !line.equals("END_HALL_OF_FAME")) {
@@ -1167,6 +1176,7 @@ public class League {
     public void changeAbbrHistoryRecords(String oldAbbr, String newAbbr) {
         // check records and win streaks
         leagueRecords.changeAbbrRecords(userTeam.abbr, newAbbr);
+        userTeamRecords.changeAbbrRecords(userTeam.abbr, newAbbr);
         changeAbbrWinStreaks(userTeam.abbr, newAbbr);
         userTeam.winStreak.changeAbbr(newAbbr);
 
@@ -1199,8 +1209,9 @@ public class League {
      */
     public void checkLeagueRecords() {
         for (Team t : teamList) {
-            t.checkLeagueRecords();
+            t.checkLeagueRecords(leagueRecords);
         }
+        userTeam.checkLeagueRecords(userTeamRecords);
     }
     /**
      * Gets all the league records, including the longest win streak		
@@ -2173,12 +2184,15 @@ public class League {
         }
 
         // Save league records
-        System.out.println("Saving Records!\n" + leagueRecords.getRecordsStr());
         sb.append(leagueRecords.getRecordsStr());
         sb.append("END_LEAGUE_RECORDS\n");
 
         sb.append(longestWinStreak.getStreakCSV());
         sb.append("\nEND_LEAGUE_WIN_STREAK\n");
+
+        // Save user team records
+        sb.append(userTeamRecords.getRecordsStr());
+        sb.append("END_USER_TEAM_RECORDS\n");
 
         // Save all the Hall of Famers
         for (String s : userTeam.hallOfFame) {

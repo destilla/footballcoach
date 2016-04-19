@@ -194,5 +194,19 @@ public class Player {
         if (gamesPlayed == 0) return 1;
         else return gamesPlayed;
     }
+
+    public static int getPosNumber(String pos) {
+        switch (pos) {
+            case "QB": return 0;
+            case "RB": return 1;
+            case "WR": return 2;
+            case "OL": return 3;
+            case "K": return 4;
+            case "S": return 5;
+            case "CB": return 6;
+            case "F7": return 7;
+            default: return 8;
+        }
+    }
     
 }
