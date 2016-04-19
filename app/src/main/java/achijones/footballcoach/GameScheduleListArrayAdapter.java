@@ -42,7 +42,7 @@ public class GameScheduleListArrayAdapter extends ArrayAdapter<Game> {
         String[] gameSummary = team.getGameSummaryStr(position);
         textLeft.setText( gameSummary[0] );
         gameButton.setText( gameSummary[1] );
-        textRight.setText(gameSummary[2]);
+        textRight.setText( gameSummary[2] );
 
         if (team.gameWLSchedule.size() > position) {
             if (team.gameWLSchedule.get(position).equals("W")) {
