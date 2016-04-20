@@ -33,6 +33,7 @@ public class League {
     public LeagueRecords leagueRecords;
     public LeagueRecords userTeamRecords;
     public TeamStreak longestWinStreak;
+    public TeamStreak yearStartLongestWinStreak;
     public TeamStreak longestActiveWinStreak;
 
 
@@ -74,6 +75,8 @@ public class League {
     public String[] bowlNames = {"Lilac Bowl", "Apple Bowl", "Salty Bowl", "Salsa Bowl", "Mango Bowl",
             "Patriot Bowl", "Salad Bowl", "Frost Bowl", "Tropical Bowl", "I'd Rather Bowl"};
 
+    public static final String[] donationNames = {"Mark Eeslee", "Lee Sin", "Brent Uttwipe", "Gabriel Kemble", "Jon Stupak"};
+
     private boolean isHardMode;
 
     /**
@@ -108,6 +111,7 @@ public class League {
         leagueRecords = new LeagueRecords();
         userTeamRecords = new LeagueRecords();
         longestWinStreak = new TeamStreak(getYear(), getYear(), 0, "XXX");
+        yearStartLongestWinStreak = new TeamStreak(getYear(), getYear(), 0, "XXX");
         longestActiveWinStreak = new TeamStreak(getYear(), getYear(), 0, "XXX");
 
         //read names from file
@@ -229,6 +233,7 @@ public class League {
         leagueRecords = new LeagueRecords();
         userTeamRecords = new LeagueRecords();
         longestWinStreak = new TeamStreak(2016, 2016, 0, "XXX");
+        yearStartLongestWinStreak = new TeamStreak(2016, 2016, 0, "XXX");
         longestActiveWinStreak = new TeamStreak(2016, 2016, 0, "XXX");
 
         try {
@@ -319,6 +324,8 @@ public class League {
             while((line = bufferedReader.readLine()) != null && !line.equals("END_LEAGUE_WIN_STREAK")) {
                 record = line.split(",");
                 longestWinStreak = new TeamStreak(
+                        Integer.parseInt(record[2]), Integer.parseInt(record[3]), Integer.parseInt(record[0]), record[1]);
+                yearStartLongestWinStreak = new TeamStreak(
                         Integer.parseInt(record[2]), Integer.parseInt(record[3]), Integer.parseInt(record[0]), record[1]);
             }
 
@@ -1117,6 +1124,9 @@ public class League {
         }
         else saveCurse = null;
 
+        // Advance win streaks
+        advanceSeasonWinStreaks();
+
         for (int c = 0; c < conferences.size(); ++c) {
             conferences.get(c).robinWeek = 0;
             conferences.get(c).week = 0;
@@ -1158,6 +1168,16 @@ public class League {
     }
 
     /**
+     * Advance season for win streaks, so no save-load whackiness.
+     */
+    public void advanceSeasonWinStreaks() {
+        yearStartLongestWinStreak = longestWinStreak;
+        for (Team t : teamList) {
+            t.yearStartWinStreak = t.winStreak;
+        }
+    }
+
+    /**
      * Change the team abbr of the lognest win streak if the user changed it
      * @param oldAbbr old abbreviation
      * @param newAbbr new abbreviation
@@ -1165,6 +1185,9 @@ public class League {
     public void changeAbbrWinStreaks(String oldAbbr, String newAbbr) {
         if (longestWinStreak.getTeam().equals(oldAbbr)) {
             longestWinStreak.changeAbbr(newAbbr);
+        }
+        if (yearStartLongestWinStreak.getTeam().equals(oldAbbr)) {
+            yearStartLongestWinStreak.changeAbbr(newAbbr);
         }
     }
 
@@ -1179,6 +1202,7 @@ public class League {
         userTeamRecords.changeAbbrRecords(userTeam.abbr, newAbbr);
         changeAbbrWinStreaks(userTeam.abbr, newAbbr);
         userTeam.winStreak.changeAbbr(newAbbr);
+        userTeam.yearStartWinStreak.changeAbbr(newAbbr);
 
         // check league and POTY history
         for (String[] yr : leagueHistory) {
@@ -1265,19 +1289,13 @@ public class League {
      * @return random name
      */
     public String getRandName() {
-        if (Math.random() > 0.001) {
+        if (Math.random() > 0.0015) {
             int fn = (int) (Math.random() * nameList.size());
             int ln = (int) (Math.random() * nameList.size());
             return nameList.get(fn) + " " + nameList.get(ln);
         } else {
-            int chosenName = (int)(Math.random()*3);
-            switch (chosenName) {
-                case 0: return "Mark Eeslee";
-                case 1: return "Lee Sin";
-                case 2: return "Brent Uttwipe";
-            }
+            return donationNames[ (int)(Math.random()*donationNames.length) ];
         }
-        return "John Doe";
     }
 
     /**
@@ -2155,7 +2173,7 @@ public class League {
                     (t.totalWins - t.wins) + "," + (t.totalLosses - t.losses) + "," + t.totalCCs + "," + t.totalNCs + "," + t.rivalTeam + "," +
                     t.totalNCLosses + "," + t.totalCCLosses + "," + t.totalBowls + "," + t.totalBowlLosses + "," +
                     t.teamStratOffNum + "," + t.teamStratDefNum + "," + (t.showPopups ? 1 : 0) + "," +
-                    t.winStreak.getStreakCSV() + "," +  t.teamTVDeal + "," + t.confTVDeal + "%" + t.evenYearHomeOpp + "%\n");
+                    t.yearStartWinStreak.getStreakCSV() + "," +  t.teamTVDeal + "," + t.confTVDeal + "%" + t.evenYearHomeOpp + "%\n");
             sb.append(t.getPlayerInfoSaveFile());
             sb.append("END_PLAYERS\n");
         }
@@ -2187,7 +2205,7 @@ public class League {
         sb.append(leagueRecords.getRecordsStr());
         sb.append("END_LEAGUE_RECORDS\n");
 
-        sb.append(longestWinStreak.getStreakCSV());
+        sb.append(yearStartLongestWinStreak.getStreakCSV());
         sb.append("\nEND_LEAGUE_WIN_STREAK\n");
 
         // Save user team records
