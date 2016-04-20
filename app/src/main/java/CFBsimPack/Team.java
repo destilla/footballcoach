@@ -42,6 +42,7 @@ public class Team {
     public String evenYearHomeOpp;
 
     public TeamStreak winStreak;
+    public TeamStreak yearStartWinStreak;
 
     //Game Log variables
     public ArrayList<Game> gameSchedule;
@@ -172,6 +173,7 @@ public class Team {
         totalWins = 0;
         totalLosses = 0;
         winStreak = new TeamStreak(league.getYear(), league.getYear(), 0, abbr);
+        yearStartWinStreak = new TeamStreak(league.getYear(), league.getYear(), 0, abbr);
         totalCCs = 0;
         totalNCs = 0;
         totalCCLosses = 0;
@@ -270,6 +272,7 @@ public class Team {
             name = teamInfo[1];
             abbr = teamInfo[2];
             winStreak = new TeamStreak(league.getYear(), league.getYear(), 0, abbr);
+            yearStartWinStreak = new TeamStreak(league.getYear(), league.getYear(), 0, abbr);
             teamPrestige = Integer.parseInt(teamInfo[3]);
             totalWins = Integer.parseInt(teamInfo[4]);
             totalLosses = Integer.parseInt(teamInfo[5]);
@@ -287,6 +290,10 @@ public class Team {
                     showPopups = (Integer.parseInt(teamInfo[15]) == 1);
                     if (teamInfo.length >= 20) {
                         winStreak = new TeamStreak(Integer.parseInt(teamInfo[18]),
+                                Integer.parseInt(teamInfo[19]),
+                                Integer.parseInt(teamInfo[16]),
+                                teamInfo[17]);
+                        yearStartWinStreak = new TeamStreak(Integer.parseInt(teamInfo[18]),
                                 Integer.parseInt(teamInfo[19]),
                                 Integer.parseInt(teamInfo[16]),
                                 teamInfo[17]);

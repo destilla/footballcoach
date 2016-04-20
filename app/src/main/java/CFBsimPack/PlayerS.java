@@ -108,7 +108,7 @@ public class PlayerS extends Player {
         careerHeismans = cHeismans;
         careerAllAmerican = cAA;
         careerAllConference = cAC;
-        careerWins = 0;
+        careerWins = cWins;
     }
     
     public PlayerS( String nm, int yr, int stars, Team t ) {
