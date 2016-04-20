@@ -415,13 +415,7 @@ public class Game implements Serializable {
             int minTime;
             int secTime;
             String secStr;
-            if (qNum >= 4 && numOT > 0) {
-                minTime = gameTime / 60;
-                secTime = gameTime - 60 * minTime;
-                if (secTime < 10) secStr = "0" + secTime;
-                else secStr = "" + secTime;
-                return minTime + ":" + secStr + " OT" + numOT;
-            } else if (gameTime <= 0 && numOT <= 0) { // Prevent Q5 1X:XX from displaying in the game log
+            if (gameTime <= 0 && numOT <= 0) { // Prevent Q5 1X:XX from displaying in the game log
                 return "0:00 Q4";
             }
             else {
@@ -1269,7 +1263,6 @@ public class Game implements Serializable {
         offense.getQB(0).statsSacked++;
         gameYardsNeed += 3;
         gameYardLine -= 3;
-        gameDown++;
         if ( gamePoss ) { // home possession
             HomeQBStats[5]++;
         } else {
@@ -1281,8 +1274,10 @@ public class Game implements Serializable {
             // Eat some time up for the play that was run, stop it once play is over
             gameTime -= 10*Math.random();
             safety();
+            return; // Run safety then get out of qbSack (safety() will take care of free kick)
         }
 
+        gameDown++; // Advance gameDown after checking for Safety, otherwise game log reports Safety occurring one down later than it did
 
         //Similar amount of time as rushing, minus some in-play time -- sacks are faster (usually)
         gameTime -= 25 + 10*Math.random();
