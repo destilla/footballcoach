@@ -67,6 +67,14 @@ public class Game implements Serializable {
     private int gameYardsNeed;
     private boolean playingOT;
     private boolean bottomOT;
+    private boolean runningClock;
+    private String playType;
+    private boolean firstHalf;
+
+    //private ints used for game situations
+    private int twoMinuteDrill;
+    private int kneelDown;
+    private int milkTheClock;
 
     /**
      * Create game with a name (likely a bowl game).
@@ -415,13 +423,10 @@ public class Game implements Serializable {
             int minTime;
             int secTime;
             String secStr;
-            if (qNum >= 4 && numOT > 0) {
-                minTime = gameTime / 60;
-                secTime = gameTime - 60 * minTime;
-                if (secTime < 10) secStr = "0" + secTime;
-                else secStr = "" + secTime;
-                return minTime + ":" + secStr + " OT" + numOT;
-            } else if (gameTime <= 0 && numOT <= 0) { // Prevent Q5 1X:XX from displaying in the game log
+            if (gameTime <= 1800 && firstHalf){ //Prevent Q3 1X:XX from displaying during the first half
+                return "0:00 Q2";
+            }
+            if (gameTime <= 0 && numOT <= 0) { // Prevent Q5 1X:XX from displaying in the game log
                 return "0:00 Q4";
             }
             else {
@@ -452,19 +457,39 @@ public class Game implements Serializable {
                     awayTeam.abbr + " Def Strategy: " + awayTeam.teamStratDef.getStratName() + "\n" +
                     homeTeam.abbr + " Off Strategy: " + homeTeam.teamStratOff.getStratName() + "\n" +
                     homeTeam.abbr + " Def Strategy: " + homeTeam.teamStratDef.getStratName() + "\n";
+
             //probably establish some home field advantage before playing
+            //First half -- Away team kicks off
             gameTime = 3600;
+            firstHalf = true;
             gameDown = 1;
             gamePoss = true;
             gameYardsNeed = 10;
-            gameYardLine = 20;
+            gameYardLine = (int) (100 - ( awayTeam.getK(0).ratKickPow + 20 - 40*Math.random() ));
 
-            // Regulation
+            // Regulation 1st Half
+            while ( gameTime > 1800 ) {
+                //play ball!
+                if (gamePoss) runPlay(homeTeam, awayTeam);
+                else runPlay(awayTeam, homeTeam);
+            }
+
+            //Second half -- Home team kicks off
+            gameTime = 1800; // Q3 15:00
+            firstHalf = false;
+            gameDown = 1;
+            gamePoss = false;
+            gameYardsNeed = 10;
+            gameYardLine = (int) (100 - ( homeTeam.getK(0).ratKickPow + 20 - 40*Math.random() ));
+
+
+            // Regulation 2nd Half
             while ( gameTime > 0 ) {
                 //play ball!
                 if (gamePoss) runPlay(homeTeam, awayTeam);
                 else runPlay(awayTeam, homeTeam);
             }
+
 
             // Add last play
             if (homeScore != awayScore) {
@@ -643,6 +668,32 @@ public class Game implements Serializable {
      */
     private void runPlay( Team offense, Team defense ) {
 
+        //Figure out what our game situation looks like
+        checkGameSituation();
+
+        if (runningClock){ //Burn off time in the huddle/at the line
+            switch(checkGameSituation()){
+                case 1: // Two minute drill
+                    gameTime -= 10 + (int)(Math.random()*6); //10-15 seconds run off
+                    break;
+
+                case 2: // Milk the clock
+                    gameTime -= 25 + (int)(Math.random()*11); //25-35 seconds run off
+                    break;
+
+                case 3: // Kneel down
+                    gameTime -= 39; //Snap as late as possible into play clock
+                    break;
+
+                default: // No special situation
+                    gameTime -= 15 + (int)(Math.random()*16); //15-30 seconds run off
+            }
+            if ((gameTime <= 0 && !playingOT) || (gameTime <= 1800 && firstHalf)){ //Check if time expired or if the first half ended while huddling/at the line
+                return; //and exit runPlay() if it did
+            }
+
+        }
+
         if ( gameDown > 4 ) {
             if (!playingOT) {
                 //Log the turnover on downs, reset down and distance, give possession to the defense, exit this runPlay()
@@ -720,6 +771,38 @@ public class Game implements Serializable {
         }
 
 
+    }
+
+    /**
+     * Examine the current time (after running the last play, but before the huddle) and score
+     * Based on the time and scores, pick a game situation to influence play selection and clock management
+     * @return int that corresponds to game situation
+     */
+
+    private int checkGameSituation() {
+        //Simplify the if statements (this is a preference thing, feel free to change it if you find it harder to read)
+        int homeScoreDiff = homeScore - awayScore; //Positive for lead, negative for trailing
+        int awayScoreDiff = awayScore - homeScore;
+
+        twoMinuteDrill = 1;
+        milkTheClock = 2;
+        kneelDown = 3;
+
+        // Check for Two Minute Drill - 2 minutes or less left in the half or 2 mins or less left in game and team with ball is trailing or tied
+        if ((gameTime <= 1920 && firstHalf) || ((gameTime <= 120) && ((gamePoss && homeScoreDiff < 1) || (!gamePoss && awayScoreDiff < 1)))){
+            return twoMinuteDrill;
+        }
+
+        //Check if it's time to milk the clock - Team with the lead has the ball and wants to burn off some clock inside of 5 minutes left in the game
+        else if ((gameTime <= 300) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))){
+            return milkTheClock;
+        }
+
+        //Check if team with the ball has a lead with 2 minutes or less to play, if so, kneel the ball three times and end the game
+        else if ((gameTime <= 120) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))) {
+            return kneelDown;
+        }
+        else return 0; //Normal game situation or special scenario has not been programmed yet
     }
 
     /**
@@ -1269,7 +1352,6 @@ public class Game implements Serializable {
         offense.getQB(0).statsSacked++;
         gameYardsNeed += 3;
         gameYardLine -= 3;
-        gameDown++;
         if ( gamePoss ) { // home possession
             HomeQBStats[5]++;
         } else {
@@ -1281,8 +1363,10 @@ public class Game implements Serializable {
             // Eat some time up for the play that was run, stop it once play is over
             gameTime -= 10*Math.random();
             safety();
+            return; // Run safety then get out of qbSack (safety() will take care of free kick)
         }
 
+        gameDown++; // Advance gameDown after checking for Safety, otherwise game log reports Safety occurring one down later than it did
 
         //Similar amount of time as rushing, minus some in-play time -- sacks are faster (usually)
         gameTime -= 25 + 10*Math.random();

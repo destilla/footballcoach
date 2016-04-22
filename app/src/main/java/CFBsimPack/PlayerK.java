@@ -230,6 +230,7 @@ public class PlayerK extends Player {
         careerFGAtt += statsFGAtt;
         careerFGMade += statsFGMade;
         careerGamesPlayed += gamesPlayed;
+        careerWins += statsWins;
 
         if (wonHeisman) careerHeismans++;
         if (wonAllAmerican) careerAllAmerican++;
