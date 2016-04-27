@@ -70,6 +70,10 @@ public class Game implements Serializable {
     private boolean runningClock;
     private String playType;
     private boolean firstHalf;
+    private int yardsGain;
+    private boolean gotTD;
+    private boolean gotInt;
+    private boolean gotFumble;
 
     //private ints used for game situations
     private int twoMinuteDrill;
@@ -663,22 +667,30 @@ public class Game implements Serializable {
 
     /**
      * Run play. Type of play run determined by offensive strengths and type of situation.
+     * Split into three main areas: Before the play, During the play, and After the play
      * @param offense offense running the play
      * @param defense defense defending the play
      */
     private void runPlay( Team offense, Team defense ) {
 
-        //Figure out what our game situation looks like
-        checkGameSituation();
+        //                               //
+        //                               //
+        //        BEFORE THE PLAY        //
+        //                               //
+        //                               //
 
-        if (runningClock){ //Burn off time in the huddle/at the line
-            switch(checkGameSituation()){
+        //Simplify the if statements (this is a preference thing, feel free to change it if you find it harder to read)
+        int homeScoreDiff = homeScore - awayScore; //Positive for lead, negative for trailing
+        int awayScoreDiff = awayScore - homeScore;
+
+        if (runningClock) { //Burn off time in the huddle/at the line
+            switch (checkGameSituation()) {
                 case 1: // Two minute drill
-                    gameTime -= 10 + (int)(Math.random()*6); //10-15 seconds run off
+                    gameTime -= 10 + (int) (Math.random() * 6); //10-15 seconds run off
                     break;
 
                 case 2: // Milk the clock
-                    gameTime -= 25 + (int)(Math.random()*11); //25-35 seconds run off
+                    gameTime -= 25 + (int) (Math.random() * 11); //25-35 seconds run off
                     break;
 
                 case 3: // Kneel down
@@ -686,92 +698,56 @@ public class Game implements Serializable {
                     break;
 
                 default: // No special situation
-                    gameTime -= 15 + (int)(Math.random()*16); //15-30 seconds run off
+                    gameTime -= 15 + (int) (Math.random() * 16); //15-30 seconds run off
             }
-            if ((gameTime <= 0 && !playingOT) || (gameTime <= 1800 && firstHalf)){ //Check if time expired or if the first half ended while huddling/at the line
+            if ((gameTime <= 0 && !playingOT) || (gameTime <= 1800 && firstHalf)) { //Check if time expired or if the first half ended while huddling/at the line
                 return; //and exit runPlay() if it did
             }
 
         }
 
-        if ( gameDown > 4 ) {
-            if (!playingOT) {
-                //Log the turnover on downs, reset down and distance, give possession to the defense, exit this runPlay()
-                gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
+        //Now we know how time we're taking off the clock, let's figure out what the best play to run is
+        double preferPass = (offense.getPassProf() * 2 - defense.getPassDef()) * Math.random() - 10;
+        double preferRush = (offense.getRushProf() * 2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
 
-                //Turn over on downs, change possession, set to first down and 10 yards to go
-                gamePoss = !gamePoss;
-                gameDown = 1;
-                gameYardsNeed = 10;
-                //and flip which direction the ball is moving in
-                gameYardLine = 100 - gameYardLine;
 
-            }
-            else {
-                //OT is over for the offense, log the turnover on downs, run resetForOT().
-                gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down in OT and their possession is over.";
-                resetForOT();
+        //                               //
+        //                               //
+        //         RUN THE PLAY          //
+        //                               //
+        //                               //
 
-            }
-        } else {
-            double preferPass = (offense.getPassProf()*2 - defense.getPassDef()) * Math.random() - 10;
-            double preferRush = (offense.getRushProf()*2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
 
-            // If it's 1st and Goal to go, adjust yards needed to reflect distance for a TD so that play selection reflects actual yards to go
-            // If we don't do this, gameYardsNeed may be higher than the actually distance for a TD and suboptimal plays may be chosen
-            if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine;
+        switch (checkGameSituation()) {
 
-            //Under 30 seconds to play, check that the team with the ball is trailing or tied, do something based on the score difference
-            if ( gameTime <= 30 && !playingOT && ((gamePoss && (awayScore >= homeScore)) || (!gamePoss && (homeScore >= awayScore)))) {
-                //Down by 3 or less, or tied, and you have the ball
-                if ( ((gamePoss && (awayScore - homeScore) <= 3) || (!gamePoss && (homeScore - awayScore) <= 3)) && gameYardLine > 60 ) {
-                    //last second FGA
-                    fieldGoalAtt( offense, defense );
-                } else {
-                    //hail mary
-                    passingPlay( offense, defense );
-                }
-            }
-            else if ( gameDown >= 4 ) {
-                if ( ((gamePoss && (awayScore - homeScore) > 3) || (!gamePoss && (homeScore - awayScore) > 3)) && gameTime < 300 ) {
-                    //go for it since we need 7 to win -- This also forces going for it if down by a TD in BOT OT
-                    if ( gameYardsNeed < 3 ) {
-                        rushingPlay( offense, defense );
-                    } else {
-                        passingPlay( offense, defense );
-                    }
-                } else {
-                    //4th down
-                    if ( gameYardsNeed < 3 ) {
-                        if ( gameYardLine > 65 ) {
-                            //fga
-                            fieldGoalAtt( offense, defense );
-                        } else if ( gameYardLine > 55 ) {
-                            // run play, go for it!
-                            rushingPlay( offense, defense );
-                        } else {
-                            //punt
-                            puntPlay( offense );
-                        }
-                    } else if ( gameYardLine > 60 ) {
-                        //fga
-                        fieldGoalAtt( offense, defense );
-                    } else {
-                        //punt
-                        puntPlay( offense );
-                    }
-                }
-            } else if ( (gameDown == 3 && gameYardsNeed > 4) || ((gameDown==1 || gameDown==2) && (preferPass >= preferRush)) ) {
-                // pass play
-                passingPlay(offense, defense);
-            } else {
-                //run play
-                rushingPlay( offense, defense );
-            }
+            case 0: //Normal Game Situation
+
+                normalGameSituationPlay(offense, defense, checkGameSituation(), preferPass, preferRush);
+                break;
+
+            case 1: //Two Minute Drill
+
+                twoMinuteDrillPlay(offense, defense, checkGameSituation(), preferPass+5, preferRush);
+                break;
+
+            case 2: // Milk the Clock
+
+                milkTheClock(offense, defense, checkGameSituation(), preferPass, preferRush+5);
+                break;
         }
 
 
+        //                               //
+        //                               //
+        //        AFTER THE PLAY         //
+        //                               //
+        //                               //
+
+
+
+
     }
+
 
     /**
      * Examine the current time (after running the last play, but before the huddle) and score
@@ -788,21 +764,23 @@ public class Game implements Serializable {
         milkTheClock = 2;
         kneelDown = 3;
 
-        // Check for Two Minute Drill - 2 minutes or less left in the half or 2 mins or less left in game and team with ball is trailing or tied
-        if ((gameTime <= 1920 && firstHalf) || ((gameTime <= 120) && ((gamePoss && homeScoreDiff < 1) || (!gamePoss && awayScoreDiff < 1)))){
-            return twoMinuteDrill;
-        }
+        if (!playingOT) { // None of these scenarios occur in OT and we don't want them to trigger in OT
+            // Check for Two Minute Drill - 2 minutes or less left in the half or 2 mins or less left in game and team with ball is trailing or tied
+            if ((gameTime <= 1920 && firstHalf) || ((gameTime <= 120) && ((gamePoss && homeScoreDiff < 1) || (!gamePoss && awayScoreDiff < 1)))) {
+                return twoMinuteDrill;
+            }
 
-        //Check if it's time to milk the clock - Team with the lead has the ball and wants to burn off some clock inside of 5 minutes left in the game
-        else if ((gameTime <= 300) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))){
-            return milkTheClock;
-        }
+            //Check if it's time to milk the clock - Team with the lead has the ball and wants to burn off some clock inside of 5 minutes left in the game
+            else if ((gameTime <= 300) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))) {
+                return milkTheClock;
+            }
 
-        //Check if team with the ball has a lead with 2 minutes or less to play, if so, kneel the ball three times and end the game
-        else if ((gameTime <= 120) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))) {
-            return kneelDown;
+            //Check if team with the ball has a lead with 2 minutes or less to play, if so, kneel the ball three times and end the game
+            else if ((gameTime <= 120) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))) {
+                return kneelDown;
+            } else return 0; //Normal game situation or special scenario has not been programmed yet
         }
-        else return 0; //Normal game situation or special scenario has not been programmed yet
+        else return 0;
     }
 
     /**
@@ -817,8 +795,7 @@ public class Game implements Serializable {
             gameYardsNeed = 10;
             gameDown = 1;
             numOT++;
-            if ((numOT%2) == 0) gamePoss = true;
-            else gamePoss = false;
+            gamePoss = numOT % 2 == 0;
             gameTime = -1;
             bottomOT = false;
             //runPlay( awayTeam, homeTeam );
@@ -840,7 +817,7 @@ public class Game implements Serializable {
      * @param offense throwing the ball
      * @param defense defending the pass
      */
-    private void passingPlay( Team offense, Team defense ) {
+    private void passingPlay( Team offense, Team defense, int gameSituation ) {
         int yardsGain = 0;
         boolean gotTD = false;
         boolean gotFumble = false;
@@ -877,6 +854,8 @@ public class Game implements Serializable {
         if ( Math.random()*100 < pressureOnQB/8 ) {
             //sacked!
             qbSack(offense);
+            runningClock = true;
+            gameTime -= 3 + (int)(Math.random() * 3); //Burn 3 to 6 seconds
             return;
         }
 
@@ -887,6 +866,9 @@ public class Game implements Serializable {
         if ( 100*Math.random() < intChance ) {
             //Interception
             qbInterception( offense );
+            runningClock = false;
+            gameTime -= 5 + (int)(Math.random() * 5);
+            gotInt = true;
             return;
         }
 
@@ -939,7 +921,7 @@ public class Game implements Serializable {
                 }
 
                 if (!gotTD && !gotFumble) {
-                    //check downs if there wasnt fumble or TD
+                    //check downs if there wasn't fumble or TD
                     gameYardsNeed -= yardsGain;
                     if ( gameYardsNeed <= 0 ) {
                         // Only set new down and distance if there wasn't a TD
@@ -1564,6 +1546,184 @@ public class Game implements Serializable {
                 if ( 3+numOT < 10 ) awayQScore[3+numOT] += points;
                 else awayQScore[9] += points;
             }
+        }
+    }
+
+    /**
+     * Select and run a play based on no special game situation
+     * @param offense running the play
+     * @param defense defending the play
+     * @param gameSituation int for the current game situation so that the play functions operate as expected
+     * @param preferPass Number generated to determine how much the team wants to pass the ball
+     * @param preferRush Number generated to determine how much the team wants to run the ball
+     */
+ private void normalGameSituationPlay(Team offense, Team defense, int gameSituation, double preferPass, double preferRush){
+     int homeScoreDiff = homeScore - awayScore; //Positive for lead, negative for trailing
+     int awayScoreDiff = awayScore - homeScore;
+
+     if (gameDown >= 4) {
+         if (((gamePoss && awayScoreDiff > 3) || (!gamePoss && homeScoreDiff > 3)) && gameTime < 300) {
+             //go for it since we need 7 to win -- This also forces going for it if down by a TD in BOT OT
+             if (gameYardsNeed < 3) {
+                 rushingPlay(offense, defense);
+             } else {
+                 passingPlay(offense, defense, gameSituation);
+             }
+         } else {
+             //4th down
+             if (gameYardsNeed < 3) {
+                 if (gameYardLine > 65) {
+                     //fga
+                     fieldGoalAtt(offense, defense);
+                 } else if (gameYardLine > 55) {
+                     // run play, go for it!
+                     rushingPlay(offense, defense);
+                 } else {
+                     //punt
+                     puntPlay(offense);
+                 }
+             } else if (gameYardLine > 60) {
+                 //fga
+                 fieldGoalAtt(offense, defense);
+             } else {
+                 //punt
+                 puntPlay(offense);
+             }
+         }
+     }
+
+     else if ((gameDown == 3 && gameYardsNeed > 4)  ||  ((gameDown == 1 || gameDown == 2) && (preferPass >= preferRush))) {
+         // pass play
+         passingPlay(offense, defense, checkGameSituation());
+     } else {
+         //run play
+         rushingPlay(offense, defense);
+     }
+
+ }
+
+    /**
+     * Select and run a play based in the Two Minute Drill
+     * @param offense running the play
+     * @param defense defending the play
+     * @param gameSituation int for the current game situation so that the play functions operate as expected
+     * @param preferPass Number generated to determine how much the team wants to pass the ball
+     * @param preferRush Number generated to determine how much the team wants to run the ball
+     */
+    private void twoMinuteDrillPlay(Team offense,Team defense,int gameSituation, double preferPass, double preferRush) {
+        int homeScoreDiff = homeScore - awayScore; //Positive for lead, negative for trailing
+        int awayScoreDiff = awayScore - homeScore;
+
+
+        //Under 20 seconds to play, check that the team with the ball is trailing or tied, do something based on the score difference
+        if (gameTime <= 20 && !playingOT && ((gamePoss && (awayScore >= homeScore)) || (!gamePoss && (homeScore >= awayScore)))) {
+            //Down by 3 or less, or tied, and you have the ball
+            if (((gamePoss && awayScoreDiff <= 3) || (!gamePoss && homeScoreDiff <= 3)) && gameYardLine > 60) {
+                //last second FGA
+                fieldGoalAtt(offense, defense);
+            } else {
+                //hail mary
+                passingPlay(offense, defense, gameSituation);
+            }
+        }
+        else if(gameDown >= 4) {
+            if (((gamePoss && awayScoreDiff > 3) || (!gamePoss && homeScoreDiff > 3)) && !firstHalf) {
+                //go for it since we need 7 to win
+                if (gameYardsNeed < 3) {
+                    if (gameTime < 60) { //Not enough time to safely rush the ball
+                        passingPlay(offense, defense, gameSituation);
+                    } else { //Still a bit of time, so rushing is an option
+                        rushingPlay(offense, defense);
+                    }
+                } else {
+                    passingPlay(offense, defense, gameSituation);
+                }
+
+            } else {
+                //4th down
+                if (gameYardsNeed < 3) {
+                    if (gameYardLine > 65) {
+                        //fga
+                        fieldGoalAtt(offense, defense);
+                    } else if (gameYardLine > 55) {
+                        //go for it!
+                        if (gameTime < 60 || (firstHalf && gameTime < 1860)) { //Not enough time to rush the ball
+                            passingPlay(offense, defense, gameSituation);
+                        } else { //Run it!
+                            rushingPlay(offense, defense);
+                        }
+                    } else if (homeScore == awayScore && gameYardLine >= 50) { //Tied in the Two Minute Drill past the 50
+                        if (gameTime < 45 || (firstHalf && gameTime < 1845)) { //Not much time for the other team to respond, punting is safe here
+                            puntPlay(offense);
+                        } else { //Still enough time left for the other team to respond in a tied game; don't want to hand them a win or a free score
+                            rushingPlay(offense, defense);
+                        }
+                    } else {
+                        if (homeScore != awayScore && !firstHalf) { //We're in a 2nd Half 2 minute drill and the game is not tied (so offense is trailing)
+                            rushingPlay(offense, defense); // No choice but to go for it, you need to move the ball to stay alive
+                        } else { //You have to punt it, otherwise you're handing the other team a chance to score (and win if it's the second half)
+                            puntPlay(offense);
+                        }
+
+                    }
+                } else if (gameYardLine > 60) {
+                    //fga
+                    fieldGoalAtt(offense, defense);
+                } else {
+                    //punt
+                    puntPlay(offense);
+                }
+            }
+        }
+
+            //Throw the ball unless very specific circumstances are met: First/second/third-and-short with more than minute left, and the team prefers running over passing runs the ball. Every other circumstance is a pass.
+            else if ((gameDown == 3 && gameYardsNeed > 4)  ||  ((gameDown == 1 || gameDown == 2 || (gameDown == 3 && gameYardsNeed <= 4)) && (preferPass >= preferRush) && gameTime > 60)  ||  (gameTime < 61)) {
+                // pass play
+                passingPlay(offense, defense, gameSituation);
+            } else {
+                //run play
+                rushingPlay(offense, defense);
+            }
+    }
+
+    /**
+     * Run a play while trying to burn time off the clock
+     * @param offense running the play
+     * @param defense defending the play
+     * @param gameSituation int for the current game situation so that the play functions operate as expected
+     * @param preferPass Number generated to determine how much the team wants to pass the ball
+     * @param preferRush Number generated to determine how much the team wants to run the ball
+     */
+    private void milkTheClock(Team offense, Team defense, int gameSituation, double preferPass, double preferRush){
+
+        if (gameDown >= 4) {
+                //4th down
+                if (gameYardsNeed < 3) {
+                    if (gameYardLine > 65) {
+                        //fga
+                        fieldGoalAtt(offense, defense);
+                    } else if (gameYardLine > 55) {
+                        // run play, go for it!
+                        rushingPlay(offense, defense);
+                    } else {
+                        //punt
+                        puntPlay(offense);
+                    }
+                } else if (gameYardLine > 60) {
+                    //fga
+                    fieldGoalAtt(offense, defense);
+                } else {
+                    //punt
+                    puntPlay(offense);
+                }
+            }
+
+        else if ((gameDown == 3 && gameYardsNeed > 4)  ||  ((gameDown == 1 || gameDown == 2) && (preferPass >= preferRush)) && gameYardsNeed > 7) {
+            // pass play
+            passingPlay(offense, defense, gameSituation);
+        } else {
+            //run play
+            rushingPlay(offense, defense);
         }
     }
 
