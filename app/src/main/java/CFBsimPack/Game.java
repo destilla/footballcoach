@@ -57,7 +57,10 @@ public class Game implements Serializable {
     private PlayerK awayK;
 
     String gameEventLog;
+    String playPrefix;
     String tdInfo;
+    String fumbleInfo;
+    String intInfo;
 
     //private variables used when simming games
     private int gameTime;
@@ -68,8 +71,14 @@ public class Game implements Serializable {
     private boolean playingOT;
     private boolean bottomOT;
     private boolean runningClock;
+    private boolean firstDownClock; // Clock management for if the ball goes OOB outside 2 minutes left in a half, or if a first down.
     private String playType;
     private boolean firstHalf;
+    private int yardsGain;
+    private boolean gotTD;
+    private boolean gotInt;
+    private boolean gotFumble;
+    private boolean gotSafety;
 
     //private ints used for game situations
     private int twoMinuteDrill;
@@ -663,22 +672,34 @@ public class Game implements Serializable {
 
     /**
      * Run play. Type of play run determined by offensive strengths and type of situation.
+     * Split into three main areas: Before the play, During the play, and After the play
      * @param offense offense running the play
      * @param defense defense defending the play
      */
     private void runPlay( Team offense, Team defense ) {
 
-        //Figure out what our game situation looks like
-        checkGameSituation();
+        //                               //
+        //                               //
+        //        BEFORE THE PLAY        //
+        //                               //
+        //                               //
 
-        if (runningClock){ //Burn off time in the huddle/at the line
-            switch(checkGameSituation()){
+        //Simplify the if statements (this is a preference thing, feel free to change it if you find it harder to read)
+        int homeScoreDiff = homeScore - awayScore; //Positive for lead, negative for trailing
+        int awayScoreDiff = awayScore - homeScore;
+
+        // If it's 1st and Goal to go, adjust yards needed to reflect distance for a TD so that play selection reflects actual yards to go
+        // If we don't do this, gameYardsNeed may be higher than the actually distance for a TD and suboptimal plays may be chosen
+        if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine;
+
+        if (runningClock) { //Burn off time in the huddle/at the line
+            switch (checkGameSituation()) {
                 case 1: // Two minute drill
-                    gameTime -= 10 + (int)(Math.random()*6); //10-15 seconds run off
+                    gameTime -= 10 + (int) (Math.random() * 6); //10-15 seconds run off
                     break;
 
                 case 2: // Milk the clock
-                    gameTime -= 25 + (int)(Math.random()*11); //25-35 seconds run off
+                    gameTime -= 25 + (int) (Math.random() * 11); //25-35 seconds run off
                     break;
 
                 case 3: // Kneel down
@@ -686,92 +707,145 @@ public class Game implements Serializable {
                     break;
 
                 default: // No special situation
-                    gameTime -= 15 + (int)(Math.random()*16); //15-30 seconds run off
+                    gameTime -= 15 + (int) (Math.random() * 16); //15-30 seconds run off
             }
-            if ((gameTime <= 0 && !playingOT) || (gameTime <= 1800 && firstHalf)){ //Check if time expired or if the first half ended while huddling/at the line
+            if ((gameTime <= 0 && !playingOT) || (gameTime <= 1800 && firstHalf)) { //Check if time expired or if the first half ended while huddling/at the line
                 return; //and exit runPlay() if it did
             }
 
         }
 
-        if ( gameDown > 4 ) {
-            if (!playingOT) {
-                //Log the turnover on downs, reset down and distance, give possession to the defense, exit this runPlay()
-                gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
+        playPrefix = getEventPrefix();
 
-                //Turn over on downs, change possession, set to first down and 10 yards to go
-                gamePoss = !gamePoss;
+        //Now we know how time we're taking off the clock, let's figure out what the best play to run is
+        double preferPass = (offense.getPassProf() * 2 - defense.getPassDef()) * Math.random() - 10;
+        double preferRush = (offense.getRushProf() * 2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
+
+
+        //                               //
+        //                               //
+        //         RUN THE PLAY          //
+        //                               //
+        //                               //
+
+
+        switch (checkGameSituation()) {
+
+            case 0: //Normal Game Situation
+
+                normalGameSituationPlay(offense, defense, checkGameSituation(), preferPass, preferRush);
+                break;
+
+            case 1: //Two Minute Drill
+
+                twoMinuteDrillPlay(offense, defense, checkGameSituation(), preferPass+5, preferRush);
+                break;
+
+            case 2: // Milk the Clock
+
+                milkTheClock(offense, defense, checkGameSituation(), preferPass, preferRush+5);
+                break;
+
+            default: //Normal
+
+                normalGameSituationPlay(offense, defense, checkGameSituation(), preferPass, preferRush)
+                break;
+        }
+
+
+        //                               //
+        //                               //
+        //        AFTER THE PLAY         //
+        //                               //
+        //                               //
+
+        if ( gotTD ){//Add touchdown, kick xp, kickoff
+            runningClock = false;
+            if(gamePoss){
+                homeScore += 6;
+            } else{
+                awayScore += 6;
+            }
+            addPointsQuarter(6);
+
+            kickXP(offense, defense);
+            if (!playingOT) kickOff( offense );
+            else resetForOT();
+        }
+
+       else if ( gotFumble ) { //Resolve change of possession and reset of downs.
+            runningClock = false;
+            gameYardLine += yardsGain; //Advance gameYardLine for the sake of determining where the turnover is given to the defense
+            gameEventLog += fumbleInfo  + gameYardLine + " yard line.";
+            if (gamePoss) { // home possession
+                homeTOs++;
+            } else {
+                awayTOs++;
+            }
+            if (!playingOT) {
                 gameDown = 1;
                 gameYardsNeed = 10;
-                //and flip which direction the ball is moving in
+                gamePoss = !gamePoss;
                 gameYardLine = 100 - gameYardLine;
 
             }
             else {
-                //OT is over for the offense, log the turnover on downs, run resetForOT().
-                gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down in OT and their possession is over.";
                 resetForOT();
-
-            }
-        } else {
-            double preferPass = (offense.getPassProf()*2 - defense.getPassDef()) * Math.random() - 10;
-            double preferRush = (offense.getRushProf()*2 - defense.getRushDef()) * Math.random() + offense.teamStratOff.getRYB();
-
-            // If it's 1st and Goal to go, adjust yards needed to reflect distance for a TD so that play selection reflects actual yards to go
-            // If we don't do this, gameYardsNeed may be higher than the actually distance for a TD and suboptimal plays may be chosen
-            if (gameDown == 1 && gameYardLine >= 91) gameYardsNeed = 100 - gameYardLine;
-
-            //Under 30 seconds to play, check that the team with the ball is trailing or tied, do something based on the score difference
-            if ( gameTime <= 30 && !playingOT && ((gamePoss && (awayScore >= homeScore)) || (!gamePoss && (homeScore >= awayScore)))) {
-                //Down by 3 or less, or tied, and you have the ball
-                if ( ((gamePoss && (awayScore - homeScore) <= 3) || (!gamePoss && (homeScore - awayScore) <= 3)) && gameYardLine > 60 ) {
-                    //last second FGA
-                    fieldGoalAtt( offense, defense );
-                } else {
-                    //hail mary
-                    passingPlay( offense, defense );
-                }
-            }
-            else if ( gameDown >= 4 ) {
-                if ( ((gamePoss && (awayScore - homeScore) > 3) || (!gamePoss && (homeScore - awayScore) > 3)) && gameTime < 300 ) {
-                    //go for it since we need 7 to win -- This also forces going for it if down by a TD in BOT OT
-                    if ( gameYardsNeed < 3 ) {
-                        rushingPlay( offense, defense );
-                    } else {
-                        passingPlay( offense, defense );
-                    }
-                } else {
-                    //4th down
-                    if ( gameYardsNeed < 3 ) {
-                        if ( gameYardLine > 65 ) {
-                            //fga
-                            fieldGoalAtt( offense, defense );
-                        } else if ( gameYardLine > 55 ) {
-                            // run play, go for it!
-                            rushingPlay( offense, defense );
-                        } else {
-                            //punt
-                            puntPlay( offense );
-                        }
-                    } else if ( gameYardLine > 60 ) {
-                        //fga
-                        fieldGoalAtt( offense, defense );
-                    } else {
-                        //punt
-                        puntPlay( offense );
-                    }
-                }
-            } else if ( (gameDown == 3 && gameYardsNeed > 4) || ((gameDown==1 || gameDown==2) && (preferPass >= preferRush)) ) {
-                // pass play
-                passingPlay(offense, defense);
-            } else {
-                //run play
-                rushingPlay( offense, defense );
             }
         }
 
+        else if ( gotInt ) { //Resolve change of possession and reset of downs
+            runningClock = false;
+            gameEventLog += playPrefix + "TURNOVER!\n" + offense.abbr + " QB " + offense.getQB(0).name + " was intercepted.";
+
+            offense.getQB(0).statsInt++;
+            if (!playingOT) {
+                gameDown = 1;
+                gameYardsNeed = 10;
+                gamePoss = !gamePoss;
+                gameYardLine = 100 - gameYardLine;
+            }
+            else resetForOT();
+        }
+        else if ( gotSafety ){
+            gotSafety = false;
+        }
+        else{
+            gameYardLine += yardsGain;
+            gameYardsNeed -= yardsGain;
+            gameDown++;
+            if(gameYardsNeed <= 0){ //First down!
+                gameYardsNeed = 10;
+                gameDown = 1;
+            }
+            if(gameDown > 4){ //Turn over on downs
+                if (!playingOT) {
+                    //Log the turnover on downs, reset down and distance, give possession to the defense, exit this runPlay()
+                    gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down. " + defense.abbr + " takes over possession on downs.";
+
+                    //Turn over on downs, change possession, set to first down and 10 yards to go
+                    gamePoss = !gamePoss;
+                    gameDown = 1;
+                    gameYardsNeed = 10;
+                    //and flip which direction the ball is moving in
+                    gameYardLine = 100 - gameYardLine;
+
+                }
+                else {
+                    //OT is over for the offense, log the turnover on downs, run resetForOT().
+                    gameEventLog += getEventPrefix() + "TURNOVER ON DOWNS!\n" + offense.abbr + " failed to convert on " + (gameDown - 1) + "th down in OT and their possession is over.";
+                    resetForOT();
+
+                }
+            }
+        }
+
+        gotTD = false;
+        gotInt = false;
+        gotFumble = false;
 
     }
+
 
     /**
      * Examine the current time (after running the last play, but before the huddle) and score
@@ -788,21 +862,23 @@ public class Game implements Serializable {
         milkTheClock = 2;
         kneelDown = 3;
 
-        // Check for Two Minute Drill - 2 minutes or less left in the half or 2 mins or less left in game and team with ball is trailing or tied
-        if ((gameTime <= 1920 && firstHalf) || ((gameTime <= 120) && ((gamePoss && homeScoreDiff < 1) || (!gamePoss && awayScoreDiff < 1)))){
-            return twoMinuteDrill;
-        }
+        if (!playingOT) { // None of these scenarios occur in OT and we don't want them to trigger in OT
+            // Check for Two Minute Drill - 2 minutes or less left in the half or 2 mins or less left in game and team with ball is trailing or tied
+            if ((gameTime <= 1920 && firstHalf) || ((gameTime <= 120) && ((gamePoss && homeScoreDiff < 1) || (!gamePoss && awayScoreDiff < 1)))) {
+                return twoMinuteDrill;
+            }
 
-        //Check if it's time to milk the clock - Team with the lead has the ball and wants to burn off some clock inside of 5 minutes left in the game
-        else if ((gameTime <= 300) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))){
-            return milkTheClock;
-        }
+            //Check if it's time to milk the clock - Team with the lead has the ball and wants to burn off some clock inside of 5 minutes left in the game
+            else if ((gameTime <= 300) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))) {
+                return milkTheClock;
+            }
 
-        //Check if team with the ball has a lead with 2 minutes or less to play, if so, kneel the ball three times and end the game
-        else if ((gameTime <= 120) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))) {
-            return kneelDown;
+            //Check if team with the ball has a lead with 2 minutes or less to play, if so, kneel the ball three times and end the game
+            else if ((gameTime <= 120) && ((gamePoss && homeScoreDiff > 0) || (!gamePoss && awayScoreDiff > 0))) {
+                return kneelDown;
+            } else return 0; //Normal game situation or special scenario has not been programmed yet
         }
-        else return 0; //Normal game situation or special scenario has not been programmed yet
+        else return 0;
     }
 
     /**
@@ -817,8 +893,7 @@ public class Game implements Serializable {
             gameYardsNeed = 10;
             gameDown = 1;
             numOT++;
-            if ((numOT%2) == 0) gamePoss = true;
-            else gamePoss = false;
+            gamePoss = numOT % 2 == 0;
             gameTime = -1;
             bottomOT = false;
             //runPlay( awayTeam, homeTeam );
@@ -840,10 +915,61 @@ public class Game implements Serializable {
      * @param offense throwing the ball
      * @param defense defending the pass
      */
-    private void passingPlay( Team offense, Team defense ) {
-        int yardsGain = 0;
-        boolean gotTD = false;
-        boolean gotFumble = false;
+    private void passingPlay( Team offense, Team defense, int gameSituation ) {
+
+        switch(gameSituation){
+            case 0: //Normal
+                normalPass(offense, defense);
+                break;
+
+            case 1: //Two Minute
+                twoMinutePass(offense, defense);
+                break;
+
+            case 2: //Milk The Clock
+                clockMilkPass(offense, defense);
+                break;
+
+            default:
+                normalPass(offense, defense);
+                break;
+        }
+
+    }
+
+    private void rushingPlay( Team offense, Team defense, int gameSituation ) {
+
+        switch(gameSituation){
+            case 0: //Normal
+                normalRush(offense, defense);
+                break;
+
+            case 1: //Two Minute
+                twoMinuteRush(offense, defense);
+                break;
+
+            case 2: //Milk The Clock
+                clockMilkRush(offense, defense);
+                break;
+
+            case 3: //Kneel Down\
+                kneelDownRush(offense, defense);
+                break;
+
+            default:
+                normalPass(offense, defense);
+                break;
+        }
+
+    }
+
+
+    /**
+     * Normal Passing Play -- Executed Under Most Circumstances
+     * @param offense passing the ball
+     * @param defense defending the play
+     */
+    private void normalPass(Team offense, Team defense){
         //choose WR to throw to, better WRs more often
         double WR1pref = Math.pow( offense.getWR(0).ratOvr , 1 ) * Math.random();
         double WR2pref = Math.pow( offense.getWR(1).ratOvr , 1 ) * Math.random();
@@ -877,6 +1003,8 @@ public class Game implements Serializable {
         if ( Math.random()*100 < pressureOnQB/8 ) {
             //sacked!
             qbSack(offense);
+            runningClock = true;
+            gameTime -= 3 + (int)(Math.random() * 3); //Burn 3 to 6 seconds
             return;
         }
 
@@ -887,21 +1015,25 @@ public class Game implements Serializable {
         if ( 100*Math.random() < intChance ) {
             //Interception
             qbInterception( offense );
+            runningClock = false;
+            gameTime -= 5 + (int)(Math.random() * 5);
+            gotInt = true;
             return;
         }
 
-        //throw ball, check for completion
         double completion = ( getHFadv() + normalize(offense.getQB(0).ratPassAcc) + normalize(selWR.ratRecCat)
-                - normalize(selCB.ratCBCov) )/2 + 18.25 - pressureOnQB/16.8 - offense.teamStratOff.getPAB() - defense.teamStratDef.getPAB();
+                        - normalize(selCB.ratCBCov) )/2 + 18.25 - pressureOnQB/16.8 - offense.teamStratOff.getPAB() - defense.teamStratDef.getPAB();
+
+        //throw ball, check for completion
         if ( 100*Math.random() < completion ) {
             if ( 100*Math.random() < (100 - selWR.ratRecCat)/3 ) {
                 //drop
-                gameDown++;
                 selWRStats[4]++;
                 selWR.statsDrops++;
                 passAttempt(offense, selWR, selWRStats, yardsGain);
-                //Drop ball = inc pass, so run time for the play, stop clock until next play, move on (aka return;)
-                gameTime -= 15*Math.random();
+
+                gameTime -= 5 + (int)(4*Math.random()); //Ball was dropped, burn 5 to 8 seconds
+                runningClock = false; //Incompletion stops the clock
                 return;
 
             } else {
@@ -916,12 +1048,10 @@ public class Game implements Serializable {
                 }
                 if ( escapeChance > 75 && Math.random() < (0.1 + (offense.teamStratOff.getPAB()-defense.teamStratDef.getPAB())/200)) {
                     //wr escapes for TD
-                    yardsGain += 100;
+                    yardsGain = (100 - gameYardLine);
                 }
 
-                //add yardage
-                gameYardLine += yardsGain;
-                if ( gameYardLine >= 100 ) { //TD!
+                if ( yardsGain >= (100 - gameYardLine)) { //TD!
                     yardsGain -= gameYardLine - 100;
                     gameYardLine = 100 - yardsGain;
                     addPointsQuarter(6);
@@ -929,83 +1059,354 @@ public class Game implements Serializable {
                     //offense.teamPoints += 6;
                     //defense.teamOppPoints += 6;
                     gotTD = true;
-                } else {
+                }
+                else { // Completion but no TD
                     //check for fumble
                     double fumChance = (defense.getS(0).ratSTkl + selCB.ratCBTkl)/2;
                     if ( 100*Math.random() < fumChance/50 ) {
                         //Fumble!
                         gotFumble = true;
+                        //Time burned off is 5 seconds (snap, read, throw, catch) + either 50%, 75%, or 100% of the greater of yards gained divided by 10, or 1.
+                        gameTime -= 5 + (int)(((Math.random()*3 + 2)/4) * (Math.max(yardsGain/10,1)));
+                        runningClock = false; //Turnover, clock stops
+                        String recoveredBy;
+                        if (normalize(defense.getS(0).ratSTkl)*Math.random() > normalize(selCB.ratCBTkl)*Math.random()) recoveredBy = defense.getS(0).name;
+                        else recoveredBy = selCB.name;
+
+                        fumbleInfo = playPrefix + "TURNOVER!\n" + offense.abbr + " WR " + selWR.name + " fumbled the ball after a catch, recovered by " + recoveredBy + " at the ";
+                        selWRStats[5]++;
+                        selWR.statsFumbles++;
+                        return;
                     }
                 }
 
                 if (!gotTD && !gotFumble) {
-                    //check downs if there wasnt fumble or TD
-                    gameYardsNeed -= yardsGain;
-                    if ( gameYardsNeed <= 0 ) {
-                        // Only set new down and distance if there wasn't a TD
-                        gameDown = 1;
-                        gameYardsNeed = 10;
-                    } else gameDown++;
+                    if(Math.random() < 0.06){
+                        firstDownClock = true; //5% chance catch goes out of bounds -- Clock only stops inside of 5 minutes to go in a half
+                    }
+                    runningClock = true;
                 }
 
                 //stats management
                 passCompletion(offense, defense, selWR, selWRStats, yardsGain);
+
+                //Time burned off is 5 seconds (snap, read, throw, catch) + either 50%, 75%, or 100% of the greater of yards gained divided by 10, or 1.
+                gameTime -= 5 + (int)(((Math.random()*3 + 2)/4) * (Math.max(yardsGain/10,1)));
             }
 
         } else {
-            //no completion, advance downs
+            //no completion, manage stats
             passAttempt(offense, selWR, selWRStats, yardsGain);
-            gameDown++;
             //Incomplete pass stops the clock, so just run time for how long the play took, then move on
-            gameTime -= 15*Math.random();
+            runningClock = false;
+            gameTime -= 5 + (int)(4*Math.random()); //Pass was inc, burn 5 to 8 seconds
             return;
         }
-
-        passAttempt(offense, selWR, selWRStats, yardsGain);
-
-
-        if ( gotFumble ) {
-            gameEventLog += getEventPrefix() + "TURNOVER!\n" + offense.abbr + " WR " + selWR.name + " fumbled the ball after a catch.";
-            selWRStats[5]++;
-            selWR.statsFumbles++;
-            if (gamePoss) { // home possession
-                homeTOs++;
-            } else {
-                awayTOs++;
-            }
-            if (!playingOT) {
-                gameDown = 1;
-                gameYardsNeed = 10;
-                gamePoss = !gamePoss;
-                gameYardLine = 100 - gameYardLine;
-                gameTime -= 15 * Math.random();
-                return;
-            }
-            else {
-                resetForOT();
-                return;
-            }
-        }
-
-        if ( gotTD ) {
-            gameTime -= 15*Math.random();
-            kickXP( offense, defense );
-            if (!playingOT) kickOff( offense );
-            else resetForOT();
-            return;
-        }
-
-        gameTime -= 15 + 15*Math.random();
 
     }
+
+    /**
+     * Passing Play within the Two Minute Drill
+     * @param offense passing the ball
+     * @param defense defending the play
+     */
+    private void twoMinutePass(Team offense, Team defense){
+        //Check to see if we need to spike the ball
+        if((gameDown == 1 && gameTime < 60 && runningClock) || (gameDown == 2 && gameTime < 40 && runningClock)){
+            //We're in a two minute situation with not much time left, so spike the ball. Willing to trade a down for seconds on the clock
+            runningClock = false;
+            gameTime -= 2;
+
+            offense.getQB(0).statsPassAtt++; //Count the spike as an incompletion with no targets
+
+            if(gamePoss){
+                HomeQBStats[1]++;
+            }else{
+                AwayQBStats[1]++;
+            }
+            return;
+        }
+        //Not spiking it, so lets run a play
+
+        //choose WR to throw to, better WRs more often
+        double WR1pref = Math.pow( offense.getWR(0).ratOvr , 1 ) * Math.random();
+        double WR2pref = Math.pow( offense.getWR(1).ratOvr , 1 ) * Math.random();
+        double WR3pref = Math.pow( offense.getWR(2).ratOvr , 1 ) * Math.random();
+
+        PlayerWR selWR;
+        PlayerCB selCB;
+        int [] selWRStats;
+        if ( WR1pref > WR2pref && WR1pref > WR3pref ) {
+            selWR = offense.getWR(0);
+            selCB = defense.getCB(0);
+            if (gamePoss) {
+                selWRStats = HomeWR1Stats;
+            } else selWRStats = AwayWR1Stats;
+        } else if ( WR2pref > WR1pref && WR2pref > WR3pref ) {
+            selWR = offense.getWR(1);
+            selCB = defense.getCB(1);
+            if (gamePoss) {
+                selWRStats = HomeWR2Stats;
+            } else selWRStats = AwayWR2Stats;
+        } else {
+            selWR = offense.getWR(2);
+            selCB = defense.getCB(2);
+            if (gamePoss) {
+                selWRStats = HomeWR3Stats;
+            } else selWRStats = AwayWR3Stats;
+        }
+
+        //get how much pressure there is on qb, check if sack
+        int pressureOnQB = defense.getCompositeF7Pass()*2 - offense.getCompositeOLPass() - getHFadv();
+        if ( Math.random()*100 < pressureOnQB/8 ) {
+            //sacked!
+            qbSack(offense);
+            runningClock = true;
+            gameTime -= 3 + (int)(Math.random() * 3); //Burn 3 to 6 seconds
+            return;
+        }
+
+        //check for int
+        double intChance = (pressureOnQB + defense.getS(0).ratOvr - (offense.getQB(0).ratPassAcc+offense.getQB(0).ratFootIQ+100)/3)/18
+                + offense.teamStratOff.getPAB() + defense.teamStratDef.getPAB();
+        if (intChance < 0.015) intChance = 0.015;
+        if ( 100*Math.random() < intChance ) {
+            //Interception
+            qbInterception( offense );
+            runningClock = false;
+            gameTime -= 5 + (int)(Math.random() * 5);
+            gotInt = true;
+            return;
+        }
+
+        double completion = ( getHFadv() + normalize(offense.getQB(0).ratPassAcc) + normalize(selWR.ratRecCat)
+                - normalize(selCB.ratCBCov) )/2 + 18.25 - pressureOnQB/16.8 - offense.teamStratOff.getPAB() - defense.teamStratDef.getPAB();
+
+        //throw ball, check for completion
+        if ( 100*Math.random() < completion ) {
+            if ( 100*Math.random() < (100 - selWR.ratRecCat)/3 ) {
+                //drop
+                selWRStats[4]++;
+                selWR.statsDrops++;
+                passAttempt(offense, selWR, selWRStats, yardsGain);
+
+                gameTime -= 5 + (int)(4*Math.random()); //Ball was dropped, burn 5 to 8 seconds
+                runningClock = false; //Incompletion stops the clock
+                return;
+
+            } else {
+                //no drop
+                yardsGain = (int) (( normalize(offense.getQB(0).ratPassPow) + normalize(selWR.ratRecSpd) - normalize(selCB.ratCBSpd) )*Math.random()/3.7
+                        + offense.teamStratOff.getPYB()/2 - defense.teamStratDef.getPYB());
+                //see if receiver can get yards after catch
+                double escapeChance = (normalize(selWR.ratRecEva)*3 - selCB.ratCBTkl - defense.getS(0).ratOvr)*Math.random()
+                        + offense.teamStratOff.getPYB() - defense.teamStratDef.getPAB();
+                if ( escapeChance > 95 || Math.random() > 0.98 ) { //Typically a two minute drill type pass will be short passes to the sideline without much YAC
+                    yardsGain += 1 + selWR.ratRecSpd*Math.random()/4;
+                }
+                if ( escapeChance > 90 && Math.random() < (0.1 + (offense.teamStratOff.getPAB()-defense.teamStratDef.getPAB())/200)) { //If you're shooting for the sideline you need a lot of luck or skill to break away for a TD
+                    //wr escapes for TD
+                    yardsGain = (100 - gameYardLine);
+                }
+
+                if ( yardsGain >= (100 - gameYardLine)) { //TD!
+                    yardsGain -= gameYardLine - 100;
+                    gameYardLine = 100 - yardsGain;
+                    addPointsQuarter(6);
+                    passingTD(offense, selWR, selWRStats, yardsGain);
+                    //offense.teamPoints += 6;
+                    //defense.teamOppPoints += 6;
+                    gotTD = true;
+                }
+                else { // Completion but no TD
+                    //check for fumble
+                    double fumChance = (defense.getS(0).ratSTkl + selCB.ratCBTkl)/2;
+                    if ( 100*Math.random() < fumChance/50 ) {
+                        //Fumble!
+                        gotFumble = true;
+                        //Time burned off is 5 seconds (snap, read, throw, catch) + either 50%, 75%, or 100% of the greater of yards the ball traveled/was carried divided by 10, or 1.
+                        gameTime -= 7 + (int)(((Math.random()*3 + 2)/4) * (Math.max(yardsGain/10,1)));
+                        runningClock = false; //Turnover, clock stops
+                        String recoveredBy;
+                        if (normalize(defense.getS(0).ratSTkl)*Math.random() > normalize(selCB.ratCBTkl)*Math.random()) recoveredBy = defense.getS(0).name;
+                        else recoveredBy = selCB.name;
+
+                        fumbleInfo = playPrefix + "TURNOVER!\n" + offense.abbr + " WR " + selWR.name + " fumbled the ball after a catch, recovered by " + recoveredBy + " at the ";
+                        selWRStats[5]++;
+                        selWR.statsFumbles++;
+                        return;
+                    }
+                }
+
+                if (!gotTD && !gotFumble) { // Ball was caught and the runner was tackled without it being a TD. Check to see if the QB was smart enough to throw to the sideline, if the WR was smart enough to make the catch near the sideline, and get OOB,
+                    //Check to see if average of QB IQ + (Avg of WR IQ + Spd) is greater than half of average of CB speed and tackling, after factoring home field advantage for the defense only. Essentially this only stays in bounds if the CB makes an amazing play or the QB/WR really screw the pooch. (CB stats intentionally not normalized to make it harder to keep the receiver inbounds)
+                    if((normalize(offense.getQB(0).ratFootIQ) + (normalize(selWR.ratFootIQ) + normalize(selWR.ratRecSpd))/2 )/2 > ((selCB.ratCBSpd/2) + (selCB.ratCBTkl/2))/2 + Math.min(0, getHFadv()) - (int)(5*Math.random()) ){
+                       runningClock = false; // Ball was caught and brought OOB -- Inside of two minutes this stops the clock
+                    }
+                    runningClock = true; //Ball was caught and tackled in bounds
+                }
+
+                //stats management
+                passCompletion(offense, defense, selWR, selWRStats, yardsGain);
+
+                //Time burned off is 5 seconds (snap, read, throw, catch) + either 50%, 75%, or 100% of the greater of yards gained divided by 10, or 1.
+                //A 99 yard catch and run that burns off the max possible time will take 14 seconds, which seems about right after looking at replays of this happening in real games.
+                gameTime -= 5 + (int)(((Math.random()*3 + 2)/4) * (Math.max(yardsGain/10,1)));
+            }
+
+        } else {
+            //no completion, manage stats
+            passAttempt(offense, selWR, selWRStats, yardsGain);
+            //Incomplete pass stops the clock, so just run time for how long the play took, then move on
+            runningClock = false;
+            gameTime -= 5 + (int)(4*Math.random()); //Pass was inc, burn 5 to 8 seconds
+            return;
+        }
+    }
+
+    /**
+     * Passing Play run while trying to burn time off the clock
+     * @param offense passing the ball
+     * @param defense defending the play
+     */
+    private void clockMilkPass(Team offense, Team defense) {
+            //choose WR to throw to, better WRs more often
+            double WR1pref = Math.pow(offense.getWR(0).ratOvr, 1) * Math.random();
+            double WR2pref = Math.pow(offense.getWR(1).ratOvr, 1) * Math.random();
+            double WR3pref = Math.pow(offense.getWR(2).ratOvr, 1) * Math.random();
+
+            PlayerWR selWR;
+            PlayerCB selCB;
+            int[] selWRStats;
+            if (WR1pref > WR2pref && WR1pref > WR3pref) {
+                selWR = offense.getWR(0);
+                selCB = defense.getCB(0);
+                if (gamePoss) {
+                    selWRStats = HomeWR1Stats;
+                } else selWRStats = AwayWR1Stats;
+            } else if (WR2pref > WR1pref && WR2pref > WR3pref) {
+                selWR = offense.getWR(1);
+                selCB = defense.getCB(1);
+                if (gamePoss) {
+                    selWRStats = HomeWR2Stats;
+                } else selWRStats = AwayWR2Stats;
+            } else {
+                selWR = offense.getWR(2);
+                selCB = defense.getCB(2);
+                if (gamePoss) {
+                    selWRStats = HomeWR3Stats;
+                } else selWRStats = AwayWR3Stats;
+            }
+
+            //get how much pressure there is on qb, check if sack
+            int pressureOnQB = defense.getCompositeF7Pass() * 2 - offense.getCompositeOLPass() - getHFadv();
+            if (Math.random() * 100 < pressureOnQB / 8) {
+                //sacked!
+                qbSack(offense);
+                runningClock = true;
+                gameTime -= 3 + (int) (Math.random() * 3); //Burn 3 to 6 seconds
+                return;
+            }
+
+            //check for int
+            double intChance = (pressureOnQB + defense.getS(0).ratOvr - (offense.getQB(0).ratPassAcc + offense.getQB(0).ratFootIQ + 100) / 3) / 18
+                    + offense.teamStratOff.getPAB() + defense.teamStratDef.getPAB() - 2;
+            if (intChance < 0.0075) intChance = 0.0075;
+            if (100 * Math.random() < intChance) {
+                //Interception
+                qbInterception(offense);
+                runningClock = false;
+                gameTime -= 5 + (int) (Math.random() * 5);
+                gotInt = true;
+                return;
+            }
+
+            double completion = (getHFadv() + normalize(offense.getQB(0).ratPassAcc) + normalize(selWR.ratRecCat)
+                    - normalize(selCB.ratCBCov)) / 2 + 18.25 - pressureOnQB / 16.8 - offense.teamStratOff.getPAB() - defense.teamStratDef.getPAB();
+
+            //throw ball, check for completion
+            if (100 * Math.random() - 5 < completion) {
+                if (100 * Math.random() < (100 - selWR.ratRecCat) / 3) {
+                    //drop
+                    selWRStats[4]++;
+                    selWR.statsDrops++;
+                    passAttempt(offense, selWR, selWRStats, yardsGain);
+
+                    gameTime -= 5 + (int) (4 * Math.random()); //Ball was dropped, burn 5 to 8 seconds
+                    runningClock = false; //Incompletion stops the clock
+                    return;
+
+                } else {
+                    //no drop
+                    yardsGain = Math.max((int) (((normalize(offense.getQB(0).ratPassPow)*0.8) + (normalize(selWR.ratRecSpd)*0.8) - normalize(selCB.ratCBSpd)) * Math.random() / 3.7
+                            + offense.teamStratOff.getPYB() / 2 - defense.teamStratDef.getPYB()),1);
+                    //see if receiver can get yards after catch -- Severely limited by the fact that this is a short high percentage pass.
+                    double escapeChance = (normalize(selWR.ratRecEva) * 3 - selCB.ratCBTkl - defense.getS(0).ratOvr) * Math.random()
+                            + offense.teamStratOff.getPYB() - defense.teamStratDef.getPAB();
+                    if (escapeChance > 95 || Math.random() > 0.97) {
+                        yardsGain += 1 + selWR.ratRecSpd * Math.random() / 5;
+                    }
+                    if (escapeChance > 98 && Math.random() < (0.1 + (offense.teamStratOff.getPAB() - defense.teamStratDef.getPAB()) / 200)) {
+                        //wr escapes for TD
+                        yardsGain = (100 - gameYardLine);
+                    }
+
+                    if (yardsGain >= (100 - gameYardLine)) { //TD!
+                        yardsGain -= gameYardLine - 100;
+                        gameYardLine = 100 - yardsGain;
+                        addPointsQuarter(6);
+                        passingTD(offense, selWR, selWRStats, yardsGain);
+                        //offense.teamPoints += 6;
+                        //defense.teamOppPoints += 6;
+                        gotTD = true;
+                    } else { // Completion but no TD
+                        //check for fumble
+                        double fumChance = (defense.getS(0).ratSTkl + selCB.ratCBTkl) / 2;
+                        if (100 * Math.random() < fumChance / 50) {
+                            //Fumble!
+                            gotFumble = true;
+                            //Time burned off is 5 seconds (snap, read, throw, catch) + either 50%, 75%, or 100% of the greater of yards gained divided by 10, or 1.
+                            gameTime -= 5 + (int) (((Math.random() * 3 + 2) / 4) * (Math.max(yardsGain / 10, 1)));
+                            runningClock = false; //Turnover, clock stops
+                            String recoveredBy;
+                            if (normalize(defense.getS(0).ratSTkl)*Math.random() > normalize(selCB.ratCBTkl)*Math.random()) recoveredBy = defense.getS(0).name;
+                            else recoveredBy = selCB.name;
+
+                            fumbleInfo = playPrefix + "TURNOVER!\n" + offense.abbr + " WR " + selWR.name + " fumbled the ball after a catch, recovered by " + recoveredBy + " at the ";
+                            selWRStats[5]++;
+                            selWR.statsFumbles++;
+                            return;
+                        }
+                    }
+
+                    if (!gotTD && !gotFumble) {
+                        runningClock = true;
+                    }
+
+                    //stats management
+                    passCompletion(offense, defense, selWR, selWRStats, yardsGain);
+
+                    //Time burned off is 5 seconds (snap, read, throw, catch) + either 50%, 75%, or 100% of the greater of yards gained divided by 10, or 1.
+                    gameTime -= 5 + (int) (((Math.random() * 3 + 2) / 4) * (Math.max(yardsGain / 10, 1)));
+                }
+
+            } else {
+                //no completion, manage stats
+                passAttempt(offense, selWR, selWRStats, yardsGain);
+                //Incomplete pass stops the clock, so just run time for how long the play took, then move on
+                runningClock = false;
+                gameTime -= 5 + (int) (4 * Math.random()); //Pass was inc, burn 5 to 8 seconds
+                return;
+            }
+
+        }
 
     /**
      * Rushing Play using running backs.
      * @param offense running the ball
      * @param defense defending the run
      */
-    private void rushingPlay( Team offense, Team defense ) {
-        boolean gotTD = false;
+    private void normalRush( Team offense, Team defense ) {
         //pick RB to run
         PlayerRB selRB;
         double RB1pref = Math.pow( offense.getRB(0).ratOvr , 1.5 ) * Math.random();
@@ -1028,21 +1429,19 @@ public class Game implements Serializable {
             }
         }
 
-        //add yardage
-        gameYardLine += yardsGain;
-        if ( gameYardLine >= 100 ) { //TD!
+        gameTime -= 1 + (Math.max(3,yardsGain/10) * ((int)(Math.random()*2 + 4)/4)); //Min time burned 4 seconds (0-10 yard gain), Max 14 seconds
+
+        if ( gameYardLine + yardsGain >= 100 ) { //TD!
             addPointsQuarter(6);
             yardsGain -= gameYardLine - 100;
             gameYardLine = 100 - yardsGain;
             if ( gamePoss ) { // home possession
-                homeScore += 6;
                 if (RB1pref > RB2pref) {
                     HomeRB1Stats[2]++;
                 } else {
                     HomeRB2Stats[2]++;
                 }
             } else {
-                awayScore += 6;
                 if (RB1pref > RB2pref) {
                     AwayRB1Stats[2]++;
                 } else {
@@ -1057,27 +1456,10 @@ public class Game implements Serializable {
             gotTD = true;
         }
 
-        //check downs if there wasn't TD
-        if (!gotTD) {
-            //check downs 
-            gameYardsNeed -= yardsGain;
-            if ( gameYardsNeed <= 0 ) {
-                // Only set new down and distance if there wasn't a TD
-                gameDown = 1;
-                gameYardsNeed = 10;
-            } else gameDown++;
-        }
-
         //stats management
         rushAttempt(offense, defense, selRB, RB1pref, RB2pref, yardsGain);
 
-        if ( gotTD ) {
-            gameTime -= 5 + 15*Math.random(); // Clock stops for the TD, just burn time for the play
-            kickXP( offense, defense );
-            if (!playingOT) kickOff( offense );
-            else resetForOT();
-        } else {
-            gameTime -= 25 + 15*Math.random();
+        if ( !gotTD ){
             //check for fumble
             double fumChance = (defense.getS(0).ratSTkl + defense.getCompositeF7Rush() - getHFadv())/2 + offense.teamStratOff.getRAB();
             if ( 100*Math.random() < fumChance/50 ) {
@@ -1097,18 +1479,22 @@ public class Game implements Serializable {
                         AwayRB2Stats[3]++;
                     }
                 }
-                gameEventLog += getEventPrefix() + "TURNOVER!\n" + offense.abbr + " RB " + selRB.name + " fumbled the ball while rushing.";
+                String recoveredBy;
+                //Determine who recovered the fumble, random chance for the safety, or a random F7 depending on who gets the higher roll on the skill check
+                if (normalize(defense.getS(0).ratSTkl)*Math.random() > (normalize(defense.getCompositeF7Rush())*Math.random())/7) recoveredBy = defense.getS(0).name; // Safety recovers
+                else recoveredBy = defense.getF7((int)(Math.random()*7)).name; // F7 member recovers
+                fumbleInfo = playPrefix + "TURNOVER!\n" + offense.abbr + " RB " + selRB.name + " fumbled the ball while rushing, recovered by " + recoveredBy + " at the "; //Set the fumble info up to be reported at the end of runPlay()
                 selRB.statsFumbles++;
-                if (!playingOT) {
-                    gameDown = 1;
-                    gameYardsNeed = 10;
-                    gamePoss = !gamePoss;
-                    gameYardLine = 100 - gameYardLine;
-                }
-                else resetForOT();
+                gotFumble = true;
             }
         }
 
+        if (!gotTD && !gotFumble) {
+            if(Math.random() < 0.03){
+                firstDownClock = true; //3% chance catch goes out of bounds -- Clock only stops inside of 5 minutes to go in a half
+            }
+            runningClock = true;
+        }
     }
 
     /**
@@ -1358,24 +1744,14 @@ public class Game implements Serializable {
             AwayQBStats[5]++;
         }
 
-        if (gameYardLine < 0) {
-            // Safety!
-            // Eat some time up for the play that was run, stop it once play is over
-            gameTime -= 10*Math.random();
-            safety();
-            return; // Run safety then get out of qbSack (safety() will take care of free kick)
-        }
-
-        gameDown++; // Advance gameDown after checking for Safety, otherwise game log reports Safety occurring one down later than it did
-
-        //Similar amount of time as rushing, minus some in-play time -- sacks are faster (usually)
-        gameTime -= 25 + 10*Math.random();
+        if (gameYardLine < 0) safety(); // Safety!
     }
 
     /**
      * Perform safety. Will add 2 to the correct team and give the ball over via a free kick.
      */
     private void safety() {
+        gotSafety = true;
         //addPointsQuarter(2);
         if (gamePoss) {
             awayScore += 2;
@@ -1404,20 +1780,6 @@ public class Game implements Serializable {
             AwayQBStats[1]++;
             awayTOs++;
         }
-
-        //Log the event before decreasing the time, in keeping with the standard of other logged plays (TD, Fumble, etc.)
-        gameEventLog += getEventPrefix() + "TURNOVER!\n" + offense.abbr + " QB " + offense.getQB(0).name + " was intercepted.";
-        //Clock stops after a pick, so just run time off the clock for the play that occurred
-        //NOTE: If the ability to run an interception back is ever added, this should be changed to be more time
-        gameTime -= 15*Math.random();
-        offense.getQB(0).statsInt++;
-        if (!playingOT) {
-            gameDown = 1;
-            gameYardsNeed = 10;
-            gamePoss = !gamePoss;
-            gameYardLine = 100 - gameYardLine;
-        }
-        else resetForOT();
     }
 
     /**
@@ -1564,6 +1926,184 @@ public class Game implements Serializable {
                 if ( 3+numOT < 10 ) awayQScore[3+numOT] += points;
                 else awayQScore[9] += points;
             }
+        }
+    }
+
+    /**
+     * Select and run a play based on no special game situation
+     * @param offense running the play
+     * @param defense defending the play
+     * @param gameSituation int for the current game situation so that the play functions operate as expected
+     * @param preferPass Number generated to determine how much the team wants to pass the ball
+     * @param preferRush Number generated to determine how much the team wants to run the ball
+     */
+ private void normalGameSituationPlay(Team offense, Team defense, int gameSituation, double preferPass, double preferRush){
+     int homeScoreDiff = homeScore - awayScore; //Positive for lead, negative for trailing
+     int awayScoreDiff = awayScore - homeScore;
+
+     if (gameDown >= 4) {
+         if (((gamePoss && awayScoreDiff > 3) || (!gamePoss && homeScoreDiff > 3)) && gameTime < 300) {
+             //go for it since we need 7 to win -- This also forces going for it if down by a TD in BOT OT
+             if (gameYardsNeed < 3) {
+                 rushingPlay(offense, defense);
+             } else {
+                 passingPlay(offense, defense, gameSituation);
+             }
+         } else {
+             //4th down
+             if (gameYardsNeed < 3) {
+                 if (gameYardLine > 65) {
+                     //fga
+                     fieldGoalAtt(offense, defense);
+                 } else if (gameYardLine > 55) {
+                     // run play, go for it!
+                     rushingPlay(offense, defense);
+                 } else {
+                     //punt
+                     puntPlay(offense);
+                 }
+             } else if (gameYardLine > 60) {
+                 //fga
+                 fieldGoalAtt(offense, defense);
+             } else {
+                 //punt
+                 puntPlay(offense);
+             }
+         }
+     }
+
+     else if ((gameDown == 3 && gameYardsNeed > 4)  ||  ((gameDown == 1 || gameDown == 2) && (preferPass >= preferRush))) {
+         // pass play
+         passingPlay(offense, defense, checkGameSituation());
+     } else {
+         //run play
+         rushingPlay(offense, defense);
+     }
+
+ }
+
+    /**
+     * Select and run a play based in the Two Minute Drill
+     * @param offense running the play
+     * @param defense defending the play
+     * @param gameSituation int for the current game situation so that the play functions operate as expected
+     * @param preferPass Number generated to determine how much the team wants to pass the ball
+     * @param preferRush Number generated to determine how much the team wants to run the ball
+     */
+    private void twoMinuteDrillPlay(Team offense,Team defense,int gameSituation, double preferPass, double preferRush) {
+        int homeScoreDiff = homeScore - awayScore; //Positive for lead, negative for trailing
+        int awayScoreDiff = awayScore - homeScore;
+
+
+        //Under 20 seconds to play, check that the team with the ball is trailing or tied, do something based on the score difference
+        if (gameTime <= 20 && !playingOT && ((gamePoss && (awayScore >= homeScore)) || (!gamePoss && (homeScore >= awayScore)))) {
+            //Down by 3 or less, or tied, and you have the ball
+            if (((gamePoss && awayScoreDiff <= 3) || (!gamePoss && homeScoreDiff <= 3)) && gameYardLine > 60) {
+                //last second FGA
+                fieldGoalAtt(offense, defense);
+            } else {
+                //hail mary
+                passingPlay(offense, defense, gameSituation);
+            }
+        }
+        else if(gameDown >= 4) {
+            if (((gamePoss && awayScoreDiff > 3) || (!gamePoss && homeScoreDiff > 3)) && !firstHalf) {
+                //go for it since we need 7 to win
+                if (gameYardsNeed < 3) {
+                    if (gameTime < 60) { //Not enough time to safely rush the ball
+                        passingPlay(offense, defense, gameSituation);
+                    } else { //Still a bit of time, so rushing is an option
+                        rushingPlay(offense, defense);
+                    }
+                } else {
+                    passingPlay(offense, defense, gameSituation);
+                }
+
+            } else {
+                //4th down
+                if (gameYardsNeed < 3) {
+                    if (gameYardLine > 65) {
+                        //fga
+                        fieldGoalAtt(offense, defense);
+                    } else if (gameYardLine > 55) {
+                        //go for it!
+                        if (gameTime < 60 || (firstHalf && gameTime < 1860)) { //Not enough time to rush the ball
+                            passingPlay(offense, defense, gameSituation);
+                        } else { //Run it!
+                            rushingPlay(offense, defense);
+                        }
+                    } else if (homeScore == awayScore && gameYardLine >= 50) { //Tied in the Two Minute Drill past the 50
+                        if (gameTime < 45 || (firstHalf && gameTime < 1845)) { //Not much time for the other team to respond, punting is safe here
+                            puntPlay(offense);
+                        } else { //Still enough time left for the other team to respond in a tied game; don't want to hand them a win or a free score
+                            rushingPlay(offense, defense);
+                        }
+                    } else {
+                        if (homeScore != awayScore && !firstHalf) { //We're in a 2nd Half 2 minute drill and the game is not tied (so offense is trailing)
+                            rushingPlay(offense, defense); // No choice but to go for it, you need to move the ball to stay alive
+                        } else { //You have to punt it, otherwise you're handing the other team a chance to score (and win if it's the second half)
+                            puntPlay(offense);
+                        }
+
+                    }
+                } else if (gameYardLine > 60) {
+                    //fga
+                    fieldGoalAtt(offense, defense);
+                } else {
+                    //punt
+                    puntPlay(offense);
+                }
+            }
+        }
+
+            //Throw the ball unless very specific circumstances are met: First/second/third-and-short with more than minute left, and the team prefers running over passing runs the ball. Every other circumstance is a pass.
+            else if ((gameDown == 3 && gameYardsNeed > 4)  ||  ((gameDown == 1 || gameDown == 2 || (gameDown == 3 && gameYardsNeed <= 4)) && (preferPass >= preferRush) && gameTime > 60)  ||  (gameTime < 61)) {
+                // pass play
+                passingPlay(offense, defense, gameSituation);
+            } else {
+                //run play
+                rushingPlay(offense, defense);
+            }
+    }
+
+    /**
+     * Run a play while trying to burn time off the clock
+     * @param offense running the play
+     * @param defense defending the play
+     * @param gameSituation int for the current game situation so that the play functions operate as expected
+     * @param preferPass Number generated to determine how much the team wants to pass the ball
+     * @param preferRush Number generated to determine how much the team wants to run the ball
+     */
+    private void milkTheClock(Team offense, Team defense, int gameSituation, double preferPass, double preferRush){
+
+        if (gameDown >= 4) {
+                //4th down
+                if (gameYardsNeed < 3) {
+                    if (gameYardLine > 65) {
+                        //fga
+                        fieldGoalAtt(offense, defense);
+                    } else if (gameYardLine > 55) {
+                        // run play, go for it!
+                        rushingPlay(offense, defense);
+                    } else {
+                        //punt
+                        puntPlay(offense);
+                    }
+                } else if (gameYardLine > 60) {
+                    //fga
+                    fieldGoalAtt(offense, defense);
+                } else {
+                    //punt
+                    puntPlay(offense);
+                }
+            }
+
+        else if ((gameDown == 3 && gameYardsNeed > 4)  ||  ((gameDown == 1 || gameDown == 2) && (preferPass >= preferRush)) && gameYardsNeed > 7) {
+            // pass play
+            passingPlay(offense, defense, gameSituation);
+        } else {
+            //run play
+            rushingPlay(offense, defense);
         }
     }
 
